@@ -1,0 +1,37 @@
+
+RTUs
+Grouping of functionality to form classes.
+
+1)Digital Inputs
+
+2)Analog Inputs
+
+3)Digital Outputs
+
+4)Analog Outputs
+
+5)Socket Communication
+
+
+
+Grouping of data to form structures.
+
+1)Current state
+
+
+
+Historian
+Grouping of functionality to form classes.
+
+1)Socket Communication
+
+2)Write to a database
+
+
+
+UI/UX
+Grouping of functionality to form classes.
+
+1)Read data from a database.
+
+2)Display data.
