@@ -3,30 +3,65 @@ RTUs
 Grouping of functionality to form classes.
 
 1)Digital Inputs
+  -State
+  -Pin number
+  -Pull up or pull down
+  -Set as Input
+  -Interrupt
+    -WiringPi or Memory mapping?
+
+  -Function to return state.
+  -Function to set up hardware.
 
 2)Analog Inputs
+  -Pin number
+  -State
+  -Value
+  -Constantly checking for valid voltages
 
+  -Function to return the value.
+  -Function to return the state.
+  -Function to set the hardware up.
 3)Digital Outputs
+  -State
+  -Pin number
+
+  -Function to send a value.
+  -Function to set up the hardware.
 
 4)Analog Outputs
 
 5)Socket Communication
+  -A send flag
+  -A receive flag
+  -Local IP address
+  -Historian IP address
+  -Broadcasting IP address
+  -Vector pointer for data
 
+
+  -A function to initialize
+  -A function to send
+  -A function to receive
 
 
 Grouping of data to form structures.
 
 1)Current state
-
+  -Time stamp
+  -States of all of the inputs.
+  -Values of the analog inputs.
+  -Indicate the event type.
 
 
 Historian
 Grouping of functionality to form classes.
 
 1)Socket Communication
+  -TCP/IP sending a pointer to a "big struct of shit" with the size of "a big struct of shit".
 
 2)Write to a database
-
+  -Research on C++ and mysql
 
 
 UI/UX
