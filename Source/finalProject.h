@@ -61,3 +61,14 @@ public:
   bool getValue();      //Get the value of the pin.
   void setValue(bool);  //Set the value of the pin.
 };
+
+class SocketCommunication{
+private:
+    int sockfd;
+    int portno;
+    struct sockaddr_in serv_addr;
+    struct hostent *server;
+
+
+
+};
