@@ -53,7 +53,7 @@ private:
 
 public:
   DigitalOutput();      //Initialize the input hardware parameters.
-  ~DigitalOutput();     //Destructor.
+  ~DigitalOutput(); /    //Destructor.
   void setPullUp();     //Set the pullup for the pin.
   void setPullDown();   //Set the pulldown for the pin.
   void setState(bool);  //Set the state if an event happened, or clear if the event is over.
