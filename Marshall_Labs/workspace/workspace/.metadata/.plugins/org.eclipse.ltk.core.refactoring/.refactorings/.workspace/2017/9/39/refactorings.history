@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<session version="1.0">
-<refactoring comment="Delete resource &apos;ECE4220_Lab2_Week1/src/code.cpp&apos;" deleteContents="false" description="Delete resource &apos;ECE4220_Lab2_Week1/src/code.cpp&apos;" element1="/ECE4220_Lab2_Week1/src/code.cpp" flags="7" id="org.eclipse.ltk.core.refactoring.delete.resources" resources="1" stamp="1506536095239"/>
-</session>
