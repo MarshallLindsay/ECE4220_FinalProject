@@ -4,8 +4,11 @@
   ECE 4220 Final Project
 
 */
+#ifndef FINALPROJECT_H
+#define FINALPROJECT_H
 
-
+#define CHAR_DEV "/dev/MarshallMaxFinal"
+#define MSG_SIZE (50)
 
 class DigitalInput{
 private:
@@ -64,11 +67,37 @@ public:
 
 class SocketCommunication{
 private:
-    int sockfd;
-    int portno;
-    struct sockaddr_in serv_addr;
-    struct hostent *server;
+  int sockfd;
+  int portno;
+  socklen_t fromlen;
+  int length;
+  string localAddress;
+  char broadcast[MSG_SIZE];
+  char receive[MSG_SIZE];
+  struct sockaddr_in server;
+  struct sockaddr_in from;
+  struct hostent *server;
+public:
+  SocketCommunication();
+  ~SocketCommunication();
+  int sendMessage(char buffer[MSG_SIZE]);
+  char* receiveMessage(void);
+};
 
-
+class CharacterCommunication{
+private:
+  int cdev_id;
+  int dummy;
+  char broadcast[MSG_SIZE];
+  char receive[MSG_SIZE];
+public:
+  CharacterCommunication();
+  ~CharacterCommunication();
+  int openDevice(); //Maybe overload to allow different devices
+  int writeToDevice(char buffer[MSG_SIZE]);
+  char* readFromDevice(void); //Char pointer return?
 
 };
+
+
+#endif
