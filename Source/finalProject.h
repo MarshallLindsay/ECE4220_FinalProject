@@ -10,6 +10,8 @@
 #define CHAR_DEV "/dev/MarshallMaxFinal"
 #define MSG_SIZE (50)
 
+using namespace std;
+
 class DigitalInput{
 private:
   int pinNumber;  //What is the pin number?
