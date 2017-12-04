@@ -1,0 +1,223 @@
+/* ece4220lab6_isr.c
+ * ECE4220/7220, Fall 2017
+ * Author: Luis Alberto Rivera
+
+ Basic steps needed to configure GPIO interrupt and attach a handler.
+ Check chapter 6 of the BCM2835 ARM Peripherals manual for details about
+ the GPIO registers, how to configure, set, clear, etc.
+
+ Note: this code is not functional. It shows some of the actual code that you need,
+ but some parts are only descriptions, hints or recommendations to help you
+ implement your module.
+
+ You can compile your module using the same Makefile provided. Just add
+ obj-m += YourModuleName.o
+ */
+
+#ifndef MODULE
+#define MODULE
+#endif
+#ifndef __KERNEL__
+#define __KERNEL__
+#endif
+
+#include <linux/module.h>
+#include <linux/kernel.h>
+#include <asm/io.h>
+#include <linux/init.h>
+#include <linux/types.h>
+#include <linux/interrupt.h>
+#include <linux/delay.h>
+#include <linux/hrtimer.h>
+#include <linux/ktime.h>
+
+MODULE_LICENSE("GPL");
+
+/* Declare your pointers for mapping the necessary GPIO registers.
+   You need to map:
+
+   - Pin Event detect status register(s)
+   - Rising Edge detect register(s) (either synchronous or asynchronous should work)
+   - Function selection register(s)
+   - Pin Pull-up/pull-down configuration registers
+
+   Important: remember that the GPIO base register address is 0x3F200000, not the
+   one shown in the BCM2835 ARM Peripherals manual.
+*/
+
+unsigned long period = 1; //Interval for HRTIMER.
+static struct hrtimer hr_timer;
+
+unsigned long* GPFSEL;	//Select register. Set as inputs and outputs.
+unsigned long* GPSET;	//GPIO set register. Used to set a pin.
+unsigned long* GPCLR;	//GPIO clear register. Used to clear a pin.
+unsigned long* GPEDS;	//GPIO Event Detect Status. Used to see which pin was set.
+unsigned long* GPAREN;	//GPIO Async. Rising Edge Detection enable register.
+unsigned long* GPPUD;	//GPIO Pullup/Pulldown enable.
+unsigned long* GPPUDCLK;//GPPUD clock for Pullup/Pulldown configuration.
+
+
+
+int mydev_id;	// variable needed to identify the handler
+
+// Interrupt handler function. Tha name "button_isr" can be different.
+// You may use printk statements for debugging purposes. You may want to remove
+// them in your final code.
+static irqreturn_t button_isr(int irq, void *dev_id)
+{
+	// In general, you want to disable the interrupt while handling it.
+	disable_irq_nosync(79);
+
+	// This same handler will be called regardless of what button was pushed,
+	// assuming that they were properly configured.
+	// How can you determine which button was the one actually pushed?
+	if(*GPEDS & 0x8000){
+		printk("\nPB1 was pressed");
+	}else if(*GPEDS & 0x10000){
+		printk("\nPB2 was pressed");
+	}else if(*GPEDS & 0x20000){
+		printk("\nPB3 was pressed");
+	}else if(*GPEDS & 0x40000){
+		printk("\nPB4 was pressed");
+	}else if(*GPEDS & 0X80000){
+		printk("\nPB5 was pressed");
+	}
+
+	// DO STUFF (whatever you need to do, based on the button that was pushed)
+
+	// IMPORTANT: Clear the Event Detect status register before leaving.
+
+	*GPEDS = 0xFFFFFFFF;
+	printk("Interrupt handled\n");
+	enable_irq(79);		// re-enable interrupt
+
+    return IRQ_HANDLED;
+}
+
+enum hrtimer_restart timer_callback(struct hrtimer *timer_for_restart){
+  ktime_t currtime, interval;
+  int count = 1;
+  unsigned long overruns = 0;
+
+
+  currtime = ktime_get(); //Get the current time
+  interval = ktime_set(0, period); //Set the end time
+
+  overruns = hrtimer_forward(timer_for_restart, currtime, interval); //Advance the timer to the next interval and return the number of overruns.
+
+  if(count % 2 == 0){
+    count--;
+    //Clear the pin
+    //printk("\nSetting the pin");
+    *GPCLR |= 0x40;
+  }else{
+    count++;
+    //Set the pin
+    //printk("\nClearing the pin");
+    *GPSET |= 0x40;
+  }
+
+  return HRTIMER_RESTART;
+}
+
+int init_module()
+{
+	int dummy = 0;
+	int i;
+	ktime_t ktime;
+
+	// Map GPIO registers
+	// Remember to map the base address (beginning of a memory page)
+	// Then you can offset to the addresses of the other registers
+
+	GPFSEL = (unsigned long*)ioremap(0x3F200000, 4096);
+	GPSET = GPFSEL;		//7
+	GPCLR = GPFSEL;		//10
+	GPEDS = GPFSEL;		//16
+	GPAREN = GPFSEL;	//31
+	GPPUD = GPFSEL;		//37
+	GPPUDCLK = GPFSEL;	//38
+
+	for(i = 0; i < 7; i++){
+	 	GPSET++;
+	}
+	for(i = 0; i < 10; i++){
+		GPCLR++;
+	}
+	for(i = 0; i < 16; i++){
+		GPEDS++;
+	}
+	for(i = 0; i < 31; i++){
+		GPAREN++;
+	}
+	for(i = 0; i < 37; i++){
+		GPPUD++;
+	}
+	for(i = 0; i < 38; i++){
+		GPPUDCLK++;
+	}
+
+	printk("\nGPSET = %p | GPCLR = %p | GPEDS = %p | GPAREN = %p | GPPUD = %p | GPPUDCLK = %p", (void*)GPSET, (void*)GPCLR, (void*)GPEDS, (void*)GPAREN, (void*)GPPUD, (void*)GPPUDCLK);
+
+	// Don't forget to configure all ports connected to the push buttons as inputs.
+
+	//Speaker - GPIO6
+	//PB1 - GPIO16
+	//PB2 - GPIO17
+	//PB3 - GPIO18
+	//PB4 - GPIO19
+	//PB5 - GPIO20
+
+	//Speaker
+	*GPFSEL |= 0x40000;
+
+	//Push buttons 1 - 4 are on the next register
+	GPFSEL++;
+	//PB1, PB2, PB3, PB4
+	*GPFSEL &= 0xF3DBFFFF;
+
+	//Push button 5 is on the next register
+	GPFSEL++;
+	//PB5
+	*GPFSEL &= 0xFFFFFFF8;
+
+
+
+	// You need to configure the pull-downs for all those ports. There is
+	// a specific sequence that needs to be followed to configure those pull-downs.
+	// The sequence is described on page 101 of the BCM2835-ARM-Peripherals manual.
+	// You can use  udelay(100);  for those 150 cycles mentioned in the manual.
+	// It's not exactly 150 cycles, but it gives the necessary delay.
+	// WiringPi makes it a lot simpler in user space...
+
+	//Pull downs for bits 15,16,17,18,19 ->
+	*GPPUD |= 0x1;	//0b01
+	udelay(100);
+	*GPPUDCLK |= 0x1F0000;
+	udelay(100);
+	*GPPUD &= 0x0;
+	udelay(100);
+	*GPPUDCLK &= 0x0;
+	// Enable (Async) Rising Edge detection for all 5 GPIO ports.
+	*GPAREN |= 0x1F0000;
+
+	// Request the interrupt / attach handler (line 79, doesn't match the manual...)
+	// The third argument string can be different (you give the name)
+	dummy = request_irq(79, button_isr, IRQF_SHARED, "Button_handler", &mydev_id);
+
+	printk("Button Detection enabled.\n");
+	return 0;
+}
+
+// Cleanup - undo whatever init_module did
+void cleanup_module()
+{
+	// Good idea to clear the Event Detect status register here, just in case.
+	*GPEDS |= 0xFFFFFFFF;
+	// Disable (Async) Rising Edge detection for all 5 GPIO ports.
+	*GPAREN |= 0x0;
+	// Remove the interrupt handler; you need to provide the same identifier
+    free_irq(79, &mydev_id);
+
+	printk("Button Detection disabled.\n");
+}

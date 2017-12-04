@@ -1,0 +1,89 @@
+/*
+ *
+ * Marshall Lindsay
+ * ECE4220
+ * Lab3 Part2
+ *
+ *
+ */
+
+#include <iostream>
+#include <pthread.h>
+#include <stdint.h>
+#include <stdlib.h>
+#include <time.h>
+#include <unistd.h>
+#include <sys/timerfd.h>
+#include <vector>
+#include <semaphore.h>
+#include <wiringPi.h>
+#include "ece4220lab3.h"
+
+using namespace std;
+
+
+#define RED_PRIORITY 51
+#define YELLOW_PRIORITY 51
+#define PED_PRIORITY 51
+#define RED (2)
+#define YELLOW (3)
+#define GREEN (4)
+#define BLUE (5)
+#define BUTTON (16)
+
+
+sem_t my_semaphore;
+
+
+void* redLight(void*);
+void* yellowLight(void*);
+void* pedLight(void*);
+
+int main(int argc, char **argv){
+
+	//Set up our i/o
+	wiringPiSetupGpio();
+	pinMode(RED, OUTPUT);
+	pinMode(YELLOW, OUTPUT);
+	pinMode(GREEN, OUTPUT);
+	pinMode(BLUE, OUTPUT);
+	pinMode(BUTTON, INPUT);
+
+	pullUpDnControl(RED, PUD_DOWN);
+	pullUpDnControl(YELLOW, PUD_DOWN);
+	pullUpDnControl(GREEN, PUD_DOWN);
+	pullUpDnControl(BLUE, PUD_DOWN);
+	pullUpDnControl(BUTTON, PUD_DOWN);
+
+
+
+	return(0);
+}
+
+
+void* redLight(void*){
+	struct sched_param param;
+
+	param.sched_priority = RED_PRIORITY;
+	sched_setscheduler(0, SCHED_FIFO, &param);
+
+}
+
+
+void* yellowLight(void*){
+	struct sched_param param;
+
+	param.sched_priority = YELLOW_PRIORITY;
+	sched_setscheduler(0, SCHED_FIFO, &param);
+
+	usleep(1000000);
+
+}
+
+void* pedLight(void*){
+	struct sched_param param;
+
+	param.sched_priority = PED_PRIORITY;
+	sched_setscheduler(0, SCHED_FIFO, &param);
+
+}

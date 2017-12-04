@@ -1,0 +1,54 @@
+/*
+ *
+ * Marshall Lindsay
+ * ECE4220
+ * Lab1
+ *
+ *
+ */
+
+
+#include <iostream>
+#include <wiringPi.h>
+
+using namespace std;
+
+void ledFlashing(void);
+
+int main(void){
+
+	wiringPiSetup();
+
+	ledFlashing();
+
+
+	return(0);
+}
+
+
+void ledFlashing(void){
+
+	pinMode(8,OUTPUT);
+	pinMode(9,OUTPUT);
+
+	digitalWrite(8, LOW);
+	digitalWrite(9, LOW);
+
+	int i;
+
+	for(i = 0; i < 10; i++){
+
+		if(i%2){
+
+			digitalWrite(8, HIGH);
+			digitalWrite(9, LOW);
+			delay(1000);
+		}else{
+
+			digitalWrite(8, LOW);
+			digitalWrite(9, HIGH);
+			delay(1000);
+		}
+	}
+
+}

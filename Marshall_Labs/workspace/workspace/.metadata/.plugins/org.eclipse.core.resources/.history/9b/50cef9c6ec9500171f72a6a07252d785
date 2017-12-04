@@ -1,0 +1,55 @@
+/*
+ *
+ * Marshall Lindsay
+ * ECE 4220
+ * Lab1 Part2
+ * Kernal Module
+ *
+ *
+ */
+#ifndef MODULE
+#define MODULE
+#endif
+
+#ifndef __KERNEL__
+#define __KERNEL__
+#endif
+
+#include <linux/module.h>
+#include <linux/kernel.h>
+#include <linux/delay.h>
+#include <asm/io.h>
+
+MODULE_LICENSE("GPL");
+
+
+int init_module(void){
+	unsigned long* GPFSEL;
+	unsigned long* GPSET;
+	unsigned long* GPCLR;
+
+	GPFSEL = (unsigned long*)ioremap(0x3F200000, 0x1c);
+
+	GPSET = (unsigned long*)ioremap(0x3F20001c, 0x4);
+
+	GPCLR = (unsigned long*)ioremap(0x3F200028, 0x4);
+
+
+	*GPSET |= 0x04;
+
+	printk("%lx", *GPSET);
+	msleep(1000);
+
+	*GPCLR |= 0x04;
+	printk("%lx", *GPSET);
+
+
+	printk("MODULE INSTALLED");
+	return(0);
+}
+
+void cleanup_module(void){
+
+	printk("MODULE REMOVED");
+
+}

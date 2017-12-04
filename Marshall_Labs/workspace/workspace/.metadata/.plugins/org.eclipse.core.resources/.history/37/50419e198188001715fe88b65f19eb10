@@ -1,0 +1,26 @@
+/*
+ *
+ * Marshall Lindsay
+ * ECE4220
+ * Lab1
+ *
+ *
+ */
+
+
+#include <iostream>
+#include <wiringPi.h>
+
+using namespace std;
+
+int main(void){
+
+	wiringPiSetup(void);
+
+	pinMode(8,OUTPUT);
+
+	digitalWrite(8,HIGH);
+
+
+	return(0);
+}

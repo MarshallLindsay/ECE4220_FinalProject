@@ -1,0 +1,81 @@
+//============================================================================
+// Name        : ECE4220_Lab5.cpp
+// Author      : Marshall Lindsay
+// Version     :
+// Copyright   : Your copyright notice
+// Description : Hello World in C++, Ansi-style
+//============================================================================
+
+#include <iostream>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <netdb.h>
+#include <arpa/inet.h>
+#include <sys/ioctl.h>
+#include <net/if.h>
+
+using namespace std;
+
+int main(int argc, char *argv[]) {
+	//Check for command line errors
+	if(argc != 2){
+		cout<<"\nIncorrect number of command line arguments!"<<endl;
+		return(1);
+	}
+
+
+	int sock;
+	int length;
+	int boolval = 1;
+
+	//Create a socket, connectionless
+	sock = socket(AF_INET, SOCK_DGRAM, 0);
+	if(sock < 0){
+		cout<<"\nSocket creation failed"<<endl;
+	}
+
+	//Put together the structure to hold all of the communication information
+	struct sockaddr_in server;
+	length = sizeof(server);
+
+	//Clear all of the data.
+	bzero(&server,length);
+	//Set the address family IPv4
+	server.sin_family = AF_INET;
+	//Set the address to INADDR_ANY.. It will be set later with bind()
+	server.sin_addr.s_addr = INADDR_ANY;
+	//Set the port from the command line argument
+	server.sin_port = htons(atoi(argv[1]));
+
+
+	//Bind the socket to the port and host IP
+	if(bind(sock, (struct sockaddr *)&server, length) < 0){
+		cout<<"\nFailed to bind the socket!"<<endl;
+	}
+
+
+	//Set the option for broadcasting.
+	if (setsockopt(sock, SOL_SOCKET, SO_BROADCAST, &boolval, sizeof(boolval)) < 0)
+	{
+		cout<<"\nError setting socket options"<<endl;
+		return(-1);
+	}
+
+	//Obtain the ip address of the server
+	//Pulled from stackoverflow
+	//https://stackoverflow.com/questions/579783/how-to-detect-ip-address-change-programmatically-in-linux
+
+	int s;
+	struct ifreq ifr;
+	strncpy(ifr.ifr_name, "wlan0", sizeof(ifr.ifr_name));
+	if(ioctl(s, SIOCGIFADDR, &ifr) >= 0){
+		cout<<"\n"<<inet_ntoa(((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr)<<endl;
+	}
+
+	return(0);
+}

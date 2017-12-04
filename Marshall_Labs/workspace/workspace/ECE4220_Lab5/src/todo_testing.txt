@@ -1,0 +1,2 @@
+So to change the socket to broadcast, you need to change the IP on the socket.
+But will the IP change back to the sender when we receive another message?

@@ -1,0 +1,1 @@
+cmd_/home/pi/workspace/ECE4220_Lab6/src/KTHREAD.ko := ld -EL -r  -T ./scripts/module-common.lds --build-id  -o /home/pi/workspace/ECE4220_Lab6/src/KTHREAD.ko /home/pi/workspace/ECE4220_Lab6/src/KTHREAD.o /home/pi/workspace/ECE4220_Lab6/src/KTHREAD.mod.o

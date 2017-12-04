@@ -1,0 +1,81 @@
+/*
+ serial_simple.c
+ Created on: Sep 25, 2013
+    Author: Luis Alberto Rivera
+*/
+
+#include <iostream>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <vector>
+#include <semaphore.h>
+#include "serial_ece4220.h"
+#include "ece4220lab3.h"
+
+using namespace std;
+
+#define INIT_VALUE (0)
+
+
+sem_t gps_semaphore;
+
+
+struct gpsData{
+	timespec time;
+	unsigned char value;
+
+};
+
+gpsData data;
+
+
+void* collection(void*);
+void* eventWatcher(void*);
+
+int main(void)
+{
+
+	struct timespec gps_time;
+	sem_init(&gps_semaphore, 0, INIT_VALUE);
+	pthread_t collectionThread, eventWatcherThread, interpolationThread;
+
+	// Open the serial port. The first argument denotes the serial port number,
+	// while the second and third denote the baud rate (of 115200 in this case)
+	int prt_id = serial_open(0,5,5);
+	unsigned char x;
+	ssize_t num_bytes;
+
+	usleep(10);
+	pthread_create(&collectionThread, NULL, collection, NULL);
+
+	while(1)
+	{
+
+		//Read data from the serial port. Blocking function
+		num_bytes = read(prt_id, &x, 1);
+		clock_gettime(CLOCK_REALTIME, &gps_time);
+		data.value = x;
+		data.time = gps_time;
+		//cout<<"\n"<<(int)(data.value)<<endl;
+		sem_post(&gps_semaphore);
+	}
+
+
+
+	return(0);
+}
+
+void* collection(void*){
+
+
+	while(1){
+		sem_wait(&gps_semaphore);
+		cout<<data.value<<endl;
+	}
+}
+
+void* eventWatcher(void*){
+
+
+}

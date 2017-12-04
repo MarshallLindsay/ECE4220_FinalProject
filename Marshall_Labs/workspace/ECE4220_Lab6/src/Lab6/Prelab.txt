@@ -1,0 +1,47 @@
+Marshall Lindsay
+ECE 4220
+Lab6 Prelab
+
+
+1) Investigate and include a brief description for the following instructions:
+
+  i)request_irq(unsigned int irq, irq_handler_t handler, unsigned long irqflags, const char * devname, void * dev_id) - This function is used to allocate an interrupt line. There are 5 Arguments -
+    a)irq - Interrupt line to allocate
+    b)handler - Function to be called when the IRQ occurs
+    c)irqflags - Interrupt type flags
+    d)devname - An ascii name for the claiming device
+    e)dev_id - A cookie passed back to the handler function.
+
+  ii)free_irq(unsiged int irq, void* dev_id) - This function is used to free an interrupt. There are 2 arguments:
+    a)irq - Interrupt line to free.
+    b)dev_id - Device identity to free.
+
+  iii)hrtimer_init(struct hrtimer* timer, clockid_t clock_id, enum hrtimer_mode mode) - This function is used to initialize a high resolution to the given clock. There are 3 arguments:
+    a)timer - The timer to be initialized.
+    b)clock_id - The clock to be used.
+    c)mode - Timer mode abs/rel.
+
+  iv)kthread_create(int(*threadfn(void* data), void* data, const char namefmt[], ...) - This function is used to create a kthread. There are at least three arguments:
+    a)threadfn - This function to run until the signal_pending(current).
+    b)data - Data ptr for the threadfn.
+    c)namefmt[] - printf-style name for the thread.
+    d)And various variable arguments.
+
+  v)kthread_stop(struct task_struct* k) - This function is used to stop a kthread that was created by kthread_creat(). There is a single argument:
+    a)k - The thread created by kthread_create().
+
+
+Lab6 pseudo code:
+  Week1 -
+
+    a)
+      Create a kthread with info about the IO
+      Send a square wave to the speaker with a delay
+
+    b)
+      Same as a) but instead of delay we will use a timer to change the frequency.
+
+  Week2 -
+    Take the function created in week1 and implement it such that we send it a frequency value.
+    Use interrupts to change that value.
+      Could use the interrupt to kill a thread and then make a new one with the new frequency variable. I will need to check the ability of kthreads and the interrupts.

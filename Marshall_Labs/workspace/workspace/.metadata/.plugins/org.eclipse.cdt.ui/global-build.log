@@ -1,0 +1,240 @@
+14:29:12 **** Build of configuration Debug for project ECE4220_Lab5 ****
+make all 
+Building file: ../src/ECE4220_Lab5.cpp
+Invoking: GCC C++ Compiler
+g++ -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/ECE4220_Lab5.d" -MT"src/ECE4220_Lab5.d" -o "src/ECE4220_Lab5.o" "../src/ECE4220_Lab5.cpp"
+Finished building: ../src/ECE4220_Lab5.cpp
+ 
+Building target: ECE4220_Lab5
+Invoking: GCC C++ Linker
+g++  -o "ECE4220_Lab5"  ./src/ECE4220_Lab5.o   
+Finished building target: ECE4220_Lab5
+ 
+14:37:20 **** Incremental Build of configuration Debug for project ECE4220_Lab5 ****
+make all 
+Building file: ../src/ECE4220_Lab5.cpp
+Invoking: GCC C++ Compiler
+g++ -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/ECE4220_Lab5.d" -MT"src/ECE4220_Lab5.d" -o "src/ECE4220_Lab5.o" "../src/ECE4220_Lab5.cpp"
+Finished building: ../src/ECE4220_Lab5.cpp
+ 
+Building target: ECE4220_Lab5
+Invoking: GCC C++ Linker
+g++  -o "ECE4220_Lab5"  ./src/ECE4220_Lab5.o   
+Finished building target: ECE4220_Lab5
+ 
+14:38:32 **** Incremental Build of configuration Debug for project ECE4220_Lab5 ****
+make all 
+Building file: ../src/ECE4220_Lab5.cpp
+Invoking: GCC C++ Compiler
+g++ -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/ECE4220_Lab5.d" -MT"src/ECE4220_Lab5.d" -o "src/ECE4220_Lab5.o" "../src/ECE4220_Lab5.cpp"
+../src/ECE4220_Lab5.cpp: In function ‘int main()’:
+src/subdir.mk:18: recipe for target 'src/ECE4220_Lab5.o' failed
+../src/ECE4220_Lab5.cpp:51:39: error: invalid use of ‘in_addr::in_addr’
+  cout<<"\n"<<(string)(server.sin_addr.in_addr)<<endl;
+                                       ^
+make: *** [src/ECE4220_Lab5.o] Error 1
+14:39:26 **** Incremental Build of configuration Debug for project ECE4220_Lab5 ****
+make all 
+Building file: ../src/ECE4220_Lab5.cpp
+Invoking: GCC C++ Compiler
+g++ -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/ECE4220_Lab5.d" -MT"src/ECE4220_Lab5.d" -o "src/ECE4220_Lab5.o" "../src/ECE4220_Lab5.cpp"
+../src/ECE4220_Lab5.cpp: In function ‘int main()’:
+src/subdir.mk:18: recipe for target 'src/ECE4220_Lab5.o' failed
+../src/ECE4220_Lab5.cpp:51:36: error: invalid use of ‘in_addr::in_addr’
+  cout<<"\n"<<(int)(server.sin_addr.in_addr)<<endl;
+                                    ^
+make: *** [src/ECE4220_Lab5.o] Error 1
+14:40:16 **** Incremental Build of configuration Debug for project ECE4220_Lab5 ****
+make all 
+Building file: ../src/ECE4220_Lab5.cpp
+Invoking: GCC C++ Compiler
+g++ -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/ECE4220_Lab5.d" -MT"src/ECE4220_Lab5.d" -o "src/ECE4220_Lab5.o" "../src/ECE4220_Lab5.cpp"
+../src/ECE4220_Lab5.cpp: In function ‘int main()’:
+src/subdir.mk:18: recipe for target 'src/ECE4220_Lab5.o' failed
+../src/ECE4220_Lab5.cpp:51:36: error: invalid use of ‘in_addr::in_addr’
+  cout<<"\n"<<(int)(server.sin_addr.in_addr.s_addr)<<endl;
+                                    ^
+make: *** [src/ECE4220_Lab5.o] Error 1
+14:41:44 **** Incremental Build of configuration Debug for project ECE4220_Lab5 ****
+make all 
+Building file: ../src/ECE4220_Lab5.cpp
+Invoking: GCC C++ Compiler
+g++ -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/ECE4220_Lab5.d" -MT"src/ECE4220_Lab5.d" -o "src/ECE4220_Lab5.o" "../src/ECE4220_Lab5.cpp"
+Finished building: ../src/ECE4220_Lab5.cpp
+ 
+Building target: ECE4220_Lab5
+Invoking: GCC C++ Linker
+g++  -o "ECE4220_Lab5"  ./src/ECE4220_Lab5.o   
+Finished building target: ECE4220_Lab5
+ 
+14:43:59 **** Incremental Build of configuration Debug for project ECE4220_Lab5 ****
+make all 
+Building file: ../src/ECE4220_Lab5.cpp
+Invoking: GCC C++ Compiler
+g++ -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/ECE4220_Lab5.d" -MT"src/ECE4220_Lab5.d" -o "src/ECE4220_Lab5.o" "../src/ECE4220_Lab5.cpp"
+Command canceled
+14:44:09 **** Build of configuration Debug for project ECE4220_Lab5 ****
+make all 
+Building file: ../src/ECE4220_Lab5.cpp
+Invoking: GCC C++ Compiler
+g++ -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/ECE4220_Lab5.d" -MT"src/ECE4220_Lab5.d" -o "src/ECE4220_Lab5.o" "../src/ECE4220_Lab5.cpp"
+Finished building: ../src/ECE4220_Lab5.cpp
+ 
+Building target: ECE4220_Lab5
+Invoking: GCC C++ Linker
+g++  -o "ECE4220_Lab5"  ./src/ECE4220_Lab5.o   
+Finished building target: ECE4220_Lab5
+ 
+14:49:59 **** Incremental Build of configuration Debug for project ECE4220_Lab5 ****
+make all 
+Building file: ../src/ECE4220_Lab5.cpp
+Invoking: GCC C++ Compiler
+g++ -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/ECE4220_Lab5.d" -MT"src/ECE4220_Lab5.d" -o "src/ECE4220_Lab5.o" "../src/ECE4220_Lab5.cpp"
+Finished building: ../src/ECE4220_Lab5.cpp
+ 
+Building target: ECE4220_Lab5
+Invoking: GCC C++ Linker
+g++  -o "ECE4220_Lab5"  ./src/ECE4220_Lab5.o   
+Finished building target: ECE4220_Lab5
+ 
+14:59:14 **** Incremental Build of configuration Debug for project ECE4220_Lab5 ****
+make all 
+Building file: ../src/ECE4220_Lab5.cpp
+Invoking: GCC C++ Compiler
+g++ -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/ECE4220_Lab5.d" -MT"src/ECE4220_Lab5.d" -o "src/ECE4220_Lab5.o" "../src/ECE4220_Lab5.cpp"
+Finished building: ../src/ECE4220_Lab5.cpp
+ 
+Building target: ECE4220_Lab5
+Invoking: GCC C++ Linker
+g++  -o "ECE4220_Lab5"  ./src/ECE4220_Lab5.o   
+Finished building target: ECE4220_Lab5
+ 
+15:00:41 **** Incremental Build of configuration Debug for project ECE4220_Lab5 ****
+make all 
+Building file: ../src/ECE4220_Lab5.cpp
+Invoking: GCC C++ Compiler
+g++ -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/ECE4220_Lab5.d" -MT"src/ECE4220_Lab5.d" -o "src/ECE4220_Lab5.o" "../src/ECE4220_Lab5.cpp"
+Finished building: ../src/ECE4220_Lab5.cpp
+ 
+Building target: ECE4220_Lab5
+Invoking: GCC C++ Linker
+g++  -o "ECE4220_Lab5"  ./src/ECE4220_Lab5.o   
+Finished building target: ECE4220_Lab5
+ 
+15:01:16 **** Incremental Build of configuration Debug for project ECE4220_Lab5 ****
+make all 
+Building file: ../src/ECE4220_Lab5.cpp
+Invoking: GCC C++ Compiler
+g++ -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/ECE4220_Lab5.d" -MT"src/ECE4220_Lab5.d" -o "src/ECE4220_Lab5.o" "../src/ECE4220_Lab5.cpp"
+Finished building: ../src/ECE4220_Lab5.cpp
+ 
+Building target: ECE4220_Lab5
+Invoking: GCC C++ Linker
+g++  -o "ECE4220_Lab5"  ./src/ECE4220_Lab5.o   
+Finished building target: ECE4220_Lab5
+ 
+15:22:16 **** Incremental Build of configuration Debug for project ECE4220_Lab5 ****
+make all 
+Building file: ../src/ECE4220_Lab5.cpp
+Invoking: GCC C++ Compiler
+g++ -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/ECE4220_Lab5.d" -MT"src/ECE4220_Lab5.d" -o "src/ECE4220_Lab5.o" "../src/ECE4220_Lab5.cpp"
+../src/ECE4220_Lab5.cpp: In function ‘int main(int, char**)’:
+../src/ECE4220_Lab5.cpp:77:73: error: expected ‘;’ before ‘)’ token
+src/subdir.mk:18: recipe for target 'src/ECE4220_Lab5.o' failed
+   cout<<"\n"<<inet_ntoa(((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr))<<endl;
+                                                                         ^
+make: *** [src/ECE4220_Lab5.o] Error 1
+15:23:01 **** Incremental Build of configuration Debug for project ECE4220_Lab5 ****
+make all 
+Building file: ../src/ECE4220_Lab5.cpp
+Invoking: GCC C++ Compiler
+g++ -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/ECE4220_Lab5.d" -MT"src/ECE4220_Lab5.d" -o "src/ECE4220_Lab5.o" "../src/ECE4220_Lab5.cpp"
+../src/ECE4220_Lab5.cpp: In function ‘int main(int, char**)’:
+../src/ECE4220_Lab5.cpp:76:31: warning: ‘s’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+  if(ioctl(s, SIOCGIFADDR, &ifr) >= 0){
+                               ^
+Finished building: ../src/ECE4220_Lab5.cpp
+ 
+Building target: ECE4220_Lab5
+Invoking: GCC C++ Linker
+g++  -o "ECE4220_Lab5"  ./src/ECE4220_Lab5.o   
+Finished building target: ECE4220_Lab5
+ 
+15:25:08 **** Incremental Build of configuration Debug for project ECE4220_Lab5 ****
+make all 
+Building file: ../src/ECE4220_Lab5.cpp
+Invoking: GCC C++ Compiler
+g++ -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/ECE4220_Lab5.d" -MT"src/ECE4220_Lab5.d" -o "src/ECE4220_Lab5.o" "../src/ECE4220_Lab5.cpp"
+../src/ECE4220_Lab5.cpp: In function ‘int main(int, char**)’:
+../src/ECE4220_Lab5.cpp:76:31: warning: ‘s’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+  if(ioctl(s, SIOCGIFADDR, &ifr) >= 0){
+                               ^
+Finished building: ../src/ECE4220_Lab5.cpp
+ 
+Building target: ECE4220_Lab5
+Invoking: GCC C++ Linker
+g++  -o "ECE4220_Lab5"  ./src/ECE4220_Lab5.o   
+Finished building target: ECE4220_Lab5
+ 
+15:27:29 **** Incremental Build of configuration Debug for project ECE4220_Lab5 ****
+make all 
+Building file: ../src/ECE4220_Lab5.cpp
+Invoking: GCC C++ Compiler
+g++ -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/ECE4220_Lab5.d" -MT"src/ECE4220_Lab5.d" -o "src/ECE4220_Lab5.o" "../src/ECE4220_Lab5.cpp"
+Finished building: ../src/ECE4220_Lab5.cpp
+ 
+Building target: ECE4220_Lab5
+Invoking: GCC C++ Linker
+g++  -o "ECE4220_Lab5"  ./src/ECE4220_Lab5.o   
+Finished building target: ECE4220_Lab5
+ 
+15:28:12 **** Incremental Build of configuration Debug for project ECE4220_Lab5 ****
+make all 
+Building file: ../src/ECE4220_Lab5.cpp
+Invoking: GCC C++ Compiler
+g++ -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/ECE4220_Lab5.d" -MT"src/ECE4220_Lab5.d" -o "src/ECE4220_Lab5.o" "../src/ECE4220_Lab5.cpp"
+Finished building: ../src/ECE4220_Lab5.cpp
+ 
+Building target: ECE4220_Lab5
+Invoking: GCC C++ Linker
+g++  -o "ECE4220_Lab5"  ./src/ECE4220_Lab5.o   
+Finished building target: ECE4220_Lab5
+ 
+15:40:11 **** Incremental Build of configuration Debug for project ECE4220_Lab5 ****
+make all 
+Building file: ../src/ECE4220_Lab5.cpp
+Invoking: GCC C++ Compiler
+g++ -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/ECE4220_Lab5.d" -MT"src/ECE4220_Lab5.d" -o "src/ECE4220_Lab5.o" "../src/ECE4220_Lab5.cpp"
+../src/ECE4220_Lab5.cpp: In function ‘int main(int, char**)’:
+../src/ECE4220_Lab5.cpp:94:41: error: expected primary-expression before ‘struct’
+src/subdir.mk:18: recipe for target 'src/ECE4220_Lab5.o' failed
+   n = recvfrom(sock, buff, MSG_SIZE, 0 (struct sockaddr*)&from, &fromlen);
+                                         ^
+../src/ECE4220_Lab5.cpp:94:57: error: expression cannot be used as a function
+   n = recvfrom(sock, buff, MSG_SIZE, 0 (struct sockaddr*)&from, &fromlen);
+                                                         ^
+make: *** [src/ECE4220_Lab5.o] Error 1
+15:41:40 **** Incremental Build of configuration Debug for project ECE4220_Lab5 ****
+make all 
+Building file: ../src/ECE4220_Lab5.cpp
+Invoking: GCC C++ Compiler
+g++ -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/ECE4220_Lab5.d" -MT"src/ECE4220_Lab5.d" -o "src/ECE4220_Lab5.o" "../src/ECE4220_Lab5.cpp"
+Finished building: ../src/ECE4220_Lab5.cpp
+ 
+Building target: ECE4220_Lab5
+Invoking: GCC C++ Linker
+g++  -o "ECE4220_Lab5"  ./src/ECE4220_Lab5.o   
+Finished building target: ECE4220_Lab5
+ 
+15:43:18 **** Incremental Build of configuration Debug for project ECE4220_Lab5 ****
+make all 
+Building file: ../src/ECE4220_Lab5.cpp
+Invoking: GCC C++ Compiler
+g++ -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/ECE4220_Lab5.d" -MT"src/ECE4220_Lab5.d" -o "src/ECE4220_Lab5.o" "../src/ECE4220_Lab5.cpp"
+Finished building: ../src/ECE4220_Lab5.cpp
+ 
+Building target: ECE4220_Lab5
+Invoking: GCC C++ Linker
+g++  -o "ECE4220_Lab5"  ./src/ECE4220_Lab5.o   
+Finished building target: ECE4220_Lab5
+ 

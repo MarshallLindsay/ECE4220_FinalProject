@@ -1,0 +1,51 @@
+/*
+ *
+ * Marshall Lindsay
+ * ECE 4220
+ * Lab1 Part2
+ * Kernal Module
+ *
+ *
+ */
+#ifndef MODULE
+#define MODULE
+#endif
+
+#ifndef __KERNEL__
+#define __KERNEL__
+#endif
+
+#include <linux/module.h>
+#include <linux/kernel.h>
+#include <linux/delay.h>
+#include <asm/io.h>
+
+MODULE_LICENSE("GPL");
+
+
+int init_module(void){
+	unsigned long* ptr;
+	unsigned long* ptr2;
+
+
+	ptr = (unsigned long*)ioremap(0x3F20001c, 0x2);
+
+	ptr2 = (unsigned long*)ioremap(0x3F200028, 0x2);
+
+
+	*ptr |= 0x04;
+
+	msleep(1000);
+
+	*ptr2 |= 0x04;
+
+
+	printk("MODULE INSTALLED");
+	return(0);
+}
+
+void cleanup_module(void){
+
+	printk("MODULE REMOVED");
+
+}

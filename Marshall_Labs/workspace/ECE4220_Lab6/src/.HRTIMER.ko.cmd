@@ -1,0 +1,1 @@
+cmd_/home/pi/workspace/ECE4220_Lab6/src/HRTIMER.ko := ld -EL -r  -T ./scripts/module-common.lds --build-id  -o /home/pi/workspace/ECE4220_Lab6/src/HRTIMER.ko /home/pi/workspace/ECE4220_Lab6/src/HRTIMER.o /home/pi/workspace/ECE4220_Lab6/src/HRTIMER.mod.o

@@ -1,0 +1,29 @@
+16:28:11 **** Incremental Build of configuration Debug for project ECE4220_Lab4_Main ****
+make all 
+Building file: ../src/ECE4220_Lab4_Main.cpp
+Invoking: GCC C++ Compiler
+g++ -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/ECE4220_Lab4_Main.d" -MT"src/ECE4220_Lab4_Main.d" -o "src/ECE4220_Lab4_Main.o" "../src/ECE4220_Lab4_Main.cpp"
+../src/ECE4220_Lab4_Main.cpp: In function ‘int main()’:
+../src/ECE4220_Lab4_Main.cpp:59:6: warning: variable ‘dummy’ set but not used [-Wunused-but-set-variable]
+  int dummy;
+      ^
+../src/ECE4220_Lab4_Main.cpp: In function ‘void* interpolation(void*)’:
+../src/ECE4220_Lab4_Main.cpp:267:10: warning: unused variable ‘inter1’ [-Wunused-variable]
+   double inter1, inter2, inter3;
+          ^
+../src/ECE4220_Lab4_Main.cpp:267:18: warning: unused variable ‘inter2’ [-Wunused-variable]
+   double inter1, inter2, inter3;
+                  ^
+../src/ECE4220_Lab4_Main.cpp:267:26: warning: unused variable ‘inter3’ [-Wunused-variable]
+   double inter1, inter2, inter3;
+                          ^
+Finished building: ../src/ECE4220_Lab4_Main.cpp
+ 
+Building target: ECE4220_Lab4_Main
+Invoking: GCC C++ Linker
+g++ -L"/home/pi/workspace/ECE4220_Lab4_Main/src" -o "ECE4220_Lab4_Main"  ./src/ECE4220_Lab4_Main.o ./src/serial_ece4220.o   -lpthread -lwiringPi -lece4220lab3_cpp
+Finished building target: ECE4220_Lab4_Main
+ 
+
+16:28:14 Build Finished (took 2s.737ms)
+

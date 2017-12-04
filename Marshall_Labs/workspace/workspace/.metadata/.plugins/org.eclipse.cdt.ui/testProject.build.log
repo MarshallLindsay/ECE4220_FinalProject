@@ -1,0 +1,15 @@
+22:51:38 **** Incremental Build of configuration Release for project testProject ****
+make all 
+Building file: ../src/testProject.cpp
+Invoking: GCC C++ Compiler
+g++ -O3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/testProject.d" -MT"src/testProject.d" -o "src/testProject.o" "../src/testProject.cpp"
+Finished building: ../src/testProject.cpp
+ 
+Building target: testProject
+Invoking: GCC C++ Linker
+g++  -o "testProject"  ./src/testProject.o   
+Finished building target: testProject
+ 
+
+22:51:39 Build Finished (took 1s.208ms)
+

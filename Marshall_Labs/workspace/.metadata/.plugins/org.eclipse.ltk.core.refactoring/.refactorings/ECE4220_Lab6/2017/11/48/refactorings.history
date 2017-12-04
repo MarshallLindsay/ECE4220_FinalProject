@@ -1,0 +1,3 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">&#x0A;<refactoring comment="Rename resource &apos;ECE4220_Lab6/src/ECE4220_Lab6.cpp&apos; to &apos;ECE4220_Lab6_Part2.cpp&apos;" description="Rename resource &apos;ECE4220_Lab6.cpp&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="src/ECE4220_Lab6.cpp" name="ECE4220_Lab6_Part2.cpp" stamp="1511996572637" updateReferences="true"/>&#x0A;<refactoring comment="Rename resource &apos;ECE4220_Lab6/src/HRTIMER.cpp&apos; to &apos;HRTIMER.c&apos;" description="Rename resource &apos;HRTIMER.cpp&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="src/HRTIMER.cpp" name="HRTIMER.c" stamp="1511996617821" updateReferences="true"/>
+</session>

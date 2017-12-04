@@ -1,0 +1,20 @@
+Programing:
+Interpolation logic
+Printing of the data (bonus?)
+
+
+Bug Fixes:
+Weird memory issues when pressing the button fast
+
+
+Testing:
+Make sure the wait timer in the events program is functioning like it should.
+
+Make sure the data sent from the events program is received correctly at the
+main program.
+
+Make sure the data is placed into the interpolation array correctly.
+
+Do the maths to validate interpolation.
+
+Make sure the shit works.. Jesus.

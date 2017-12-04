@@ -1,0 +1,45 @@
+13:06:58 **** Build of configuration Debug for project LAB6 ****
+make all 
+Building file: ../src/LAB6.cpp
+Invoking: GCC C++ Compiler
+g++ -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"src/LAB6.d" -MT"src/LAB6.d" -o "src/LAB6.o" "../src/LAB6.cpp"
+../src/LAB6.cpp: In function ‘int main(int, char**)’:
+../src/LAB6.cpp:181:26: error: could not convert ‘message.std::basic_string<_CharT, _Traits, _Alloc>::operator=<char, std::char_traits<char>, std::allocator<char> >(((const char*)"@A"))’ from ‘std::basic_string<char>’ to ‘bool’
+src/subdir.mk:18: recipe for target 'src/LAB6.o' failed
+   }else if(message = "@A"){
+                          ^
+../src/LAB6.cpp:183:19: error: incompatible types in assignment of ‘const char [3]’ to ‘char [40]’
+    charDevMessage = "@A";
+                   ^
+../src/LAB6.cpp:187:26: error: could not convert ‘message.std::basic_string<_CharT, _Traits, _Alloc>::operator=<char, std::char_traits<char>, std::allocator<char> >(((const char*)"@B"))’ from ‘std::basic_string<char>’ to ‘bool’
+   }else if(message = "@B"){
+                          ^
+../src/LAB6.cpp:189:19: error: incompatible types in assignment of ‘const char [3]’ to ‘char [40]’
+    charDevMessage = "@B";
+                   ^
+../src/LAB6.cpp:193:26: error: could not convert ‘message.std::basic_string<_CharT, _Traits, _Alloc>::operator=<char, std::char_traits<char>, std::allocator<char> >(((const char*)"@C"))’ from ‘std::basic_string<char>’ to ‘bool’
+   }else if(message = "@C"){
+                          ^
+../src/LAB6.cpp:195:19: error: incompatible types in assignment of ‘const char [3]’ to ‘char [40]’
+    charDevMessage = "@C";
+                   ^
+../src/LAB6.cpp:199:26: error: could not convert ‘message.std::basic_string<_CharT, _Traits, _Alloc>::operator=<char, std::char_traits<char>, std::allocator<char> >(((const char*)"@D"))’ from ‘std::basic_string<char>’ to ‘bool’
+   }else if(message = "@D"){
+                          ^
+../src/LAB6.cpp:201:19: error: incompatible types in assignment of ‘const char [3]’ to ‘char [40]’
+    charDevMessage = "@D";
+                   ^
+../src/LAB6.cpp:205:26: error: could not convert ‘message.std::basic_string<_CharT, _Traits, _Alloc>::operator=<char, std::char_traits<char>, std::allocator<char> >(((const char*)"@E"))’ from ‘std::basic_string<char>’ to ‘bool’
+   }else if(message = "@E"){
+                          ^
+../src/LAB6.cpp:207:19: error: incompatible types in assignment of ‘const char [3]’ to ‘char [40]’
+    charDevMessage = "@E";
+                   ^
+../src/LAB6.cpp: In function ‘void writeToCharacterDevice(char*)’:
+../src/LAB6.cpp:302:3: error: break statement not within loop or switch
+   break;
+   ^
+make: *** [src/LAB6.o] Error 1
+
+13:07:01 Build Finished (took 3s.7ms)
+

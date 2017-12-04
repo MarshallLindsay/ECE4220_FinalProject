@@ -1,0 +1,1 @@
+cmd_/home/pi/workspace/Lab1_Part2/src/Lab1_Part2.ko := ld -EL -r  -T ./scripts/module-common.lds --build-id  -o /home/pi/workspace/Lab1_Part2/src/Lab1_Part2.ko /home/pi/workspace/Lab1_Part2/src/Lab1_Part2.o /home/pi/workspace/Lab1_Part2/src/Lab1_Part2.mod.o

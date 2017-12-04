@@ -1,0 +1,108 @@
+/*
+
+Marshall Lindsay
+ECE 4220 Lab6 Week 1
+Musical Keyboard
+
+HRTIMER Test
+
+*/
+
+
+
+#ifndef MODULE
+#define MODULE
+#endif
+
+#ifndef __KERNEL__
+#define __KERNEL__
+#endif
+
+#include <asm/io.h>
+#include <linux/init.h>
+#include <linux/types.h>
+
+#include <linux/module.h>
+#include <linux/kernel.h>
+#include <linux/hrtimer.h>
+#include <linux/ktime.h>
+
+MODULE_LICENSE("GPL");
+
+unsigned long middle_c_period = 3.8e6; //Interval for middle C in ns. 3.8ms
+unsigned long testing_period = 1e9; //1 second
+static struct hrtimer hr_timer;
+static int count = 1;
+
+
+enum hrtimer_restart timer_callback(struct hrtimer *timer_for_restart){
+  ktime_t currtime, interval;
+  unsigned long overruns = 0;
+  unsigned long* GPFSEL;
+  unsigned long* GPSET;
+  unsigned long* GPCLR;
+  int i;
+
+  GPFSEL = (unsigned long*)ioremap(0x3F200000, 4096); //Function Select
+  GPSET = GPFSEL;
+  GPCLR = GPFSEL;
+  *GPFSEL |= 0x41000;	//Set the green led and the speaker as outputs.
+
+
+  for(i = 0; i < 7; i++){
+ 	GPSET++;
+  }
+  for(i = 0; i < 10; i++){
+	GPCLR++;
+  }
+
+  printk("\nGPSET = %p   GPCLR = %p", (void*)GPSET, (void*)GPCLR);
+
+
+  currtime = ktime_get(); //Get the current time
+  interval = ktime_set(0, testing_period); //Set the end time
+
+  overruns = hrtimer_forward(timer_for_restart, currtime, interval); //Advance the timer to the next interval and return the number of overruns.
+  if(overruns > 1 ){
+    printk("Too many overrruns in HRtimer module. Overruns: %ld\n", overruns);
+  }
+  if(count % 2 == 0){
+    count--;
+    //Clear the pin
+    *GPCLR |= 0x10;
+  }else{
+    count++;
+    //Set the pin
+    *GPCLR |= 0x10;
+  }
+
+  return HRTIMER_RESTART;
+}
+
+
+int timer_init(void){
+
+  ktime_t ktime = ktime_set(0, middle_c_period);
+
+  hrtimer_init(&hr_timer, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
+
+  hr_timer.function = &timer_callback;
+
+  hrtimer_start(&hr_timer, ktime, HRTIMER_MODE_REL);
+
+  return(0);
+}
+
+
+void timer_exit(void){
+
+  int ret;
+
+  ret = hrtimer_cancel(&hr_timer);
+
+  printk("HR Timer module uninstalling\n");
+
+}
+
+module_init(timer_init);
+module_exit(timer_exit);

@@ -1,0 +1,53 @@
+#include <iostream>
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdint.h>
+#include <unistd.h>
+#include <wiringPi.h>
+#include <time.h>
+#include <sys/timerfd.h>
+#include <sched.h>
+#include "ece4220lab3.h"
+
+using namespace std;
+
+#define PRIORITY (51)
+#define BUTTON (16)
+
+int main(void){
+	//Time stuff
+	struct timespec event_time;
+	int timer_fd = timerfd_create(CLOCK_MONOTONIC, 0);
+	if(timer_fd == -1){
+		cout<<"\nFailed to create the timer"<<endl;
+		exit(-1);
+	}
+
+	struct itimerspec itval;
+	itval.it_interval.tv_nsec = 75000000; //75 ms
+	if(timerfd_settime(timer_fd, 0, &itval, NULL) == -1){
+		cout<<"\nSettime Failed"<<endl;
+	}
+
+	//IO
+	wiringPiSetupGpio();
+	pullUpDnControl(BUTTON, PUD_DOWN);
+
+	//Scheduling
+	struct sched_param param;
+	param.sched_priority = PRIORITY;
+	sched_setscheduler(0, SCHED_FIFO, &param);
+	uint64_t num_periods = 0;
+
+	//Loop
+	while(1){
+		cout<<"\nLoop"<<endl;
+		if(check_button()){
+			clock_gettime(CLOCK_REALTIME, &event_time);
+			cout<<(int)(event_time.tv_sec)<<endl;
+			clear_button();
+
+		}
+	}
+
+}

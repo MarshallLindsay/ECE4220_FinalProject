@@ -1,0 +1,32 @@
+/*
+ *
+ * Marshall Lindsay
+ * ECE4220
+ * Lab3 Part2
+ *
+ *
+ */
+
+#include <iostream>
+#include <pthread.h>
+#include <stdint.h>
+#include <stdlib.h>
+#include <time.h>
+#include <unistd.h>
+#include <sys/timerfd.h>
+#include <vector>
+#include <wiringPi.h>
+#include "ece4220lab3.h"
+
+using namespace std;
+
+
+#define RED_PRIORITY 51
+#define YELLOW_PRIORITY 51
+#define PED_PRIORITY 51
+
+int main(int argc, char* argv){
+
+	cout<<"\nUmm... Hello?"<<endl;
+	return(0);
+}

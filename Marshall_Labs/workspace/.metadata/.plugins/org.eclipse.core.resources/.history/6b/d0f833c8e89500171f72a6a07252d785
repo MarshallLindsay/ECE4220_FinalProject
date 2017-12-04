@@ -1,0 +1,37 @@
+/*
+ *
+ * Marshall Lindsay
+ * ECE 4220
+ * Lab1 Part2
+ * Kernal Module
+ *
+ *
+ */
+#ifndef MODULE
+#define MODULE
+#endif
+
+#ifndef __KERNEL__
+#define __KERNEL__
+#endif
+
+#include <linux/module.h>
+#include <linux/kernel.h>
+#include <asm/io.h>
+
+MODULE_LICENSE("GPL");
+
+
+
+int init_module(void){
+
+
+	printk("MODULE INSTALLED");
+	return(0);
+}
+
+void cleanup_module(void){
+
+	printk("MODULE REMOVED");
+
+}
