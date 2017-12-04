@@ -89,6 +89,7 @@ class SocketCommunication{
 private:
   int sockfd;
   int portno;
+  int boolval;
   socklen_t fromlen;
   int length;
   string localAddress;
