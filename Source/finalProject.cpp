@@ -195,8 +195,9 @@ void AnalogInput::ADCthread() {
       if(this->value < ADC_UNDERLOAD)
         this->state = UNDERLOAD;
     }
-
     last = this->value;
+    
+    cout << this->value; //for debugging
   }
   
   //thread should never exit

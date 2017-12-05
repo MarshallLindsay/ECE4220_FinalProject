@@ -17,7 +17,7 @@ RTU program
 
 int main() {
   //instantiate all objects
-    //analog inputs
+    AnalogInput analoginput(); //analog input
     //digital inputs
     //digital outputs
     //networking stuff
