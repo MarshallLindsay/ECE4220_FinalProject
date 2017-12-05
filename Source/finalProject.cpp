@@ -80,3 +80,35 @@ SocketCommunication::SocketCommunication(){
 
 }
 
+SocketCommunication::~SocketCommunication(){
+  //Close the socket
+  close(this->sockfd);
+}
+
+int SocketCommunication::sendMessage(char buffer[MSG_SIZE]){
+  int n;
+  //Copy the message over
+  this->broadcast = buffer;
+
+  //Set the broadcast IP
+  this->from.sin_addr.s_addr = inet_adr("128.206.19.255");
+
+  //This may throw an error for types.
+  n = sendto(this->sockfd, this->broadcast, MSG_SIZE, 0, (struct sockaddr*)&this->from, this->fromlen);
+
+  //Error checking
+  if(n < 0){
+    return(-1);
+  }
+
+  return(1);
+}
+
+char* receiveMessage(void){
+  int n;
+  //Clear the receive character array
+  bzero(this->receive, MSG_SIZE);
+
+  n = recvfrom()
+
+}
