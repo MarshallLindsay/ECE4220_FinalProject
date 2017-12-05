@@ -80,7 +80,6 @@ SocketCommunication::SocketCommunication(){
 
 }
 
-
 SocketCommunication::~SocketCommunication(){
   //Close the socket
   close(this->sockfd);

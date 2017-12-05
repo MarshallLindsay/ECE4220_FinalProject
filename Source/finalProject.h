@@ -13,6 +13,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <stdint.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -24,9 +25,17 @@
 #include <sstream>
 #include <semaphore.h>
 #include <thread>
+#include <wiringPi.h>
+#include <wiringPiSPI.h>
 
 #define CHAR_DEV "/dev/MarshallMaxFinal"
 #define MSG_SIZE (50)
+
+//definitions for ADC
+#define SPI_CHANNEL	      0	// 0 or 1
+#define SPI_SPEED 	2000000	// Max speed is 3.6 MHz when VDD = 5 V
+#define ADC_CHANNEL       1	// Between 1 and 3
+#define ADC_REF 3.3 //reference voltage for ADC
 
 using namespace std;
 
@@ -49,25 +58,6 @@ public:
   bool getState();        //Get the state of the pin.
 };
 
-
-class AnalogInput{
-private:
-  int pinNumber;  //What is the pin number?
-  bool state;     //What is the state of the input? Has an event occurred.
-  double value;   //What is the value on the pin?
-
-public:
-  AnalogInput();        //Initialize the input hardware parameters.
-  ~AnalogInput();       //Destructor.
-  void setState(bool);  //Set the state if an event happened, or clear if the event is over.
-  void setPullUp();      //Set the pullup for the pin.
-  void setPullDown();    //Set the pulldown for the pin.
-  double getValue();     //Get the value on the pin.
-  bool getState();       //Get the state of the pin.
-  void setValue();       //Set the value of the pin.
-};
-
-
 class DigitalOutput{
 private:
   int pinNumber;  //What is the pin number?
@@ -84,6 +74,22 @@ public:
   bool getValue();      //Get the value of the pin.
   void setValue(bool);  //Set the value of the pin.
 };
+
+class AnalogInput{
+private:
+  uint16_t get_ADC();
+  bool state;     //What is the state of the input? Has an event occurred.
+  double value;   //What is the value on the pin?
+  
+public:
+  AnalogInput(); //default constructor, will use ADC channel 1
+  void test_ADC();
+    ~AnalogInput();       //Destructor.
+  void setState(bool);  //Set the state if an event happened, or clear if the event is over.
+  double getValue();     //Get the value on the pin.
+  bool getState();       //Get the state of the pin.
+  bool resetState();    //reset state flag when it is logged
+}
 
 class SocketCommunication{
 private:
