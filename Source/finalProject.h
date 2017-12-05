@@ -27,6 +27,7 @@
 #include <thread>
 #include <wiringPi.h>
 #include <wiringPiSPI.h>
+#include <pthread.h>
 
 #define CHAR_DEV "/dev/MarshallMaxFinal"
 #define MSG_SIZE (50)
@@ -80,11 +81,11 @@ private:
   uint16_t get_ADC();
   bool state;     //What is the state of the input? Has an event occurred.
   double value;   //What is the value on the pin?
-  
+  void ADCthread();
 public:
   AnalogInput(); //default constructor, will use ADC channel 1
   void test_ADC();
-    ~AnalogInput();       //Destructor.
+  ~AnalogInput();       //Destructor.
   void setState(bool);  //Set the state if an event happened, or clear if the event is over.
   double getValue();     //Get the value on the pin.
   bool getState();       //Get the state of the pin.
