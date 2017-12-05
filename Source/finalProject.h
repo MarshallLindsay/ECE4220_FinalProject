@@ -28,6 +28,7 @@
 #include <wiringPi.h>
 #include <wiringPiSPI.h>
 #include <pthread.h>
+#include <sys/timerfd.h>
 
 #define CHAR_DEV "/dev/MarshallMaxFinal"
 #define MSG_SIZE (50)
@@ -41,21 +42,20 @@
 #define ADC_UNDERLOAD 0.9 //underload voltage
 #define ADC_POWERDOWN 10//number of consecutive equal measurements pbefore power line is considered down
 
+#define OK 1
+#define OVERLOAD -1
+#define UNDERLOAD -2
+#define POWERDOWN -3
+#define EVENT -1
 using namespace std;
 
-enum ADCstatus {OK = 1, OVERLOAD = -1, UNDERLOAD = -2, POWERDOWN = -3};
-
-class DigitalInput{
+class DigitalOutput{
 private:
   int pinNumber;  //What is the pin number?
-  bool state;     //What is the state of the input...has an event occurred?
+  int state;     //What is the state of the input...has an event occurred?
   bool value;     //What is the value on the pin?
-
-
 public:
-
-  DigitalInput();         //Initialize the input hardware parameters
-  ~DigitalInput();        //Destructor
+  DigitalOutput();         //Initialize the input hardware parameters
   void setState(bool);    //Set the state if an event happened, or clear if the event is over.
   void setPullUp();       //Set the pullup for the pin.
   void setPullDown();     //Set the pulldown for the pin.
@@ -64,37 +64,34 @@ public:
   bool getState();        //Get the state of the pin.
 };
 
-class DigitalOutput{
+class DigitalInput{
 private:
-  int pinNumber;  //What is the pin number?
-  bool state;     //What is the state on the pin?
-  bool value;     //What is the value on the pin?
-
+  int pinNumber;  //pin number using wiringpi scheme
+  int state;     //What is the state on the pin?
+  int value;     //What is the value on the pin?
 public:
-  DigitalOutput();      //Initialize the input hardware parameters.
-  ~DigitalOutput();     //Destructor.
-  void setPullUp();     //Set the pullup for the pin.
-  void setPullDown();   //Set the pulldown for the pin.
-  void setState(bool);  //Set the state if an event happened, or clear if the event is over.
-  bool getState();      //Get the state of the pin.
-  bool getValue();      //Get the value of the pin.
-  void setValue(bool);  //Set the value of the pin.
+  DigitalInput(int pin);      //Initialize the input hardware parameters.
+  void resetState();  //Set the state if an event happened, or clear if the event is over.
+  int getState();      //Get the state of the pin.
+  int getValue();      //Get the value of the pin.
 };
 
 class AnalogInput{
 private:
-  uint16_t get_ADC();
-  ADCstatus state;     //What is the state of the input? Has an event occurred.
+  void get_ADC();
+  int state;     //What is the state of the input? Has an event occurred.
   double value;   //What is the value on the pin?
-  void ADCthread();
+  double last;
+  double count;
 public:
   AnalogInput(); //default constructor, will use ADC channel 1
   void test_ADC();
   ~AnalogInput();       //Destructor.
   void setState(bool);  //Set the state if an event happened, or clear if the event is over.
   double getValue();     //Get the value on the pin.
-  bool getState();       //Get the state of the pin.
+  int getState();       //Get the state of the pin.
   void resetState();    //reset state flag when it is logged
+  void updateADC();
 };
 
 class SocketCommunication{

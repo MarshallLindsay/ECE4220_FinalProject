@@ -4,7 +4,7 @@ Max Houck
 ECE 4220 Final Final Project
 */
 
-
+/*
 #include <iostream>
 #include <fcntl.h>
 #include <stdio.h>
@@ -22,7 +22,7 @@ ECE 4220 Final Final Project
 #include <sstream>
 #include <semaphore.h>
 #include <thread>
-#include <sys/timerfd.h>
+#include <sys/timerfd.h>*/
 #include "finalProject.h"
 
 
@@ -110,7 +110,8 @@ char* receiveMessage(void){
   //Clear the receive character array
   bzero(this->receive, MSG_SIZE);
 
-  n = recvfrom()
+  n = recvfrom();
+  return 0; //just trying to make this compile
 
 }
 
@@ -119,14 +120,9 @@ AnalogInput::AnalogInput() {
   		printf("wiringPiSPISetup failed\n");
   		exit(0);
   	}
-   pthread_t thread1; //create thread pointer
-   pthread_create(&thread1, NULL, (void *)&ADCthread, NULL); //execute thread
-   //set up the timer to call get_ADC at 1000 Hz
-   
-   //
 }
   
-uint16_t AnalogInput::get_ADC() {
+void AnalogInput::get_ADC() {
   uint8_t spiData[3];
 	spiData[0] = 0b00000001; // Contains the Start Bit
 	spiData[1] = 0b10000000 | (ADC_CHANNEL << 4);	// Mode and Channel: M0XX0000
@@ -141,52 +137,37 @@ uint16_t AnalogInput::get_ADC() {
 	
 	// spiData[1] and spiData[2] now have the result (2 bits and 8 bits, respectively)
 	
-	this.value =  (3.3/1024)*((spiData[1] << 8) | spiData[2]);
+	this->value =  (3.3/1024)*((spiData[1] << 8) | spiData[2]);
 }
 
 void AnalogInput::test_ADC() {
-  cout << "ADC value is " << get_ADC() << "\n";
+  cout << "ADC value is " << this->value << "\n";
 }
 
 void AnalogInput::resetState() {
-  this.state = OK;
+  this->state = OK;
 }
 
-void AnalogInput::ADCthread() {
-  //timer and scheduling setup
-  int timer_fd = timerfd_create(CLOCK_MONOTONIC, 0); //intialize realtime scheduling
-	 if(timer_fd == -1) {
-		 	printf("Error creating timer");
-		 	exit(0);
-	 }
-	 struct itimerspec timerspec;
-	 timerspec.it_interval.tv_sec = 0;
-	 timerspec.it_interval.tv_nsec = 1000000;
-	 timerspec.it_value.tv_sec = 0;
-	 timerspec.it_value.tv_nsec = 1000000;
-	 if(timerfd_settime(timer_fd,0,&timerspec,NULL) == -1) {
-	 	 printf("Error starting timer");
-	 	 exit(0);
-	 }
-	 struct sched_param param;
-	 param.sched_priority = 49;
-	 sched_setscheduler(0,SCHED_FIFO,&param);
-	 uint64_t num_periods = 0;
-   
-   double last;
-   double count;
-   this->state = OK;
-   
-  while(1) {
-    while(read(timer_fd, &num_periods,sizeof(num_periods)) == -1); //wait for timer
-		if(num_periods >  1) {puts("MISSED WINDOW");exit(1);} //error check
-    get_ADC(); //actually get the value over spi
+int AnalogInput::getState() {
+  return this->state;
+}
+
+double AnalogInput::getValue() {
+  return this->value;
+}
+
+AnalogInput::~AnalogInput() {
+}
+
+void AnalogInput::updateADC() {
+   this->state = OK;   
+   get_ADC(); //actually get the value over spi
     
-    if(this->value == last) //power down status can happen even if overload is already set
-      count++;
-    if(this->value != last)
-      count = 0;
-    if(count > ADC_POWERDOWN)
+    if(this->value == this->last) //power down status can happen even if overload is already set
+      this->count++;
+    if(this->value != this->last)
+      this->count = 0;
+    if(this->count > ADC_POWERDOWN)
       this->state = POWERDOWN;   
       
     if (this->state == OK) { //overload or underload states cannot occur when power is already down
@@ -195,11 +176,23 @@ void AnalogInput::ADCthread() {
       if(this->value < ADC_UNDERLOAD)
         this->state = UNDERLOAD;
     }
-    last = this->value;
+    this->last = this->value;
     
     cout << this->value; //for debugging
-  }
-  
-  //thread should never exit
-  //pthread_exit((void*)retval);
+}
+
+DigitalInput::DigitalInput(int pin) {
+
+}
+
+void DigitalInput::resetState() {
+  this->state = OK;
+}
+
+int DigitalInput::getState() {
+  return this->state;
+}
+
+int DigitalInput::getValue() {
+  return this->value;
 }
