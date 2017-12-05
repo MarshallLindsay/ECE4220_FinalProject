@@ -37,3 +37,5 @@ uint16_t AnalogInput::get_ADC() {
 void AnalogInput::test_ADC() {
   cout << "ADC value is " << get_ADC() << "\n";
 }
+
+//max made a change to test github
