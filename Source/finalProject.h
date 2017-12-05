@@ -37,8 +37,13 @@
 #define SPI_SPEED 	2000000	// Max speed is 3.6 MHz when VDD = 5 V
 #define ADC_CHANNEL       1	// Between 1 and 3
 #define ADC_REF 3.3 //reference voltage for ADC
+#define ADC_OVERLOAD 2.1 //overload voltage
+#define ADC_UNDERLOAD 0.9 //underload voltage
+#define ADC_POWERDOWN 10//number of consecutive equal measurements pbefore power line is considered down
 
 using namespace std;
+
+enum ADCstatus {OK = 1, OVERLOAD = -1, UNDERLOAD = -2, POWERDOWN = -3};
 
 class DigitalInput{
 private:
@@ -67,7 +72,7 @@ private:
 
 public:
   DigitalOutput();      //Initialize the input hardware parameters.
-  ~DigitalOutput(); /    //Destructor.
+  ~DigitalOutput();     //Destructor.
   void setPullUp();     //Set the pullup for the pin.
   void setPullDown();   //Set the pulldown for the pin.
   void setState(bool);  //Set the state if an event happened, or clear if the event is over.
@@ -79,7 +84,7 @@ public:
 class AnalogInput{
 private:
   uint16_t get_ADC();
-  bool state;     //What is the state of the input? Has an event occurred.
+  ADCstatus state;     //What is the state of the input? Has an event occurred.
   double value;   //What is the value on the pin?
   void ADCthread();
 public:
@@ -89,8 +94,8 @@ public:
   void setState(bool);  //Set the state if an event happened, or clear if the event is over.
   double getValue();     //Get the value on the pin.
   bool getState();       //Get the state of the pin.
-  bool resetState();    //reset state flag when it is logged
-}
+  void resetState();    //reset state flag when it is logged
+};
 
 class SocketCommunication{
 private:
