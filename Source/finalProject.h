@@ -39,10 +39,10 @@
 #define SPI_CHANNEL	      0	// 0 or 1
 #define SPI_SPEED 	2000000	// Max speed is 3.6 MHz when VDD = 5 V
 #define ADC_CHANNEL       1	// Between 1 and 3
-#define ADC_REF 3.3 //reference voltage for ADC
-#define ADC_OVERLOAD 2.1 //overload voltage
-#define ADC_UNDERLOAD 0.9 //underload voltage
-#define ADC_POWERDOWN 10//number of consecutive equal measurements pbefore power line is considered down
+#define ADC_REF 3.3 		//reference voltage for ADC
+#define ADC_OVERLOAD 2.1 	//overload voltage
+#define ADC_UNDERLOAD 0.9 	//underload voltage
+#define ADC_POWERDOWN 10	//number of consecutive equal measurements pbefore power line is considered down
 
 #define OK 1
 #define OVERLOAD -1
