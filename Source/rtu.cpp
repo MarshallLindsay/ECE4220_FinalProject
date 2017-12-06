@@ -101,9 +101,56 @@ struct logEntry gather_log(DigitalInput digin1, DigitalInput digin2, DigitalInpu
   log.analogvalue = analoginput.getValue();
   
   //check all the events
-  if(digin1.getEvent())
-    log.note = "Digital input 1 has gone high";
-    log.note = "Digital input 1 has gone low";
+  if(digin1.getEvent()) {
+    if(digin1.getValue())
+      log.note = "Digital input 1 has gone high";
+    else
+      log.note = "Digital input 1 has gone low";
     digin1.resetFlag();
+    }
+  else if(digin2.getEvent()) {
+    if(digin2.getValue())
+      log.note = "Digital input 2 has gone high";
+    else
+      log.note = "Digital input 2 has gone low";
+    digin2.resetFlag();
+    }
+  else if(digin3.getEvent()) {
+    if(digin3.getValue())
+      log.note = "Digital input 3 has gone high";
+    else
+      log.note = "Digital input 3 has gone low";
+    digin1.resetFlag();
+    }
+  else if(digout1.getEvent()) {
+    if(digout1.getValue())
+      log.note = "Digital output 1 has gone high";
+    else
+      log.note = "Digital output 1 has gone low";
+    digout1.resetFlag();
+    }
+  else if(digout2.getEvent()) {
+    if(digout2.getValue())
+      log.note = "Digital output 2 has gone high";
+    else
+      log.note = "Digital output 2 has gone low";
+    digout2.resetFlag();
+    }
+  else if(digout3.getEvent()) {
+    if(digout3.getValue())
+      log.note = "Digital output 3 has gone high";
+    else
+      log.note = "Digital output 3 has gone low";
+    digout3.resetFlag();
+    }
+  else if(analoginput.getEvent()) {
+    int state = analoginput.getState();
+    if(state == OVERLOAD) log.note = "Analog input has detected a line overload";
+    if(state == UNDERLOAD) log.note = "Analog input has detected a line underload";
+    if(state == POWERDOWN) log.note = "Analog input has detected loss of power";
+    analoginput.resetFlag();
+  }
+  else log.note = "No event has occured. This is just a 1 Hz update";  
+    
   return log;
 }
