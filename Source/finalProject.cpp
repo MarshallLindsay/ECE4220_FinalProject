@@ -101,6 +101,7 @@ AnalogInput::AnalogInput() {
   		printf("wiringPiSPISetup failed\n");
   		exit(0);
   	}
+   this->state = OK; 
 }
   
 void AnalogInput::get_ADC() {
@@ -125,12 +126,17 @@ void AnalogInput::test_ADC() {
   cout << "ADC value is " << this->value << "\n";
 }
 
-void AnalogInput::resetState() {
-  this->state = OK;
-}
-
 int AnalogInput::getState() {
   return this->state;
+}
+
+void AnalogInput::resetFlag() {
+  this->eventFlag = false;
+  this->state = OK; 
+}
+
+bool AnalogInput::getEvent() {
+  return this->eventFlag;
 }
 
 double AnalogInput::getValue() {
@@ -140,8 +146,7 @@ double AnalogInput::getValue() {
 AnalogInput::~AnalogInput() {
 }
 
-void AnalogInput::update() {
-   this->state = OK;   
+void AnalogInput::update() {  
    get_ADC(); //actually get the value over spi
     
     if(this->value == this->last) //power down status can happen even if overload is already set
@@ -158,7 +163,7 @@ void AnalogInput::update() {
         this->state = UNDERLOAD;
     }
     this->last = this->value;
-    
+    if(this->value != OK) this->eventFlag = true;
     cout << this->value; //for debugging
 }
 
@@ -168,20 +173,22 @@ DigitalInput::DigitalInput(int pin) {
  pinMode(pin,INPUT);
 }
 
-void DigitalInput::resetState() {
-  this->state = OK;
+void DigitalInput::update() {
+  //use wiringpi to check if value on pin is different than value in object
+  if(this->value != digitalRead(this->pinNumber));
+    this->eventFlag = true; //if theyre different set the event flag
+  this->value = digitalRead(this->pinNumber); //always update the value anyways
+}
+bool DigitalInput::getEvent() {
+  return this->eventFlag;
 }
 
-int DigitalInput::getState() {
-  return this->state;
+void DigitalInput::resetFlag() {
+  this->eventFlag = false;
 }
 
 int DigitalInput::getValue() {
   return this->value;
-}
-
-void DigitalInput::update() {
-  this->value = digitalRead(this->pinNumber);
 }
 
 DigitalOutput::DigitalOutput(int pin) {
@@ -191,4 +198,17 @@ DigitalOutput::DigitalOutput(int pin) {
 
 void DigitalOutput::setValue(int value) {
   digitalWrite(this->pinNumber,value);
+  this->eventFlag = true;
+}
+
+bool DigitalOutput::getEvent() {
+  return this->eventFlag;
+}
+
+void DigitalOutput::resetFlag() {
+  this->eventFlag = false;
+}
+
+int DigitalOutput::getValue() {
+  return this->value;
 }

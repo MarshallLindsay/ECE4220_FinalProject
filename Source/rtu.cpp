@@ -8,13 +8,20 @@ RTU program
 void* ADCthread(void*);
 
 void gpio_tests();
-void check_status();
+int deviceid;
+struct logEntry gather_log(DigitalInput digin1, DigitalInput digin2, DigitalInput digin3, 
+      DigitalOutput digout1, DigitalOutput digout2, DigitalOutput digout3, AnalogInput analoginput);
 
+int main(int argc, char **argv) {
+    if(argc != 2) { //check inputs and set device id
+      cout << "Usage: rtu <deviceid>\r\n";
+      exit(0);
+    }
+    deviceid = (int) argv[1]; 
 
-int main() {
   //instantiate all objects
     wiringPiSetup();
-    AnalogInput analoginput(); //analog input
+    AnalogInput analoginput; //analog input
     pthread_t thread1; //create thread pointer
     pthread_create(&thread1, NULL, ADCthread, (void*)&analoginput); //execute thread that will time ADC
     DigitalInput digin1(1);
@@ -24,30 +31,26 @@ int main() {
     DigitalOutput digout2(5);
     DigitalOutput digout3(6);
     vector<struct logEntry> log; //make this a vector eventually 
-    //digital inputs
-    //digital outputs
-    //networking stuff
     
-  
+    //instantiate networking stuff
+      //create pthread that sends data every 1 second
+      //also be listening for commands to control the digouts. call get_states() and make a log entry when you receive a command.
+    
   while(1) {  
+  //  network.update();  //read network buffer for incoming commands
     digin1.update();
     digin2.update();
     digin3.update();
-    log.push_back(check_status());
-  
-   //if (flag)
-     // //grab states and write to a log file
-  }
-
+    if(digin1.getEvent() || digin2.getEvent() || digin3.getEvent() || analoginput.getEvent()) 
+      log.push_back(gather_log(digin1,digin2,digin3,digout1,digout2,digout3,analoginput));
+  }  
 }
 
 void gpio_tests() {
 
 }
 
-void check_status() {
 
-}
 
 void* ADCthread(void* ptr) {
   //timer and scheduling setup
@@ -82,3 +85,25 @@ void* ADCthread(void* ptr) {
   //pthread_exit((void*)retval);
 }
 //TODO: marshall can just copy that ADCthread and make the timer 1 second and have it call his networking send() function
+
+struct logEntry gather_log(DigitalInput digin1, DigitalInput digin2, DigitalInput digin3, 
+      DigitalOutput digout1, DigitalOutput digout2, DigitalOutput digout3, AnalogInput analoginput) { //this is a sad arguments list
+  struct logEntry log;
+  gettimeofday(&log.timestamp,NULL);
+  log.deviceid = deviceid;
+  log.digin1state = digin1.getValue();
+  log.digin2state = digin2.getValue();
+  log.digin3state = digin3.getValue();
+  log.digout1state = digout1.getValue();
+  log.digout2state = digout2.getValue();
+  log.digout3state = digout3.getValue();
+  log.analoginstate = analoginput.getState();
+  log.analogvalue = analoginput.getValue();
+  
+  //check all the events
+  if(digin1.getEvent())
+    log.note = "Digital input 1 has gone high";
+    log.note = "Digital input 1 has gone low";
+    digin1.resetFlag();
+  return log;
+}

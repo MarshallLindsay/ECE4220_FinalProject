@@ -29,6 +29,8 @@
 #include <wiringPiSPI.h>
 #include <pthread.h>
 #include <sys/timerfd.h>
+#include <sys/time.h>
+#include <vector>
 
 #define CHAR_DEV "/dev/MarshallMaxFinal"
 #define MSG_SIZE (50)
@@ -46,29 +48,32 @@
 #define OVERLOAD -1
 #define UNDERLOAD -2
 #define POWERDOWN -3
-#define EVENT -1
 using namespace std;
 
 class DigitalOutput{
 private:
   int pinNumber;  //What is the pin number?
   int value;     //What is the state of the input...has an event occurred?
+  bool eventFlag;
 public:
   DigitalOutput(int);         //Initialize the input hardware parameters
   void setValue(int);    //Set the state if an event happened, or clear if the event is over.
+  int getValue(void);
+  void resetFlag();
+  bool getEvent();
 };
 
 class DigitalInput{
 private:
   int pinNumber;  //pin number using wiringpi scheme
-  int state;     //What is the state on the pin?
   int value;     //What is the value on the pin?
+  bool eventFlag;
 public:
   DigitalInput(int);      //Initialize the input hardware parameters.
-  void resetState();  //Set the state if an event happened, or clear if the event is over.
-  int getState();      //Get the state of the pin.
   int getValue();      //Get the value of the pin.
   void update();
+  void resetFlag();
+  bool getEvent();
 };
 
 class AnalogInput{
@@ -78,6 +83,7 @@ private:
   double value;   //What is the value on the pin?
   double last;
   double count;
+  bool eventFlag;
 public:
   AnalogInput(); //default constructor, will use ADC channel 1
   void test_ADC();
@@ -85,8 +91,9 @@ public:
   void setState(bool);  //Set the state if an event happened, or clear if the event is over.
   double getValue();     //Get the value on the pin.
   int getState();       //Get the state of the pin.
-  void resetState();    //reset state flag when it is logged
   void update();
+  void resetFlag();
+  bool getEvent();
 };
 
 class SocketCommunication{
@@ -128,5 +135,6 @@ struct logEntry {
   double analogvalue;
   timeval timestamp;
   int deviceid; 
+  char* note; //note what actually triggered the event
 };
 #endif
