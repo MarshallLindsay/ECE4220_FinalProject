@@ -82,4 +82,3 @@ void* ADCthread(void* ptr) {
   //pthread_exit((void*)retval);
 }
 //TODO: marshall can just copy that ADCthread and make the timer 1 second and have it call his networking send() function
-
