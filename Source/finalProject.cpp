@@ -159,7 +159,7 @@ double AnalogInput::getValue() {
 AnalogInput::~AnalogInput() {
 }
 
-void AnalogInput::updateADC() {
+void AnalogInput::update() {
    this->state = OK;   
    get_ADC(); //actually get the value over spi
     
@@ -182,7 +182,9 @@ void AnalogInput::updateADC() {
 }
 
 DigitalInput::DigitalInput(int pin) {
-
+ //set pull up or pull down if necessary
+ //set pin as input
+ pinMode(pin,INPUT);
 }
 
 void DigitalInput::resetState() {
@@ -195,4 +197,17 @@ int DigitalInput::getState() {
 
 int DigitalInput::getValue() {
   return this->value;
+}
+
+void DigitalInput::update() {
+  this->value = digitalRead(this->pinNumber);
+}
+
+DigitalOutput::DigitalOutput(int pin) {
+  this->pinNumber = pin;
+  pinMode(this->pinNumber,OUTPUT);
+}
+
+void DigitalOutput::setValue(int value) {
+  digitalWrite(this->pinNumber,value);
 }

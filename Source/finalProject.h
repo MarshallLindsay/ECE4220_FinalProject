@@ -52,16 +52,10 @@ using namespace std;
 class DigitalOutput{
 private:
   int pinNumber;  //What is the pin number?
-  int state;     //What is the state of the input...has an event occurred?
-  bool value;     //What is the value on the pin?
+  int value;     //What is the state of the input...has an event occurred?
 public:
-  DigitalOutput();         //Initialize the input hardware parameters
-  void setState(bool);    //Set the state if an event happened, or clear if the event is over.
-  void setPullUp();       //Set the pullup for the pin.
-  void setPullDown();     //Set the pulldown for the pin.
-  void setAsInterrupt();  //Set the pin as an interrupt.
-  bool getValue();        //Get the value on the pin.
-  bool getState();        //Get the state of the pin.
+  DigitalOutput(int);         //Initialize the input hardware parameters
+  void setValue(int);    //Set the state if an event happened, or clear if the event is over.
 };
 
 class DigitalInput{
@@ -70,10 +64,11 @@ private:
   int state;     //What is the state on the pin?
   int value;     //What is the value on the pin?
 public:
-  DigitalInput(int pin);      //Initialize the input hardware parameters.
+  DigitalInput(int);      //Initialize the input hardware parameters.
   void resetState();  //Set the state if an event happened, or clear if the event is over.
   int getState();      //Get the state of the pin.
   int getValue();      //Get the value of the pin.
+  void update();
 };
 
 class AnalogInput{
@@ -91,7 +86,7 @@ public:
   double getValue();     //Get the value on the pin.
   int getState();       //Get the state of the pin.
   void resetState();    //reset state flag when it is logged
-  void updateADC();
+  void update();
 };
 
 class SocketCommunication{
@@ -126,8 +121,12 @@ public:
   int openDevice(); //Maybe overload to allow different devices
   int writeToDevice(char buffer[MSG_SIZE]);
   char* readFromDevice(void); //Char pointer return?
-
 };
 
-
+struct logEntry {
+  int analoginstate,digin1state,digin2state,digin3state,digout1state,digout2state,digout3state;
+  double analogvalue;
+  timeval timestamp;
+  int deviceid; 
+};
 #endif

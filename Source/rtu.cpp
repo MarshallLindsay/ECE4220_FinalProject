@@ -6,30 +6,39 @@ RTU program
 #include "finalProject.h"
 
 void* ADCthread(void*);
+void gpio_tests();
+void check_status();
 
-//max made a change to test github
-//max made another change to test github
-
-
-//pthread
-//needs to run at 1khz
-//read adc
-
-int main {
+int main() {
   //instantiate all objects
+    wiringPiSetup();
     AnalogInput analoginput(); //analog input
     pthread_t thread1; //create thread pointer
     pthread_create(&thread1, NULL, ADCthread, (void*)&analoginput); //execute thread that will time ADC
-    //digital inputs
-    //digital outputs
-    //networking stuff
-    
-    
+    DigitalInput digin1(1);
+    DigitalInput digin2(2);
+    DigitalInput digin3(3);
+    DigitalOutput digout1(4);
+    DigitalOutput digout2(5);
+    DigitalOutput digout3(6);
+    vector<struct logEntry> log; //make this a vector eventually 
   while(1) {  
-  //monitor flags from inputs
+    digin1.update();
+    digin2.update();
+    digin3.update();
+    log.push_back(check_status());
+  
    //if (flag)
      // //grab states and write to a log file
   }
+
+}
+
+void gpio_tests() {
+
+}
+
+void check_status() {
 
 }
 
@@ -59,9 +68,11 @@ void* ADCthread(void* ptr) {
   while(1) {
     while(read(timer_fd, &num_periods,sizeof(num_periods)) == -1); //wait for timer
 		if(num_periods >  1) {puts("MISSED WINDOW");exit(1);} //error check
-    adc->updateADC(); //call update method
+    adc->update(); //call update method
   }
   
   //thread should never exit
   //pthread_exit((void*)retval);
 }
+
+//TODO: marshall can just copy that ADCthread and make the timer 1 second and have it call his networking send() function
