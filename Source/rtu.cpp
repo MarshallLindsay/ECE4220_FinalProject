@@ -6,8 +6,10 @@ RTU program
 #include "finalProject.h"
 
 void* ADCthread(void*);
+
 void gpio_tests();
 void check_status();
+
 
 int main() {
   //instantiate all objects
@@ -22,6 +24,11 @@ int main() {
     DigitalOutput digout2(5);
     DigitalOutput digout3(6);
     vector<struct logEntry> log; //make this a vector eventually 
+    //digital inputs
+    //digital outputs
+    //networking stuff
+    
+  
   while(1) {  
     digin1.update();
     digin2.update();
@@ -74,5 +81,5 @@ void* ADCthread(void* ptr) {
   //thread should never exit
   //pthread_exit((void*)retval);
 }
-
 //TODO: marshall can just copy that ADCthread and make the timer 1 second and have it call his networking send() function
+
