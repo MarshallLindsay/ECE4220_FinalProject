@@ -24,26 +24,27 @@ int main(int argc, char **argv) {
     AnalogInput analoginput; //analog input
     pthread_t thread1; //create thread pointer
     pthread_create(&thread1, NULL, ADCthread, (void*)&analoginput); //execute thread that will time ADC
-    DigitalInput digin1(1);
-    DigitalInput digin2(2);
-    DigitalInput digin3(3);
-    DigitalOutput digout1(4);
-    DigitalOutput digout2(5);
-    DigitalOutput digout3(6);
+    DigitalInput digin1(26);
+    DigitalInput digin2(23);
+    DigitalInput digin3(28);
+    DigitalOutput digout1(9);
+    DigitalOutput digout2(7);
+    DigitalOutput digout3(21);
     vector<struct logEntry> log; //make this a vector eventually 
     
     //instantiate networking stuff
       //create pthread that sends data every 1 second
       //also be listening for commands to control the digouts. call get_states() and make a log entry when you receive a command.
-    
   while(1) {  
   //  network.update();  //read network buffer for incoming commands
-  cout << "running";
     digin1.update();
     digin2.update();
     digin3.update();
-    if(digin1.getEvent() || digin2.getEvent() || digin3.getEvent() || analoginput.getEvent()) 
+    if(digin1.getEvent() || digin2.getEvent() || digin3.getEvent() || analoginput.getEvent()) {
       log.push_back(gather_log(digin1,digin2,digin3,digout1,digout2,digout3,analoginput));
+    	cout << log[log.size()-1].note << endl; 
+    //	cout << "event detected" << endl;
+  }
   }  
 }
 
@@ -121,7 +122,7 @@ struct logEntry gather_log(DigitalInput digin1, DigitalInput digin2, DigitalInpu
       log.note = "Digital input 3 has gone high";
     else
       log.note = "Digital input 3 has gone low";
-    digin1.resetFlag();
+    digin3.resetFlag();
     }
   else if(digout1.getEvent()) {
     if(digout1.getValue())
