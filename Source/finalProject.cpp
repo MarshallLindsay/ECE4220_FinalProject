@@ -73,7 +73,7 @@ SocketCommunication::~SocketCommunication(){
 int SocketCommunication::sendMessage(logEntry buffer){
   int n;
   string temp;
-  temp = buffer.analoginstate + "," + buffer.digin1state + "," + buffer.digin2state + ",";
+  temp = "hello" + buffer.analoginstate + "," + buffer.digin1state + "," + buffer.digin2state + ",";
   temp += buffer.digin3state + "," + buffer.digout1state + "," + buffer.digout2state + ",";
   temp += buffer.digout3state + "," + buffer.analogvalue + "," + buffer.timestamp + ",";
   temp += buffer.deviceid + "," + buffer.note;
