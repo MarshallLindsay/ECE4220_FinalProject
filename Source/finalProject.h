@@ -41,7 +41,7 @@ struct logEntry {
   int deviceid;
   char* note; //note what actually triggered the event
 };
-#define MSG_SIZE sizeof(logEntry);
+#define MSG_SIZE sizeof(logEntry)
 
 //definitions for ADC
 #define SPI_CHANNEL	      0	// 0 or 1
