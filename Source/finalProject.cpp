@@ -91,7 +91,9 @@ int SocketCommunication::sendMessage(struct logEntry buffer){
   temp += ",";
   temp += to_string(buffer.analogvalue);
   temp += ",";
-  temp += to_string(buffer.timestamp);
+  temp += to_string(buffer.timestamp.tv_sec);
+  temp += ",";
+  temp += to_string(buffer.timestamp.tv_usec);
   temp += ",";
   temp += to_string(buffer.deviceid);
   temp += ",";
