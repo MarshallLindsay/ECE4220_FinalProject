@@ -19,7 +19,7 @@ SocketCommunication::SocketCommunication(){
 
   //Set the port.. We could change to dymanic port
   this->portno = 2345;
-  cout<<this->portno<<endl;
+  cout<<"hello"<<this->portno<<endl;
 
   //Set the boolval.. Just gotta do it
   this->boolval = 1;
