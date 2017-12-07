@@ -7,15 +7,9 @@ historian program
 
 #include "finalProject.h"
 
-void* readMessages(void*);
-
-
 int main(void){
 
 	SocketCommunication sock;
-	pthread_t messageReader;
-	void** retVal;
-	pthread_create(&messageReader, NULL, readMessages, NULL);
 	char buffer[MSG_SIZE];
 	string message = "This is a message";
 	struct logEntry log;
@@ -35,19 +29,5 @@ int main(void){
 	sock.sendMessage(log);
 	sock.sendMessage(message);
 
-	pthread_join(messageReader, retVal);
 	return(1);
-}
-
-void* readMessages(void* ptr){
-	SocketCommunication sock;
-
-	//Set thread to real time
-	struct sched_param param;
-	param.sched_priority = 51;
-	sched_setscheduler(0,SCHED_FIFO,&param);
-
-	while(1){
-		sock.receiveMessage();
-	}
 }
