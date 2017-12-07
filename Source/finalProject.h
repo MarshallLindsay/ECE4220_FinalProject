@@ -121,6 +121,7 @@ private:
   struct hostent *server;
 public:
   SocketCommunication();
+  SocketCommunication(int port);
   ~SocketCommunication();
   int sendMessage(logEntry buffer);
   int sendMessage(string buffer);
