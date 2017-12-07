@@ -73,7 +73,7 @@ SocketCommunication::~SocketCommunication(){
 }
 
 int SocketCommunication::sendMessage(string buffer){
-  const char * message = temp.c_str();
+  const char * message = buffer.c_str();
   cout<<message<<endl;
   n = sendto(this->sockfd, message, MSG_SIZE, 0, (struct sockaddr*)&(this->fromaddress), this->fromlen);
 
