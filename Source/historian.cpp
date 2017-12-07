@@ -29,5 +29,6 @@ int main(void){
 	sock.sendMessage(log);
 	sock.sendMessage(message);
 	sock.receiveMessage();
+	sock.receiveMessage();
 	return(1);
 }
