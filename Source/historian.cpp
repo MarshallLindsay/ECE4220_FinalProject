@@ -8,11 +8,11 @@ historian program
 #include "finalProject.h"
 
 void* readMessages(void*);
-
+SocketCommunication sock;
 
 int main(void){
 
-	SocketCommunication sock;
+
 	pthread_t messageReader;
 	void** retVal;
 	pthread_create(&messageReader, NULL, readMessages, NULL);
