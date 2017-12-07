@@ -80,10 +80,10 @@ SocketCommunication::~SocketCommunication(){
 int SocketCommunication::sendMessage(char buffer[MSG_SIZE]){
   struct sockaddr_in from1;
   int n;
-  cout<<buffer<<endl;
+  //cout<<buffer<<endl;
   //Copy the message over
   strcpy(this->broadcast,buffer);
-  cout<<this->broadcast<<endl;
+  //cout<<this->broadcast<<endl;
 
   //Set the broadcast IP
   from1.sin_addr.s_addr = inet_addr("128.206.19.255");
@@ -94,7 +94,8 @@ int SocketCommunication::sendMessage(char buffer[MSG_SIZE]){
   this->fromaddress = from1;
   //Error checking
   if(n < 0){
-    return(-1);
+    cout<<"SEND FAILED"<<endl;
+    exit(-1);
   }
 
   return(1);
