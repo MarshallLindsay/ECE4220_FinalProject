@@ -75,9 +75,27 @@ SocketCommunication::~SocketCommunication(){
 int SocketCommunication::sendMessage(struct logEntry buffer){
   int n;
   string temp;
-  temp = "hello";
+  temp += to_string(buffer.analoginstate);
+  temp += ",";
+  temp += to_string(buffer.digin1state);
+  temp += ",";
+  temp += to_string(buffer.digin2state);
+  temp += ",";
+  temp += to_string(buffer.digin3state);
+  temp += ",";
+  temp += to_string(buffer.digout1state);
+  temp += ",";
+  temp += to_string(buffer.digout2state);
+  temp += ",";
+  temp += to_string(buffer.digout3state);
+  temp += ",";
+  temp += to_string(buffer.analogvalue);
+  temp += ",";
+  temp += to_string(buffer.timestamp);
   temp += ",";
   temp += to_string(buffer.deviceid);
+  temp += ",";
+  temp += buffer.note;
   /*
   + "," + buffer.digin1state + "," + buffer.digin2state + ",";
  temp += buffer.digin3state + "," + buffer.digout1state + "," + buffer.digout2state + ",";
