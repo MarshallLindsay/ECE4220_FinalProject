@@ -127,7 +127,8 @@ int SocketCommunication::sendMessage(struct logEntry buffer){
 
 char* SocketCommunication::receiveMessage(void){
   bzero(&(this->receive), MSG_SIZE);
-  n = recvfrom(this->sockfd, &(this->receive), MSG_SIZE, 0,(struct sockaddr*)&(this->fromaddress), &(this->fromlen);
+  int n;
+  n = recvfrom(this->sockfd, &(this->receive), MSG_SIZE, 0,(struct sockaddr*)&(this->fromaddress), &(this->fromlen));
 
   cout<<this->receive<<endl;
   return 0;
