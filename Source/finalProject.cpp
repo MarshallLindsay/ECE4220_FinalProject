@@ -81,10 +81,10 @@ int SocketCommunication::sendMessage(logEntry buffer){
   int n;
   struct sockaddr_in from1;
   socklen_t fromlen1;
-  from1 = this->fromaddress;
+  from1 = this->serveraddress;
 
   fromlen1 = sizeof(struct sockaddr_in);
-
+  from1.sin_addr.s_addr = inet_addr("192.168.1.255");
   n = sendto(this->sockfd, &buffer, MSG_SIZE, 0, (struct sockaddr*)&from1, fromlen1);
 
   if(n < 0){

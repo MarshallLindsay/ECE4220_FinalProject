@@ -22,6 +22,8 @@ int main(void){
   log.digout3state = 1;
   log.analoginstate = 0;
   log.analogvalue = 1.21;
+
+	cout<<log.deviceid<<endl;
 	sock.sendMessage(log);
 	log = sock.receiveMessage();
 	return(1);
