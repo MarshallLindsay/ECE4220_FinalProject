@@ -102,7 +102,7 @@ void* readMessages(void* ptr){
 	//Initialize a socket on the read port
 	SocketCommunication sock(RSEND_HREC_PORT);
 	//Variable to hold the message recieved
-	char buffer[MSG_SIZE];
+	char buffer[MSG_SIZE] = "Initialize";
 	//Clear the buffer variable
 	bzero(buffer, MSG_SIZE);
 	while(1){
@@ -119,5 +119,6 @@ void* readMessages(void* ptr){
 }
 
 void createLogEntry(char* buffer){
+	//Take the message in buffer, create a log, push to the log vector
 	cout<<buffer<<endl;
 }
