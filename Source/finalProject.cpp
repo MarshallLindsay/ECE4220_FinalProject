@@ -73,7 +73,7 @@ SocketCommunication::~SocketCommunication(){
 int SocketCommunication::sendMessage(struct logEntry buffer){
   int n;
   string temp;
-  temp = "hello" + buffer.analoginstate + ",";
+  temp = "hello" + buffer.analoginstate + " , ";
   /*
   + "," + buffer.digin1state + "," + buffer.digin2state + ",";
  temp += buffer.digin3state + "," + buffer.digout1state + "," + buffer.digout2state + ",";
