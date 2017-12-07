@@ -32,21 +32,13 @@
 #include <sys/time.h>
 #include <vector>
 
-
 #define CHAR_DEV "/dev/MarshallMaxFinal"
-struct logEntry {
-  int analoginstate,digin1state,digin2state,digin3state,digout1state,digout2state,digout3state;
-  double analogvalue;
-  timeval timestamp;
-  int deviceid;
-  char* note; //note what actually triggered the event
-};
-#define MSG_SIZE (100)
+#define MSG_SIZE (50)
 
 //definitions for ADC
 #define SPI_CHANNEL	      0	// 0 or 1
 #define SPI_SPEED 	2000000	// Max speed is 3.6 MHz when VDD = 5 V
-#define ADC_CHANNEL       2	// Between 1 and 3
+#define ADC_CHANNEL       1	// Between 1 and 3
 #define ADC_REF 3.3 		//reference voltage for ADC
 #define ADC_OVERLOAD 2.1 	//overload voltage
 #define ADC_UNDERLOAD 0.9 	//underload voltage
@@ -112,19 +104,38 @@ private:
   socklen_t fromlen;
   int length;
   string localAddress;
-
   char broadcast[MSG_SIZE];
-  struct logEntry receive;
-
+  char receive[MSG_SIZE];
   struct sockaddr_in serveraddress;
   struct sockaddr_in fromaddress;
   struct hostent *server;
 public:
   SocketCommunication();
   ~SocketCommunication();
-  int sendMessage(logEntry buffer);
+  int sendMessage(struct logEntry buffer);
   int sendMessage(string buffer);
   char* receiveMessage(void);
 };
 
+class CharacterCommunication{
+private:
+  int cdev_id;
+  int dummy;
+  char broadcast[MSG_SIZE];
+  char receive[MSG_SIZE];
+public:
+  CharacterCommunication();
+  ~CharacterCommunication();
+  int openDevice(); //Maybe overload to allow different devices
+  int writeToDevice(char buffer[MSG_SIZE]);
+  char* readFromDevice(void); //Char pointer return?
+};
+
+struct logEntry {
+  int analoginstate,digin1state,digin2state,digin3state,digout1state,digout2state,digout3state;
+  double analogvalue;
+  timeval timestamp;
+  int deviceid; 
+  string note; //note what actually triggered the event
+};
 #endif
