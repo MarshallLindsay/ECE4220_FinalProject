@@ -42,7 +42,7 @@ void printWelcomeMessage(){
 	cout<<"4)Exit"<<endl;
 }
 
-void checkUserInput(string input){
+int checkUserInput(string input){
 	if(input == "1"){
 		return(1);
 	}else if(input == "2"){
