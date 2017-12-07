@@ -23,5 +23,6 @@ int main(void){
   log.analoginstate = 0;
   log.analogvalue = 1.21;
 	sock.sendMessage(log);
+	log = sock.receiveMessage();
 	return(1);
 }
