@@ -94,15 +94,16 @@ void printHistory(){
 
 void* sendMessages(void* ptr){
 	//Initialize a socket on the send port
-	SocketCommunication* sock = new SocketCommunication(HSEND_RREC_PORT);
-
-	delete sock;
-
+	SocketCommunication sock(HSEND_RREC_PORT);
 }
 
 void* readMessages(void* ptr){
 	//Initialize a socket on the read port
-	SocketCommunication* sock = new SocketCommunication(RSEND_HREC_PORT);
+	SocketCommunication sock(RSEND_HREC_PORT);
+	char buffer[MSG_SIZE];
 
-	delete sock;
+	while(1){
+		strcpy(buffer, sock.receiveMessage());
+		cout<<buffer<<endl;
+	}
 }

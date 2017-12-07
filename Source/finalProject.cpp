@@ -55,7 +55,7 @@ SocketCommunication::SocketCommunication(){
   strncpy(ifr.ifr_name, "wlan0", sizeof(ifr.ifr_name));
   if(ioctl(this->sockfd, SIOCGIFADDR, &ifr) >= 0){
     this->localAddress = inet_ntoa(((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr);
-    cout<<"\nMy IP addr is: "<<this->localAddress<<endl;
+    //cout<<"\nMy IP addr is: "<<this->localAddress<<endl;
   }
 
   //Set the fromaddress struct as the same as the server.
@@ -114,7 +114,7 @@ SocketCommunication::SocketCommunication(int port){
   strncpy(ifr.ifr_name, "wlan0", sizeof(ifr.ifr_name));
   if(ioctl(this->sockfd, SIOCGIFADDR, &ifr) >= 0){
     this->localAddress = inet_ntoa(((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr);
-    cout<<"\nMy IP addr is: "<<this->localAddress<<endl;
+    //cout<<"\nMy IP addr is: "<<this->localAddress<<endl;
   }
 
   //Set the fromaddress struct as the same as the server.
