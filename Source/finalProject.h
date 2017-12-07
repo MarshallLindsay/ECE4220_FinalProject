@@ -122,8 +122,8 @@ private:
 public:
   SocketCommunication();
   ~SocketCommunication();
-  int sendMessage(char buffer[MSG_SIZE]);
-  char* receiveMessage(void);
+  int sendMessage(logEntry buffer);
+  logEntry receiveMessage(void);
 };
 
 class CharacterCommunication{

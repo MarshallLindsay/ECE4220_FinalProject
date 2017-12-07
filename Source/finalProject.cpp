@@ -94,7 +94,7 @@ int SocketCommunication::sendMessage(logEntry buffer){
   return(1);
 }
 
-char* SocketCommunication::receiveMessage(void){
+logEntry SocketCommunication::receiveMessage(void){
   int n;
   socklen_t fromlen1;
   struct sockaddr_in addr;
@@ -104,11 +104,9 @@ char* SocketCommunication::receiveMessage(void){
 
   n = recvfrom(this->sockfd, this->receive, MSG_SIZE, 0,(struct sockaddr*)&addr, &fromlen1);
 
-  cout<<this->receive.deviceid<<endl;
-
   this->fromlen = fromlen1;
   this->fromaddress = addr;
-  return 0; //just trying to make this compile
+  return this->receive; //just trying to make this compile
 
 }
 

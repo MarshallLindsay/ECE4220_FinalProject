@@ -10,6 +10,7 @@ historian test program
 int main(void){
 
 	SocketCommunication sock;
-	sock.receiveMessage(log);
+  struct logEntry log;
+	log = sock.receiveMessage();
 	return(1);
 }
