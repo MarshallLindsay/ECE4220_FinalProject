@@ -82,7 +82,7 @@ int SocketCommunication::sendMessage(char buffer[MSG_SIZE]){
   cout<<buffer<<endl;
   //Copy the message over
   strcpy(this->broadcast,buffer);
-  cout<<thi->broadcast<<endl;
+  cout<<this->broadcast<<endl;
 
   //Set the broadcast IP
   this->fromaddress.sin_addr.s_addr = inet_addr("128.206.19.255");
