@@ -19,6 +19,7 @@ SocketCommunication::SocketCommunication(){
 
   //Set the port.. We could change to dymanic port
   this->portno = 2345;
+  cout<<this->portno<<endl;
 
   //Set the boolval.. Just gotta do it
   this->boolval = 1;
@@ -101,9 +102,9 @@ AnalogInput::AnalogInput() {
   		printf("wiringPiSPISetup failed\n");
   		exit(0);
   	}
-   this->state = OK; 
+   this->state = OK;
 }
-  
+
 void AnalogInput::get_ADC() {
   uint8_t spiData[3];
 	spiData[0] = 0b00000001; // Contains the Start Bit
@@ -111,14 +112,14 @@ void AnalogInput::get_ADC() {
 												// M = 1 ==> single ended
 									// XX: channel selection: 00, 01, 10 or 11
 	spiData[2] = 0;	// "Don't care", doesn't matter the value.
-	
+
 	// The next function performs a simultaneous write/read transaction over the selected
 	// SPI bus. Data that was in the spiData buffer is overwritten by data returned from
 	// the SPI bus.
 	wiringPiSPIDataRW(SPI_CHANNEL, spiData, 3);
-	
+
 	// spiData[1] and spiData[2] now have the result (2 bits and 8 bits, respectively)
-	
+
 	this->value =  (3.3/1024)*((spiData[1] << 8) | spiData[2]);
 }
 
@@ -132,7 +133,7 @@ int AnalogInput::getState() {
 
 void AnalogInput::resetFlag() {
   this->eventFlag = false;
-  this->state = OK; 
+  this->state = OK;
 }
 
 bool AnalogInput::getEvent() {
@@ -146,16 +147,16 @@ double AnalogInput::getValue() {
 AnalogInput::~AnalogInput() {
 }
 
-void AnalogInput::update() {  
+void AnalogInput::update() {
    get_ADC(); //actually get the value over spi
-    
+
     if(this->value == this->last) //power down status can happen even if overload is already set
       this->count++;
     if(this->value != this->last)
       this->count = 0;
     if(this->count > ADC_POWERDOWN)
-      this->state = POWERDOWN;   
-      
+      this->state = POWERDOWN;
+
     if (this->state == OK) { //overload or underload states cannot occur when power is already down
       if(this->value > ADC_OVERLOAD) //check the value and update status if necessary
         this->state = OVERLOAD;
