@@ -58,6 +58,11 @@ SocketCommunication::SocketCommunication(){
     cout<<"\nMy IP addr is: "<<this->localAddress<<endl;
   }
 
+  //Set the fromaddress struct as the same as the server.
+  this->fromaddress = this->serveraddress;
+  //Set the size for the fromlen
+  this->fromlen = sizeof(struct sockaddr_in);
+
 }
 
 SocketCommunication::~SocketCommunication(){
@@ -67,13 +72,15 @@ SocketCommunication::~SocketCommunication(){
 
 int SocketCommunication::sendMessage(logEntry buffer){
   int n;
-  struct sockaddr_in from1;
-  socklen_t fromlen1;
-  from1 = this->serveraddress;
+  string temp;
+  temp = buffer.analoginstate + "," + buffer.digin1state + "," + buffer.digin2state + ",";
+  temp += buffer.digin3state + "," + buffer.digout1state + "," + buffer.digout2state + ",";
+  temp += buffer.digout3state + "," + buffer.analogvalue + "," + buffer.timestamp + ",";
+  temp += buffer.deviceid + "," + buffer.note;
 
-  fromlen1 = sizeof(struct sockaddr_in);
-  from1.sin_addr.s_addr = inet_addr("192.168.1.255");
-  n = sendto(this->sockfd, &buffer, MSG_SIZE, 0, (struct sockaddr*)&from1, fromlen1);
+  const char * message = temp.c_str();
+  this->fromaddress.sin_addr.s_addr = inet_addr("192.168.1.255");
+  n = sendto(this->sockfd, message, MSG_SIZE, 0, (struct sockaddr*)&(this->fromaddress), this->fromlen);
 
   if(n < 0){
     cout<<"SEND FAILED"<<endl;

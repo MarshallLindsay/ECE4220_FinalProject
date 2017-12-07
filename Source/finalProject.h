@@ -41,7 +41,7 @@ struct logEntry {
   int deviceid;
   char* note; //note what actually triggered the event
 };
-#define MSG_SIZE sizeof(logEntry)
+#define MSG_SIZE (100)
 
 //definitions for ADC
 #define SPI_CHANNEL	      0	// 0 or 1
@@ -113,7 +113,7 @@ private:
   int length;
   string localAddress;
 
-  struct logEntry broadcast;
+  char broadcast[MSG_SIZE];
   struct logEntry receive;
 
   struct sockaddr_in serveraddress;
