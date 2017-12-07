@@ -10,7 +10,7 @@ historian program
 int main(void){
 
 	SocketCommunication sock;
-	char* buffer[MSG_SIZE];
+	char buffer[MSG_SIZE];
 	string message = "This is a message";
 	struct logEntry log;
 	gettimeofday(&log.timestamp,NULL);
