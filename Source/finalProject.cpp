@@ -89,6 +89,7 @@ int SocketCommunication::sendMessage(char buffer[MSG_SIZE]){
   //cout<<this->broadcast<<endl;
 
   //Set the broadcast IP
+  from1 = this->fromaddress;
   from1.sin_addr.s_addr = inet_addr("128.206.19.255");
   strcpy(message,this->broadcast);
   fromlen1 = sizeof(struct sockaddr_in);
