@@ -19,7 +19,7 @@ int main(void){
   log.digout1state = 0;
   log.digout2state = 1;
   log.digout3state = 1;
-  log.analoginstate = 0;
+  log.analoginstate = 1;
   log.analogvalue = 1.21;
 	log.note = "This is a note";
 
