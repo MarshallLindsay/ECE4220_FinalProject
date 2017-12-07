@@ -73,7 +73,7 @@ SocketCommunication::~SocketCommunication(){
 int SocketCommunication::sendMessage(struct logEntry buffer){
   int n;
   string temp;
-  temp = "hello" + buffer.analoginstate;
+  temp = "hello" + buffer.analoginstate + ",";
   /*
   + "," + buffer.digin1state + "," + buffer.digin2state + ",";
  temp += buffer.digin3state + "," + buffer.digout1state + "," + buffer.digout2state + ",";
@@ -82,6 +82,7 @@ int SocketCommunication::sendMessage(struct logEntry buffer){
  */
 
   const char * message = temp.c_str();
+  cout<<message<<endl;
   this->fromaddress.sin_addr.s_addr = inet_addr("192.168.1.255");
   n = sendto(this->sockfd, message, MSG_SIZE, 0, (struct sockaddr*)&(this->fromaddress), this->fromlen);
 
