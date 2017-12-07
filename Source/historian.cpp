@@ -11,6 +11,7 @@ int main(void){
 
 	SocketCommunication sock;
 	char buffer[MSG_SIZE] = "Hello";
-	int n = sock.sendMessage(buffer);
+	sock.receiveMessage();
+
 	return(1);
 }
