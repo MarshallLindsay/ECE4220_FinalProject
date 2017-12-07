@@ -31,7 +31,10 @@ int main(void){
 
 	while(1){
 		strcpy(buffer, sock.receiveMessage());
-		cout<<buffer<<endl;
+		if(buffer[0] == '#'){
+			cout<<buffer<<endl;
+		}
+
 	}
 	return(1);
 }
