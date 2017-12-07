@@ -60,6 +60,8 @@ SocketCommunication::SocketCommunication(){
 
   //Set the fromaddress struct as the same as the server.
   this->fromaddress = this->serveraddress;
+  //Set the address to the broadcast address for the lab
+  this->fromaddress.sin_addr.s_addr = inet_addr("192.168.1.255");
   //Set the size for the fromlen
   this->fromlen = sizeof(struct sockaddr_in);
 
@@ -82,11 +84,11 @@ int SocketCommunication::sendMessage(struct logEntry buffer){
  temp += buffer.digout3state + "," + buffer.analogvalue + "," + buffer.timestamp + ",";
  temp += buffer.deviceid;]
  */
-
+  struct sockaddr_in from1;
+  from1 = this->fromaddress;
   const char * message = temp.c_str();
   cout<<message<<endl;
-  this->fromaddress.sin_addr.s_addr = inet_addr("192.168.1.255");
-  n = sendto(this->sockfd, message, MSG_SIZE, 0, (struct sockaddr*)&(this->fromaddress), this->fromlen);
+  n = sendto(this->sockfd, message, MSG_SIZE, 0, (struct sockaddr*)&(from1), this->fromlen);
 
   if(n < 0){
     cout<<"SEND FAILED"<<endl;
