@@ -9,6 +9,6 @@ historian test program
 
 int main(void){
 
-	
+
 	return(1);
 }

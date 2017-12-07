@@ -9,7 +9,7 @@ void* ADCthread(void*);
 
 void gpio_tests();
 int deviceid;
-struct logEntry gather_log(DigitalInput digin1, DigitalInput digin2, DigitalInput digin3, 
+struct logEntry gather_log(DigitalInput digin1, DigitalInput digin2, DigitalInput digin3,
       DigitalOutput digout1, DigitalOutput digout2, DigitalOutput digout3, AnalogInput analoginput);
 
 int main(int argc, char **argv) {
@@ -17,34 +17,46 @@ int main(int argc, char **argv) {
       cout << "Usage: rtu <deviceid>\r\n";
       exit(0);
     }
-    deviceid = (int) argv[1]; 
+    deviceid = (int) argv[1];
 
   //instantiate all objects
     wiringPiSetup();
     AnalogInput analoginput; //analog input
     pthread_t thread1; //create thread pointer
     pthread_create(&thread1, NULL, ADCthread, (void*)&analoginput); //execute thread that will time ADC
-    DigitalInput digin1(1);
-    DigitalInput digin2(2);
-    DigitalInput digin3(3);
-    DigitalOutput digout1(4);
-    DigitalOutput digout2(5);
-    DigitalOutput digout3(6);
-    vector<struct logEntry> log; //make this a vector eventually 
-    
+    DigitalInput digin1(26);
+    DigitalInput digin2(23);
+    DigitalInput digin3(28);
+    DigitalOutput digout1(9);
+    DigitalOutput digout2(7);
+    DigitalOutput digout3(21);
+    vector<struct logEntry> log; //make this a vector eventually
+
     //instantiate networking stuff
       //create pthread that sends data every 1 second
       //also be listening for commands to control the digouts. call get_states() and make a log entry when you receive a command.
-    
-  while(1) {  
+  while(1) {
   //  network.update();  //read network buffer for incoming commands
-  cout << "running";
+	 cout<<digin1.getEvent()<<endl;
     digin1.update();
     digin2.update();
     digin3.update();
-    if(digin1.getEvent() || digin2.getEvent() || digin3.getEvent() || analoginput.getEvent()) 
+/*    if(digin1.getEvent()) cout << "event on digin1" << endl;
+    if(digin2.getEvent()) cout << "event on digin2" << endl;
+    if(digin3.getEvent()) cout << "event on digin3" << endl;
+    if(digout1.getEvent()) cout << "event on digout1" << endl;
+    if(digout2.getEvent()) cout << "event on digout2" << endl;
+    if(digout3.getEvent()) cout << "event on digout3" << endl;
+    if(analoginput.getEvent()) cout << "event on analog" << endl;*/
+  //  cout << "state of analog is " << analoginput.getState() << endl;}
+    cout<<digin1.getEvent()<<endl;
+    if(digin1.getEvent() || digin2.getEvent() || digin3.getEvent() || analoginput.getEvent()) {
       log.push_back(gather_log(digin1,digin2,digin3,digout1,digout2,digout3,analoginput));
-  }  
+    	cout << log[log.size()-1].note << endl;
+    //	cout << "event detected" << endl;
+  }
+    cout<<digin1.getEvent()<<endl;
+  }
 }
 
 void gpio_tests() {
@@ -73,7 +85,7 @@ void* ADCthread(void* ptr) {
 	 param.sched_priority = 49;
 	 sched_setscheduler(0,SCHED_FIFO,&param);
 	 uint64_t num_periods = 0;
-   
+
    AnalogInput *adc = (AnalogInput*)ptr;
 
   while(1) {
@@ -81,13 +93,13 @@ void* ADCthread(void* ptr) {
 		if(num_periods >  1) {puts("MISSED WINDOW");exit(1);} //error check
     adc->update(); //call update method
   }
-  
+
   //thread should never exit
   //pthread_exit((void*)retval);
 }
 //TODO: marshall can just copy that ADCthread and make the timer 1 second and have it call his networking send() function
 
-struct logEntry gather_log(DigitalInput digin1, DigitalInput digin2, DigitalInput digin3, 
+struct logEntry gather_log(DigitalInput digin1, DigitalInput digin2, DigitalInput digin3,
       DigitalOutput digout1, DigitalOutput digout2, DigitalOutput digout3, AnalogInput analoginput) { //this is a sad arguments list
   struct logEntry log;
   gettimeofday(&log.timestamp,NULL);
@@ -100,7 +112,7 @@ struct logEntry gather_log(DigitalInput digin1, DigitalInput digin2, DigitalInpu
   log.digout3state = digout3.getValue();
   log.analoginstate = analoginput.getState();
   log.analogvalue = analoginput.getValue();
-  
+
   //check all the events
   if(digin1.getEvent()) {
     if(digin1.getValue())
@@ -121,7 +133,7 @@ struct logEntry gather_log(DigitalInput digin1, DigitalInput digin2, DigitalInpu
       log.note = "Digital input 3 has gone high";
     else
       log.note = "Digital input 3 has gone low";
-    digin1.resetFlag();
+    digin3.resetFlag();
     }
   else if(digout1.getEvent()) {
     if(digout1.getValue())
@@ -151,7 +163,7 @@ struct logEntry gather_log(DigitalInput digin1, DigitalInput digin2, DigitalInpu
     if(state == POWERDOWN) log.note = "Analog input has detected loss of power";
     analoginput.resetFlag();
   }
-  else log.note = "No event has occured. This is just a 1 Hz update";  
-    
+  else log.note = "No event has occured. This is just a 1 Hz update";
+
   return log;
 }

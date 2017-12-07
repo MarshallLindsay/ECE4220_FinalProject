@@ -140,6 +140,7 @@ char* SocketCommunication::receiveMessage(void){
 }
 
 AnalogInput::AnalogInput() {
+	this->eventFlag = false;
   if(wiringPiSPISetup(SPI_CHANNEL, SPI_SPEED) < 0) {
   		printf("wiringPiSPISetup failed\n");
   		exit(0);
@@ -206,21 +207,36 @@ void AnalogInput::update() {
         this->state = UNDERLOAD;
     }
     this->last = this->value;
-    if(this->value != OK) this->eventFlag = true;
-    cout << this->value; //for debugging
+    if(this->state != OK) {
+    	this->eventFlag = true;
+    }
+
+    //cout << this->value << endl; //for debugging
 }
 
 DigitalInput::DigitalInput(int pin) {
  //set pull up or pull down if necessary
  //set pin as input
- pinMode(pin,INPUT);
+	this->pinNumber = pin;
+	this->eventFlag = false;
+	pinMode(pin,INPUT);
+	pullUpDnControl(pin, PUD_DOWN);
+	this->value = digitalRead(this->pinNumber);
 }
 
 void DigitalInput::update() {
   //use wiringpi to check if value on pin is different than value in object
-  if(this->value != digitalRead(this->pinNumber));
+	if(this->pinNumber == 26)
+	cout << "at start of update for pin previous value is " << this->value << " new value is " << digitalRead(this->pinNumber) << "event flag is " << this->eventFlag <<  " the value of comparison is " << (this->value != digitalRead(this->pinNumber)) <<endl;
+  if(this->value != digitalRead(this->pinNumber)) {
+	  cout <<"setting event flag to true" <<endl;
     this->eventFlag = true; //if theyre different set the event flag
-  this->value = digitalRead(this->pinNumber); //always update the value anyways
+     //update the value anyways
+  }
+ this->value = digitalRead(this->pinNumber);
+ if(this->pinNumber == 26)
+  cout << "at end of update current value is " << digitalRead(this->pinNumber) << "and eventflag is " << this->eventFlag << endl;
+
 }
 bool DigitalInput::getEvent() {
   return this->eventFlag;
@@ -228,6 +244,7 @@ bool DigitalInput::getEvent() {
 
 void DigitalInput::resetFlag() {
   this->eventFlag = false;
+  cout << "resetting flag. flag is " << this->eventFlag << endl;
 }
 
 int DigitalInput::getValue() {
@@ -235,8 +252,10 @@ int DigitalInput::getValue() {
 }
 
 DigitalOutput::DigitalOutput(int pin) {
+	this->eventFlag = false;
   this->pinNumber = pin;
   pinMode(this->pinNumber,OUTPUT);
+  this->value = digitalRead(this->pinNumber);
 }
 
 void DigitalOutput::setValue(int value) {
