@@ -30,7 +30,7 @@ SocketCommunication::SocketCommunication(){
   this->boolval = 1;
 
   //Clear all of the server data
-  this->length = sizeof(this->serveraddress);
+  this->length = sizeof(struct sockaddr_in);
   bzero((char*)&serv_addr, sizeof(serv_addr));
 
   //Set the address family as IPv4
@@ -78,6 +78,7 @@ SocketCommunication::~SocketCommunication(){
 }
 
 int SocketCommunication::sendMessage(char buffer[MSG_SIZE]){
+  struct sockaddr_in from1;
   int n;
   cout<<buffer<<endl;
   //Copy the message over
@@ -85,11 +86,12 @@ int SocketCommunication::sendMessage(char buffer[MSG_SIZE]){
   cout<<this->broadcast<<endl;
 
   //Set the broadcast IP
-  this->fromaddress.sin_addr.s_addr = inet_addr("128.206.19.255");
+  from1.sin_addr.s_addr = inet_addr("128.206.19.255");
 
   //This may throw an error for types.
-  n = sendto(this->sockfd, this->broadcast, MSG_SIZE, 0, (struct sockaddr*)&this->fromaddress, this->fromlen);
+  n = sendto(this->sockfd, this->broadcast, MSG_SIZE, 0, (struct sockaddr*)&from1, this->fromlen);
 
+  this->fromaddress = from1;
   //Error checking
   if(n < 0){
     return(-1);
