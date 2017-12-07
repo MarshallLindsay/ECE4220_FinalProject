@@ -83,7 +83,7 @@ int SocketCommunication::sendMessage(char buffer[MSG_SIZE]){
   socklen_t fromlen1;
   from1 = this->fromaddress;
 
-  socklen_t fromlen1 = sizeof(struct sockaddr_in);
+  fromlen1 = sizeof(struct sockaddr_in);
 
   n = sendto(this->sockfd, &buffer, MSG_SIZE, 0, (struct sockaddr*)&from1, fromlen1);
 
