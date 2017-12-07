@@ -28,6 +28,6 @@ int main(void){
 	cout<<log.deviceid<<endl;
 	sock.sendMessage(log);
 	sock.sendMessage(message);
-	strcpy(buffer, (const char*)sock.receiveMessage());
+	sock.receiveMessage();
 	return(1);
 }
