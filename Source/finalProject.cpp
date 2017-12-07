@@ -108,10 +108,18 @@ int SocketCommunication::sendMessage(char buffer[MSG_SIZE]){
 
 char* SocketCommunication::receiveMessage(void){
   int n;
+  socklen_t fromlen1;
+  struct sockaddr_in addr;
   //Clear the receive character array
   bzero(this->receive, MSG_SIZE);
+  fromlen1 = sizeof(struct sockaddr_in);
 
- // n = recvfrom();
+  n = recvfrom(this->sockfd, this->receive, MSG_SIZE, 0,(struct sockaddr*)&addr, &fromlen1);
+
+  cout<<this->receive<<endl;
+
+  this->fromlen = fromlen1;
+  this->fromaddress = addr;
   return 0; //just trying to make this compile
 
 }
