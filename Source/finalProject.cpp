@@ -38,7 +38,7 @@ SocketCommunication::SocketCommunication(){
   this->serveraddress.sin_port = htons(this->portno);
 
   //Bind the socket
-  if(bind(this->sockfd, (struct sockaddr *)&(this->server), this->length) < 0){
+  if(bind(this->sockfd, (struct sockaddr *)&(this->server), sizeof(this->serveraddress)) < 0){
 		cout<<"\nFailed to bind the socket!"<<endl;
 		exit(1);
 	}
