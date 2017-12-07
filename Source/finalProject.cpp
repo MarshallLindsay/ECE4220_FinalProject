@@ -70,7 +70,7 @@ SocketCommunication::~SocketCommunication(){
   close(this->sockfd);
 }
 
-int SocketCommunication::sendMessage(logEntry buffer){
+int SocketCommunication::sendMessage(struct logEntry buffer){
   int n;
   string temp;
   temp = "hello" + buffer.analoginstate + "," + buffer.digin1state + "," + buffer.digin2state + ",";
