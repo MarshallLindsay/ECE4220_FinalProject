@@ -35,7 +35,7 @@ int main(void){
 	sock.sendMessage(log);
 	sock.sendMessage(message);
 
-	pthread_join(messageReader, retval);
+	pthread_join(messageReader, retVal);
 	return(1);
 }
 
