@@ -25,7 +25,7 @@ SocketCommunication::SocketCommunication(){
 
   //Clear all of the server data
   this->length = sizeof(struct sockaddr_in);
-  bzero((char*)&*(this->serveraddress), sizeof(this->serveraddress));
+  bzero((char*)&(this->serveraddress), sizeof(this->serveraddress));
 
   //Set the address family as IPv4
   this->serveraddress.sin_family = AF_INET;
