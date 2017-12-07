@@ -9,57 +9,47 @@ ECE 4220 Final Final Project
 
 //Socket communication methods
 SocketCommunication::SocketCommunication(){
-  int sockfd1, newsockfd, portno1, pid, j = 0;
-  socklen_t clilen;
-  struct sockaddr_in serv_addr, cli_addr;
   int boolval1;
 
   //Create a socket, connectionless
-  sockfd1 = socket(AF_INET, SOCK_DGRAM, 0);
-	if(sockfd < 0){
+  this->sockfd= socket(AF_INET, SOCK_DGRAM, 0);
+	if(this->sockfd < 0){
 		cout<<"\nSocket creation failed"<<endl;
 		exit(1);
 	}
 
   //Set the port.. We could change to dymanic port
-  portno1 = 2345;
+  this->portno1 = 2345;
   //cout<<"hello"<<this->portno<<endl;
-  this->portno = portno1;
 
   //Set the boolval.. Just gotta do it
   this->boolval = 1;
 
   //Clear all of the server data
   this->length = sizeof(struct sockaddr_in);
-  bzero((char*)&serv_addr, sizeof(serv_addr));
+  bzero((char*)&*(this->serveraddress), sizeof(this->serveraddress));
 
   //Set the address family as IPv4
-  serv_addr.sin_family = AF_INET;
+  this->serveraddress.sin_family = AF_INET;
 
   //Set the address to INADDR_ANY
-  serv_addr.sin_addr.s_addr = INADDR_ANY;
+  this->serveraddress.sin_addr.s_addr = INADDR_ANY;
 
   //Set the port number
-  serv_addr.sin_port = htons(portno1);
+  this->serveraddress.sin_port = htons(this->portno);
 
   //Bind the socket
-  if(bind(sockfd1, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0){
+  if(bind(this->sockfd, (struct sockaddr *)&(this->serveraddress), sizeof(this->serveraddress)) < 0){
 		cout<<"\nFailed to bind the socket!"<<endl;
 		exit(1);
 	}
 
   //Set the option for broadcasting
-  if (setsockopt(sockfd1, SOL_SOCKET, SO_BROADCAST, &boolval1, sizeof(boolval1)) < 0)
+  if (setsockopt(this->sockfd, SOL_SOCKET, SO_BROADCAST, &boolval1, sizeof(boolval1)) < 0)
 	{
 		cout<<"\nError setting socket options"<<endl;
 		exit(1);
 	}
-
-  this->sockfd = sockfd1;
-  this->portno = portno1;
-  this->boolval = boolval1;
-  this->serveraddress = serv_addr;
-
   //Get the ip of the system
   //Pulled from stackoverflow. Modified slightly for my uses
 	//https://stackoverflow.com/questions/579783/how-to-detect-ip-address-change-programmatically-in-linux
@@ -94,7 +84,7 @@ int SocketCommunication::sendMessage(logEntry buffer){
   return(1);
 }
 
-logEntry SocketCommunication::receiveMessage(void){
+char* SocketCommunication::receiveMessage(void){
   int n;
   socklen_t fromlen1;
   struct sockaddr_in addr;
@@ -106,7 +96,7 @@ logEntry SocketCommunication::receiveMessage(void){
 
   this->fromlen = fromlen1;
   this->fromaddress = addr;
-  return this->receive; //just trying to make this compile
+  return 0;
 
 }
 
