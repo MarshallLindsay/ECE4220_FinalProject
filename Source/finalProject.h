@@ -123,6 +123,7 @@ public:
   SocketCommunication();
   ~SocketCommunication();
   int sendMessage(logEntry buffer);
+  int sendMessage(string buffer);
   char* receiveMessage(void);
 };
 
