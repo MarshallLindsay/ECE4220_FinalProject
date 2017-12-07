@@ -193,7 +193,7 @@ void AnalogInput::update() {
     if(this->value != this->last)
       this->count = 0;
     if(this->count > ADC_POWERDOWN)
-      this->state = POWERDOWN;
+    a  this->state = POWERDOWN;
 
     if (this->state == OK) { //overload or underload states cannot occur when power is already down
       if(this->value > ADC_OVERLOAD) //check the value and update status if necessary
@@ -221,16 +221,18 @@ DigitalInput::DigitalInput(int pin) {
 
 void DigitalInput::update() {
   //use wiringpi to check if value on pin is different than value in object
-	if(this->pinNumber == 26)
-	cout << "at start of update for pin previous value is " << this->value << " new value is " << digitalRead(this->pinNumber) << "event flag is " << this->eventFlag <<  " the value of comparison is " << (this->value != digitalRead(this->pinNumber)) <<endl;
+//	cout<<"Point C: "<<this->getEvent()<<endl;
+//	cout<<"Point D: "<<this->eventFlag<<endl;
+	//if(this->pinNumber == 26)
+	//cout << "at start of update for pin previous value is " << this->value << " new value is " << digitalRead(this->pinNumber) << "event flag is " << this->eventFlag <<  " the value of comparison is " << (this->value != digitalRead(this->pinNumber)) <<endl;
   if(this->value != digitalRead(this->pinNumber)) {
-	  cout <<"setting event flag to true" <<endl;
+	//  cout <<"setting event flag to true" <<endl;
     this->eventFlag = true; //if theyre different set the event flag
      //update the value anyways
   }
  this->value = digitalRead(this->pinNumber);
- if(this->pinNumber == 26)
-  cout << "at end of update current value is " << digitalRead(this->pinNumber) << "and eventflag is " << this->eventFlag << endl;
+ //if(this->pinNumber == 26)
+//  cout << "at end of update current value is " << digitalRead(this->pinNumber) << "and eventflag is " << this->eventFlag << endl;
 
 }
 bool DigitalInput::getEvent() {
@@ -239,7 +241,9 @@ bool DigitalInput::getEvent() {
 
 void DigitalInput::resetFlag() {
   this->eventFlag = false;
-  cout << "resetting flag. flag is " << this->eventFlag << endl;
+//  cout << "resetting flag. flag is " << this->eventFlag << endl;
+//	cout<<"Point E: "<<this->getEvent()<<endl;
+//	cout<<"Point F: "<<this->eventFlag<<endl;
 }
 
 int DigitalInput::getValue() {

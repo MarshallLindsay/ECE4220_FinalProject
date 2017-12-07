@@ -33,13 +33,16 @@
 #include <vector>
 
 
-#define CHAR_DEV "/dev/MarshallMaxFinal"
+#define CHAR_DEV "/dev/MarshallMaxFinal" ///pretty sure we can delete this
+
+using namespace std;
+
 struct logEntry {
   int analoginstate,digin1state,digin2state,digin3state,digout1state,digout2state,digout3state;
   double analogvalue;
   timeval timestamp;
   int deviceid;
-  char* note; //note what actually triggered the event
+  string note; //note what actually triggered the event
 };
 #define MSG_SIZE (100)
 
@@ -56,7 +59,7 @@ struct logEntry {
 #define OVERLOAD -1
 #define UNDERLOAD -2
 #define POWERDOWN -3
-using namespace std;
+
 
 class DigitalOutput{
 private:
