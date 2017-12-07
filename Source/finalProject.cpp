@@ -149,7 +149,6 @@ AnalogInput::~AnalogInput() {
 
 void AnalogInput::update() {  
    get_ADC(); //actually get the value over spi
-    
     if(this->value == this->last) //power down status can happen even if overload is already set
       this->count++;
     if(this->value != this->last)
@@ -164,7 +163,10 @@ void AnalogInput::update() {
         this->state = UNDERLOAD;
     }
     this->last = this->value;
-    if(this->value != OK) this->eventFlag = true;
+    if(this->state != OK) {
+    	this->eventFlag = true;
+    }
+
     //cout << this->value << endl; //for debugging
 }
 
@@ -174,18 +176,21 @@ DigitalInput::DigitalInput(int pin) {
 	this->pinNumber = pin;
 	this->eventFlag = false;
 	pinMode(pin,INPUT);
-	pullUpDnControl(pin, PUD_UP);
+	pullUpDnControl(pin, PUD_DOWN);
 	this->value = digitalRead(this->pinNumber);
 }
 
 void DigitalInput::update() {
   //use wiringpi to check if value on pin is different than value in object
-	cout << "at start of update previous value is " << this->value << " new value is " << digitalRead(this->pinNumber) << "the value of comparison is " << (this->value != digitalRead(this->pinNumber)) <<endl;
+	if(this->pinNumber == 26)
+	cout << "at start of update for pin previous value is " << this->value << " new value is " << digitalRead(this->pinNumber) << "event flag is " << this->eventFlag <<  " the value of comparison is " << (this->value != digitalRead(this->pinNumber)) <<endl;
   if(this->value != digitalRead(this->pinNumber)) {
+	  cout <<"setting event flag to true" <<endl;
     this->eventFlag = true; //if theyre different set the event flag
-    this->value = digitalRead(this->pinNumber); //update the value anyways
+     //update the value anyways
   }
- 
+ this->value = digitalRead(this->pinNumber);
+ if(this->pinNumber == 26)
   cout << "at end of update current value is " << digitalRead(this->pinNumber) << "and eventflag is " << this->eventFlag << endl;
 
 }
@@ -195,6 +200,7 @@ bool DigitalInput::getEvent() {
 
 void DigitalInput::resetFlag() {
   this->eventFlag = false;
+  cout << "resetting flag. flag is " << this->eventFlag << endl;
 }
 
 int DigitalInput::getValue() {
