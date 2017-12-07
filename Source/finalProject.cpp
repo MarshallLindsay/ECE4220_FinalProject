@@ -78,32 +78,19 @@ SocketCommunication::~SocketCommunication(){
 }
 
 int SocketCommunication::sendMessage(char buffer[MSG_SIZE]){
-  struct sockaddr_in from1;
   int n;
-  char message[MSG_SIZE];
-  int fromlen1;
-  int sockfd1;
-  //cout<<buffer<<endl;
-  //Copy the message over
-  strcpy(this->broadcast,buffer);
-  //cout<<this->broadcast<<endl;
-
-  //Set the broadcast IP
+  struct sockaddr_in from1;
+  socklen_t fromlen1;
   from1 = this->fromaddress;
-  from1.sin_addr.s_addr = inet_addr("128.206.19.255");
-  strcpy(message,this->broadcast);
-  fromlen1 = sizeof(struct sockaddr_in);
-  sockfd1 = this->sockfd;
-  //This may throw an error for types.
-  n = sendto(sockfd1, &message, MSG_SIZE, 0, (struct sockaddr*)&from1, fromlen1);
 
-  this->fromaddress = from1;
-  //Error checking
+  socklen_t fromlen1 = sizeof(struct sockaddr_in);
+
+  n = sendto(this->sockfd, &buffer, MSG_SIZE, 0, (struct sockaddr*)&from1, fromlen1);
+
   if(n < 0){
     cout<<"SEND FAILED"<<endl;
-    exit(-1);
+    exit(1);
   }
-
   return(1);
 }
 
