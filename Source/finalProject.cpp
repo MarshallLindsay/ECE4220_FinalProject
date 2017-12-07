@@ -24,7 +24,7 @@ SocketCommunication::SocketCommunication(){
   //Set the port.. We could change to dymanic port
   portno1 = 2345;
   //cout<<"hello"<<this->portno<<endl;
-  this->portno = protno1;
+  this->portno = portno1;
 
   //Set the boolval.. Just gotta do it
   this->boolval = 1;
