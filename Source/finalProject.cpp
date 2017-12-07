@@ -82,6 +82,7 @@ int SocketCommunication::sendMessage(char buffer[MSG_SIZE]){
   int n;
   char message[MSG_SIZE];
   int fromlen1;
+  int sockfd1;
   //cout<<buffer<<endl;
   //Copy the message over
   strcpy(this->broadcast,buffer);
@@ -91,8 +92,9 @@ int SocketCommunication::sendMessage(char buffer[MSG_SIZE]){
   from1.sin_addr.s_addr = inet_addr("128.206.19.255");
   strcpy(message,this->broadcast);
   fromlen1 = sizeof(struct sockaddr_in);
+  sockfd1 = this->sockfd;
   //This may throw an error for types.
-  n = sendto(this->sockfd, message, MSG_SIZE, 0, (struct sockaddr*)&from1, fromlen1);
+  n = sendto(sockfd1, message, MSG_SIZE, 0, (struct sockaddr*)&from1, fromlen1);
 
   this->fromaddress = from1;
   //Error checking
