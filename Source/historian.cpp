@@ -10,6 +10,7 @@ historian program
 int main(void){
 
 	SocketCommunication sock;
+	string message = "This is a message";
 	struct logEntry log;
 	gettimeofday(&log.timestamp,NULL);
   log.deviceid = 15;
@@ -25,5 +26,6 @@ int main(void){
 
 	cout<<log.deviceid<<endl;
 	sock.sendMessage(log);
+	sock.sendMessage(message);
 	return(1);
 }

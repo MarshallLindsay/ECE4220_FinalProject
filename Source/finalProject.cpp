@@ -72,6 +72,18 @@ SocketCommunication::~SocketCommunication(){
   close(this->sockfd);
 }
 
+int SocketCommunication::sendMessage(string buffer){
+  const char * message = temp.c_str();
+  cout<<message<<endl;
+  n = sendto(this->sockfd, message, MSG_SIZE, 0, (struct sockaddr*)&(this->fromaddress), this->fromlen);
+
+  if(n < 0){
+    cout<<"SEND FAILED"<<endl;
+    exit(1);
+  }
+  return(1);
+}
+
 int SocketCommunication::sendMessage(struct logEntry buffer){
   int n;
   string temp;
@@ -98,12 +110,7 @@ int SocketCommunication::sendMessage(struct logEntry buffer){
   temp += to_string(buffer.deviceid);
   temp += ",";
   temp += buffer.note;
-  /*
-  + "," + buffer.digin1state + "," + buffer.digin2state + ",";
- temp += buffer.digin3state + "," + buffer.digout1state + "," + buffer.digout2state + ",";
- temp += buffer.digout3state + "," + buffer.analogvalue + "," + buffer.timestamp + ",";
- temp += buffer.deviceid;]
- */
+
   const char * message = temp.c_str();
   cout<<message<<endl;
   n = sendto(this->sockfd, message, MSG_SIZE, 0, (struct sockaddr*)&(this->fromaddress), this->fromlen);
