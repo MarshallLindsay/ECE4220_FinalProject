@@ -75,7 +75,7 @@ int SocketCommunication::sendMessage(struct logEntry buffer){
   string temp;
   temp = "hello";
   temp += ",";
-  temp += (int)(buffer.deviceid);
+  temp += to_string(buffer.deviceid);
   /*
   + "," + buffer.digin1state + "," + buffer.digin2state + ",";
  temp += buffer.digin3state + "," + buffer.digout1state + "," + buffer.digout2state + ",";
