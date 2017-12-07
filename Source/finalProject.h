@@ -34,7 +34,7 @@
 
 
 #define CHAR_DEV "/dev/MarshallMaxFinal"
-#define MSG_SIZE (50)
+#define MSG_SIZE sizeof(logEntry);
 
 //definitions for ADC
 #define SPI_CHANNEL	      0	// 0 or 1
@@ -105,8 +105,8 @@ private:
   socklen_t fromlen;
   int length;
   string localAddress;
-  char broadcast[MSG_SIZE];
-  char receive[MSG_SIZE];
+  vector<logEntry> broadcast;
+  vector<logEntry> receive;
   struct sockaddr_in serveraddress;
   struct sockaddr_in fromaddress;
   struct hostent *server;
@@ -135,7 +135,7 @@ struct logEntry {
   int analoginstate,digin1state,digin2state,digin3state,digout1state,digout2state,digout3state;
   double analogvalue;
   timeval timestamp;
-  int deviceid; 
+  int deviceid;
   char* note; //note what actually triggered the event
 };
 #endif
