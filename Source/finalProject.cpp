@@ -86,7 +86,7 @@ int SocketCommunication::sendMessage(struct logEntry buffer){
  */
   struct sockaddr_in from1;
   from1 = this->fromaddress;
-  char * message = temp.c_str();
+  const char * message = temp.c_str();
   cout<<message<<endl;
   n = sendto(this->sockfd, message, MSG_SIZE, 0, (struct sockaddr*)&(from1), this->fromlen);
 
