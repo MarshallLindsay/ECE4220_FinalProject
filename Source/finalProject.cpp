@@ -61,7 +61,7 @@ SocketCommunication::SocketCommunication(){
   //Set the fromaddress struct as the same as the server.
   this->fromaddress = this->serveraddress;
   //Set the address to the broadcast address for the lab
-  this->fromaddress.sin_addr.s_addr = inet_addr("192.168.1.255");
+  this->fromaddress.sin_addr.s_addr = inet_addr("192.168.19.255");
   //Set the size for the fromlen
   this->fromlen = sizeof(struct sockaddr_in);
 
@@ -86,7 +86,7 @@ int SocketCommunication::sendMessage(struct logEntry buffer){
  */
   struct sockaddr_in from1;
   from1 = this->fromaddress;
-  const char * message = temp.c_str();
+  char * message = temp.c_str();
   cout<<message<<endl;
   n = sendto(this->sockfd, message, MSG_SIZE, 0, (struct sockaddr*)&(from1), this->fromlen);
 
