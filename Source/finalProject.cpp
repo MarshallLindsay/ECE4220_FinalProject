@@ -73,6 +73,7 @@ SocketCommunication::~SocketCommunication(){
 }
 
 int SocketCommunication::sendMessage(string buffer){
+  this->fromaddress.sin_addr.s_addr = inet_addr("128.206.19.255");
   const char * message = buffer.c_str();
   int n;
   cout<<message<<endl;
@@ -86,6 +87,7 @@ int SocketCommunication::sendMessage(string buffer){
 }
 
 int SocketCommunication::sendMessage(struct logEntry buffer){
+  this->fromaddress.sin_addr.s_addr = inet_addr("128.206.19.255");
   int n;
   string temp;
   temp += to_string(buffer.analoginstate);
@@ -124,17 +126,10 @@ int SocketCommunication::sendMessage(struct logEntry buffer){
 }
 
 char* SocketCommunication::receiveMessage(void){
-  int n;
-  socklen_t fromlen1;
-  struct sockaddr_in addr;
-  //Clear the receive character array
   bzero(&(this->receive), MSG_SIZE);
-  fromlen1 = sizeof(struct sockaddr_in);
+  n = recvfrom(this->sockfd, &(this->receive), MSG_SIZE, 0,(struct sockaddr*)&(this->fromaddress), &(this->fromlen);
 
-  n = recvfrom(this->sockfd, &(this->receive), MSG_SIZE, 0,(struct sockaddr*)&addr, &fromlen1);
-
-  this->fromlen = fromlen1;
-  this->fromaddress = addr;
+  cout<<this->receive<<endl;
   return 0;
 
 }
