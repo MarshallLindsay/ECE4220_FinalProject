@@ -19,7 +19,7 @@ SocketCommunication::SocketCommunication(){
 	}
 
   //Set the port.. We could change to dymanic port
-  this->portno1 = 2345;
+  this->portno = 2345;
   //cout<<"hello"<<this->portno<<endl;
 
   //Set the boolval.. Just gotta do it
@@ -45,7 +45,7 @@ SocketCommunication::SocketCommunication(){
 	}
 
   //Set the option for broadcasting
-  if (setsockopt(this->sockfd, SOL_SOCKET, SO_BROADCAST, &boolval1, sizeof(boolval1)) < 0)
+  if (setsockopt(this->sockfd, SOL_SOCKET, SO_BROADCAST, &(this->boolval), sizeof(this->boolval)) < 0)
 	{
 		cout<<"\nError setting socket options"<<endl;
 		exit(1);
