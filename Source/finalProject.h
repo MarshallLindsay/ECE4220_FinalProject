@@ -123,22 +123,7 @@ public:
   SocketCommunication();
   ~SocketCommunication();
   int sendMessage(logEntry buffer);
-  logEntry receiveMessage(void);
+  char* receiveMessage(void);
 };
-
-class CharacterCommunication{
-private:
-  int cdev_id;
-  int dummy;
-  char broadcast[MSG_SIZE];
-  char receive[MSG_SIZE];
-public:
-  CharacterCommunication();
-  ~CharacterCommunication();
-  int openDevice(); //Maybe overload to allow different devices
-  int writeToDevice(char buffer[MSG_SIZE]);
-  char* readFromDevice(void); //Char pointer return?
-};
-
 
 #endif

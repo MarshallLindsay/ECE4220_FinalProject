@@ -9,8 +9,6 @@ ECE 4220 Final Final Project
 
 //Socket communication methods
 SocketCommunication::SocketCommunication(){
-  int boolval1;
-
   //Create a socket, connectionless
   this->sockfd= socket(AF_INET, SOCK_DGRAM, 0);
 	if(this->sockfd < 0){
