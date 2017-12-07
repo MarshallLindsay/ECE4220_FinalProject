@@ -78,7 +78,7 @@ void startRTUS(){
 	//Set the message
 	strcpy(broadcast, "#start");
 	//Get a start time
-	gettimeofday($systemStartTime, NULL);
+	gettimeofday(&systemStartTime, NULL);
 	//Post to the sendBroadcast_semaphore, indicating a message should be sent.
 	sem_post(&sendBroadcast_semaphore);
 
