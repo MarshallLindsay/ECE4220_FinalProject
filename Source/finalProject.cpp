@@ -85,7 +85,7 @@ int SocketCommunication::sendMessage(logEntry buffer){
 
   fromlen1 = sizeof(struct sockaddr_in);
 
-  n = sendto(this->sockfd, buffer, MSG_SIZE, 0, (struct sockaddr*)&from1, fromlen1);
+  n = sendto(this->sockfd, &buffer, MSG_SIZE, 0, (struct sockaddr*)&from1, fromlen1);
 
   if(n < 0){
     cout<<"SEND FAILED"<<endl;
@@ -99,10 +99,10 @@ logEntry SocketCommunication::receiveMessage(void){
   socklen_t fromlen1;
   struct sockaddr_in addr;
   //Clear the receive character array
-  bzero(this->receive, MSG_SIZE);
+  bzero(&(this->receive), MSG_SIZE);
   fromlen1 = sizeof(struct sockaddr_in);
 
-  n = recvfrom(this->sockfd, this->receive, MSG_SIZE, 0,(struct sockaddr*)&addr, &fromlen1);
+  n = recvfrom(this->sockfd, &(this->receive), MSG_SIZE, 0,(struct sockaddr*)&addr, &fromlen1);
 
   this->fromlen = fromlen1;
   this->fromaddress = addr;
