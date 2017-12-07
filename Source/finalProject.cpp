@@ -80,6 +80,8 @@ SocketCommunication::~SocketCommunication(){
 int SocketCommunication::sendMessage(char buffer[MSG_SIZE]){
   struct sockaddr_in from1;
   int n;
+  char message[MSG_SIZE];
+  int fromlen1;
   //cout<<buffer<<endl;
   //Copy the message over
   strcpy(this->broadcast,buffer);
@@ -87,9 +89,10 @@ int SocketCommunication::sendMessage(char buffer[MSG_SIZE]){
 
   //Set the broadcast IP
   from1.sin_addr.s_addr = inet_addr("128.206.19.255");
-
+  message = this->broadcast;
+  fromlen1 = sizeof(struct sockaddr_in);
   //This may throw an error for types.
-  n = sendto(this->sockfd, this->broadcast, MSG_SIZE, 0, (struct sockaddr*)&from1, this->fromlen);
+  n = sendto(this->sockfd, message, MSG_SIZE, 0, (struct sockaddr*)&from1, fromlen1);
 
   this->fromaddress = from1;
   //Error checking
