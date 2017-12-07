@@ -85,7 +85,7 @@ int SocketCommunication::sendMessage(char buffer[MSG_SIZE]){
 
   fromlen1 = sizeof(struct sockaddr_in);
 
-  n = sendto(this->sockfd, &buffer, MSG_SIZE, 0, (struct sockaddr*)&from1, fromlen1);
+  n = sendto(this->sockfd, buffer, MSG_SIZE, 0, (struct sockaddr*)&from1, fromlen1);
 
   if(n < 0){
     cout<<"SEND FAILED"<<endl;
