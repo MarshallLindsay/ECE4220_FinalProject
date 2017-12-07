@@ -73,10 +73,13 @@ SocketCommunication::~SocketCommunication(){
 int SocketCommunication::sendMessage(struct logEntry buffer){
   int n;
   string temp;
-  temp = "hello" + buffer.analoginstate + "," + buffer.digin1state + "," + buffer.digin2state + ",";
-  temp += buffer.digin3state + "," + buffer.digout1state + "," + buffer.digout2state + ",";
-  temp += buffer.digout3state + "," + buffer.analogvalue + "," + buffer.timestamp + ",";
-  temp += buffer.deviceid;
+  temp = "hello" + buffer.analoginstate;
+  /*
+  + "," + buffer.digin1state + "," + buffer.digin2state + ",";
+ temp += buffer.digin3state + "," + buffer.digout1state + "," + buffer.digout2state + ",";
+ temp += buffer.digout3state + "," + buffer.analogvalue + "," + buffer.timestamp + ",";
+ temp += buffer.deviceid;]
+ */
 
   const char * message = temp.c_str();
   this->fromaddress.sin_addr.s_addr = inet_addr("192.168.1.255");
