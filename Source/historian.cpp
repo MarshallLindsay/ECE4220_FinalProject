@@ -9,6 +9,6 @@ historian program
 
 int main(void){
 
-	SocketCommunication sock = new SocketCommunication();
+	SocketCommunication sock;
 	return(1);
 }

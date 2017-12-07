@@ -38,6 +38,7 @@ int main(int argc, char **argv) {
     
   while(1) {  
   //  network.update();  //read network buffer for incoming commands
+  cout << "running";
     digin1.update();
     digin2.update();
     digin3.update();

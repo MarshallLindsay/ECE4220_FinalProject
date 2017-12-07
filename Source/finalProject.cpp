@@ -12,7 +12,7 @@ SocketCommunication::SocketCommunication(){
 
   //Create a socket, connectionless
   this->sockfd = socket(AF_INET, SOCK_DGRAM, 0);
-	if(sock < 0){
+	if(sockfd < 0){
 		cout<<"\nSocket creation failed"<<endl;
 		exit(1);
 	}
@@ -24,17 +24,17 @@ SocketCommunication::SocketCommunication(){
   this->boolval = 1;
 
   //Clear all of the server data
-  this->length = sizeof(this->server);
-  bzero(&this->server, this->length);
+  this->length = sizeof(this->serveraddress);
+  bzero(&this->serveraddress, this->length);
 
   //Set the address family as IPv4
-  this->server.sin_family = AF_INET;
+  this->serveraddress.sin_family = AF_INET;
 
   //Set the address to INADDR_ANY
-  this->server.sin_addr.s_addr = INADDR_ANY;
+  this->serveraddress.sin_addr.s_addr = INADDR_ANY;
 
   //Set the port number
-  this->server.sin_port = htons(this->portno);
+  this->serveraddress.sin_port = htons(this->portno);
 
   //Bind the socket
   if(bind(this->sockfd, (struct sockaddr *)&this->server, this->length) < 0){
@@ -56,7 +56,7 @@ SocketCommunication::SocketCommunication(){
   struct ifreq ifr;
   strncpy(ifr.ifr_name, "wlan0", sizeof(ifr.ifr_name));
   if(ioctl(this->sockfd, SIOCGIFADDR, &ifr) >= 0){
-    this->localAddress = inet_ntoas(((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr);
+    this->localAddress = inet_ntoa(((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr);
     cout<<"\nMy IP addr is: "<<this->localAddress<<endl;
   }
 
@@ -70,13 +70,13 @@ SocketCommunication::~SocketCommunication(){
 int SocketCommunication::sendMessage(char buffer[MSG_SIZE]){
   int n;
   //Copy the message over
-  this->broadcast = buffer;
+  strcpy(this->broadcast,buffer);
 
   //Set the broadcast IP
-  this->from.sin_addr.s_addr = inet_adr("128.206.19.255");
+  this->fromaddress.sin_addr.s_addr = inet_addr("128.206.19.255");
 
   //This may throw an error for types.
-  n = sendto(this->sockfd, this->broadcast, MSG_SIZE, 0, (struct sockaddr*)&this->from, this->fromlen);
+  n = sendto(this->sockfd, this->broadcast, MSG_SIZE, 0, (struct sockaddr*)&this->fromaddress, this->fromlen);
 
   //Error checking
   if(n < 0){
@@ -86,12 +86,12 @@ int SocketCommunication::sendMessage(char buffer[MSG_SIZE]){
   return(1);
 }
 
-char* receiveMessage(void){
+char* SocketCommunication::receiveMessage(void){
   int n;
   //Clear the receive character array
   bzero(this->receive, MSG_SIZE);
 
-  n = recvfrom();
+ // n = recvfrom();
   return 0; //just trying to make this compile
 
 }

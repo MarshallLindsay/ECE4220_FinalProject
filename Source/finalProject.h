@@ -32,6 +32,7 @@
 #include <sys/time.h>
 #include <vector>
 
+
 #define CHAR_DEV "/dev/MarshallMaxFinal"
 #define MSG_SIZE (50)
 
@@ -106,8 +107,8 @@ private:
   string localAddress;
   char broadcast[MSG_SIZE];
   char receive[MSG_SIZE];
-  struct sockaddr_in server;
-  struct sockaddr_in from;
+  struct sockaddr_in serveraddress;
+  struct sockaddr_in fromaddress;
   struct hostent *server;
 public:
   SocketCommunication();
