@@ -17,7 +17,7 @@ int main(void){
 		int option;
 		while(1){
 			//print the welcome message
-			printWelcomMessage();
+			printWelcomeMessage();
 			//get user input
 			getline(cin,userInput);
 			//Validate user input
