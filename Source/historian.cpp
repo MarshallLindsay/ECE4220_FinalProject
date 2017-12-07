@@ -7,34 +7,51 @@ historian program
 
 #include "finalProject.h"
 
+void printWelcomeMessage();
+int checkUserInput(string input);
 int main(void){
 
-	SocketCommunication sock;
-	char buffer[MSG_SIZE];
-	string message = "This is a message";
-	struct logEntry log;
-	gettimeofday(&log.timestamp,NULL);
-  log.deviceid = 15;
-  log.digin1state = 1;
-  log.digin2state = 0;
-  log.digin3state = 1;
-  log.digout1state = 0;
-  log.digout2state = 1;
-  log.digout3state = 1;
-  log.analoginstate = 1;
-  log.analogvalue = 1.21;
-	log.note = "This is a note";
-
-	cout<<log.deviceid<<endl;
-	sock.sendMessage(log);
-	sock.sendMessage(message);
-
 	while(1){
-		strcpy(buffer, sock.receiveMessage());
-		if(buffer[0] == '#'){
-			cout<<buffer<<endl;
+
+		string userInput;
+		int option;
+		while(1){
+			//print the welcome message
+			printWelcomMessage();
+			//get user input
+			getline(cin,userInput);
+			//Validate user input
+			if(!checkUserInput(userInput)){
+				cout<<"Invalid input!"<<endl;
+			}else{
+				break;
+			}
+
 		}
 
 	}
 	return(1);
+}
+
+void printWelcomeMessage(){
+	cout<<"\nWelcome to the Historian Program!"<<endl;
+	cout<<"\nPlease select an option:"<<endl;
+	cout<<"1)Start the RTUs"<<endl;
+	cout<<"2)Send a command to the RTUs"<<endl;
+	cout<<"3)Print the event history since start"<<endl;
+	cout<<"4)Exit"<<endl;
+}
+
+void checkUserInput(string input){
+	if(input == "1"){
+		return(1);
+	}else if(input == "2"){
+		return(1);
+	}else if(input == "3"){
+		return(1);
+	}else if(input == "4"){
+		return(1);
+	}else{
+		return(0);
+	}
 }
