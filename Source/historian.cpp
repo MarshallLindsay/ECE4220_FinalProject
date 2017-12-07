@@ -8,11 +8,11 @@ historian program
 #include "finalProject.h"
 
 void* readMessages(void*);
-SocketCommunication sock;
+
 
 int main(void){
 
-
+	SocketCommunication sock;
 	pthread_t messageReader;
 	void** retVal;
 	pthread_create(&messageReader, NULL, readMessages, NULL);
@@ -40,6 +40,8 @@ int main(void){
 }
 
 void* readMessages(void* ptr){
+	SocketCommunication sock;
+
 	//Set thread to real time
 	struct sched_param param;
 	param.sched_priority = 51;
