@@ -34,6 +34,13 @@
 
 
 #define CHAR_DEV "/dev/MarshallMaxFinal"
+struct logEntry {
+  int analoginstate,digin1state,digin2state,digin3state,digout1state,digout2state,digout3state;
+  double analogvalue;
+  timeval timestamp;
+  int deviceid;
+  char* note; //note what actually triggered the event
+};
 #define MSG_SIZE sizeof(logEntry);
 
 //definitions for ADC
@@ -105,8 +112,10 @@ private:
   socklen_t fromlen;
   int length;
   string localAddress;
+
   struct logEntry broadcast;
   struct logEntry receive;
+
   struct sockaddr_in serveraddress;
   struct sockaddr_in fromaddress;
   struct hostent *server;
@@ -131,11 +140,5 @@ public:
   char* readFromDevice(void); //Char pointer return?
 };
 
-struct logEntry {
-  int analoginstate,digin1state,digin2state,digin3state,digout1state,digout2state,digout3state;
-  double analogvalue;
-  timeval timestamp;
-  int deviceid;
-  char* note; //note what actually triggered the event
-};
+
 #endif
