@@ -105,8 +105,8 @@ private:
   socklen_t fromlen;
   int length;
   string localAddress;
-  vector<logEntry> broadcast;
-  vector<logEntry> receive;
+  struct logEntry broadcast;
+  struct logEntry receive;
   struct sockaddr_in serveraddress;
   struct sockaddr_in fromaddress;
   struct hostent *server;
