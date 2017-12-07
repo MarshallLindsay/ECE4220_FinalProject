@@ -130,7 +130,7 @@ char* SocketCommunication::receiveMessage(void){
   bzero(&(this->receive), MSG_SIZE);
   int n;
   n = recvfrom(this->sockfd, buffer, MSG_SIZE, 0,(struct sockaddr*)&(this->fromaddress), &(this->fromlen));
-
+  bzero(buffer, MSG_SIZE);
   cout<<buffer<<endl;
   return 0;
 
