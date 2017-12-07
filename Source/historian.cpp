@@ -14,6 +14,7 @@ int main(void){
 
 	SocketCommunication sock;
 	pthread_t messageReader;
+	void** retVal;
 	pthread_create(&messageReader, NULL, readMessages, NULL);
 	char buffer[MSG_SIZE];
 	string message = "This is a message";
@@ -33,6 +34,8 @@ int main(void){
 	cout<<log.deviceid<<endl;
 	sock.sendMessage(log);
 	sock.sendMessage(message);
+
+	pthread_join(messageReader, retval);
 	return(1);
 }
 
