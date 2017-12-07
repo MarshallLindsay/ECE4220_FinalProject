@@ -95,7 +95,7 @@ int SocketCommunication::sendMessage(char buffer[MSG_SIZE]){
   fromlen1 = sizeof(struct sockaddr_in);
   sockfd1 = this->sockfd;
   //This may throw an error for types.
-  n = sendto(sockfd1, message, MSG_SIZE, 0, (struct sockaddr*)&from1, fromlen1);
+  n = sendto(sockfd1, &message, MSG_SIZE, 0, (struct sockaddr*)&from1, fromlen1);
 
   this->fromaddress = from1;
   //Error checking
