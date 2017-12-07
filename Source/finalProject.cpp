@@ -76,7 +76,7 @@ int SocketCommunication::sendMessage(logEntry buffer){
   temp = "hello" + buffer.analoginstate + "," + buffer.digin1state + "," + buffer.digin2state + ",";
   temp += buffer.digin3state + "," + buffer.digout1state + "," + buffer.digout2state + ",";
   temp += buffer.digout3state + "," + buffer.analogvalue + "," + buffer.timestamp + ",";
-  temp += buffer.deviceid + "," + buffer.note;
+  temp += buffer.deviceid;
 
   const char * message = temp.c_str();
   this->fromaddress.sin_addr.s_addr = inet_addr("192.168.1.255");
