@@ -29,5 +29,9 @@ int main(void){
 	sock.sendMessage(log);
 	sock.sendMessage(message);
 
+	while(1){
+		strcpy(buffer, sock.receiveMessage());
+		cout<<buffer<<endl;
+	}
 	return(1);
 }
