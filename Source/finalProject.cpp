@@ -58,11 +58,6 @@ SocketCommunication::SocketCommunication(){
     //cout<<"\nMy IP addr is: "<<this->localAddress<<endl;
   }
 
-  //Set the fromaddress struct as the same as the server.
-  this->fromaddress = this->serveraddress;
-  //Set the address to the broadcast address for the lab
-  this->fromaddress.sin_addr.s_addr = inet_addr("128.206.19.255");
-  //Set the size for the fromlen
   this->fromlen = sizeof(struct sockaddr_in);
 
 }
@@ -117,11 +112,6 @@ SocketCommunication::SocketCommunication(int port){
     //cout<<"\nMy IP addr is: "<<this->localAddress<<endl;
   }
 
-  //Set the fromaddress struct as the same as the server.
-  this->fromaddress = this->serveraddress;
-  //Set the address to the broadcast address for the lab
-  this->fromaddress.sin_addr.s_addr = inet_addr("128.206.19.255");
-  //Set the size for the fromlen
   this->fromlen = sizeof(struct sockaddr_in);
 
 }
