@@ -14,6 +14,7 @@ int handleUserInput(string input);
 void startRTUS();
 void sendCommand();
 void printHistory();
+void createLogEntry(char* message);
 
 char broadcast[MSG_SIZE];
 timeval systemStartTime;
@@ -100,10 +101,23 @@ void* sendMessages(void* ptr){
 void* readMessages(void* ptr){
 	//Initialize a socket on the read port
 	SocketCommunication sock(RSEND_HREC_PORT);
+	//Variable to hold the message recieved
 	char buffer[MSG_SIZE];
-
+	//Clear the buffer variable
+	bzero(buffer, MSG_SIZE);
 	while(1){
+		//Get a message and copy to buffer
 		strcpy(buffer, sock.receiveMessage());
-		cout<<buffer<<endl;
+		//Filter messages
+		if(buffer[0] != '#'){
+			//Create a log entry of the message
+			createLogEntry(buffer);
+		}else{
+			cout<<"Master message received"<<endl;
+		}
 	}
+}
+
+void createLogEntry(char* buffer){
+	cout<<buffer<<endl;
 }
