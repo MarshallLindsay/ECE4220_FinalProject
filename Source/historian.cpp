@@ -133,5 +133,47 @@ void createLogEntry(char* buffer){
 	string message = buffer;
 	string delimiter = ",";
 
+	string state;
+	string analogValueString;
+	double analogValue;
+	string timeSec;
+	string timeMircoSec;
+	string deviceNumber;
+	string note;
+	size_t pos = 0;
+
+	pos = message.find(delimiter);
+	state = message.substr(0, pos);
+	stringstream(state) >> entry.analoginstate;
+	message.erase(0, pos + delimiter.length());
+	pos = message.find(delimiter);
+	state = message.substr(0, pos);
+	stringstream(state) >> entry.digin1state;
+	message.erase(0, pos + delimiter.length());
+	pos = message.find(delimiter);
+	state = message.substr(0, pos);
+	stringstream(state) >> entry.digin2state;
+	message.erase(0, pos + delimiter.length());
+	pos = message.find(delimiter);
+	state = message.substr(0, pos);
+	stringstream(state) >> entry.digin3state;
+	message.erase(0, pos + delimiter.length());
+	pos = message.find(delimiter);
+	state = message.substr(0, pos);
+	stringstream(state) >> entry.digout1state;
+	message.erase(0, pos + delimiter.length());
+	pos = message.find(delimiter);
+	state = message.substr(0, pos);
+	stringstream(state) >> entry.digout2state;
+	message.erase(0, pos + delimiter.length());
+	pos = message.find(delimiter);
+	state = message.substr(0, pos);
+	stringstream(state) >> entry.digout3state;
+	message.erase(0, pos + delimiter.length());
+
+	size_type sz;
+	pos = message.find(delimiter);
+	analogValueString = message.substr(0, pos);
+	stod(analogValueSting,&sz);
 
 }
