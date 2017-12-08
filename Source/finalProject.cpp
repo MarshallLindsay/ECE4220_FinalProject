@@ -175,6 +175,7 @@ int SocketCommunication::sendMessage(struct logEntry buffer){
 }
 
 char* SocketCommunication::receiveMessage(void){
+  char buffer[MSG_SIZE];
   bzero(buffer, MSG_SIZE);
   int n;
   n = recvfrom(this->sockfd, buffer, MSG_SIZE, 0,(struct sockaddr*)&(this->fromaddress), &(this->fromlen));
