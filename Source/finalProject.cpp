@@ -126,7 +126,7 @@ int SocketCommunication::sendMessage(string buffer){
   const char * message = buffer.c_str();
   int n;
   cout<<message<<endl;
-  n = sendto(this->sockfd, message, MSG_SIZE, 0, (struct sockaddr*)&(this->fromaddress), this->fromlen);
+  n = sendto(this->sockfd, message, MSG_SIZE, 0, (struct sockaddr*)&(this->serveraddress), this->fromlen);
 
   if(n < 0){
     cout<<"SEND FAILED"<<endl;
