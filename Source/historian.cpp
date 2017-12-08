@@ -251,9 +251,9 @@ vector<struct logEntry> sortHistory(){
 	struct logEntry temp;
 
 	int minLocation = 0;
-	for(int j = 0; j < sortedHistory.size()-1; j++){
+	for(unsigned int j = 0; j < sortedHistory.size()-1; j++){
 		minLocation = j;
-		for(int i = j; i < sortedHistory.size()-1-j; i++){
+		for(unsigned int i = j; i < sortedHistory.size()-1-j; i++){
 
 			if(sortedHistory[i].timestamp.tv_sec < sortedHistory[minLocation].timestamp.tv_sec){
 				minLocation = i;
