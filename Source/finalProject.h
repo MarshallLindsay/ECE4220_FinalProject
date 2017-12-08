@@ -141,6 +141,7 @@ public:
   SocketCommunication(int port);
   ~SocketCommunication();
   int sendMessage(vector<struct logEntry> buffer);
+	int sendMessage(struct logEntry buffer);
   int sendMessage(string buffer);
   char* receiveMessage(void);
 };
