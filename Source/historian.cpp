@@ -108,7 +108,7 @@ void printHistory(){
 		cout<<"------------------------------------------------"<<endl;
 		cout<<"No events have been logged!"<<endl;			cout<<"------------------------------------------------"<<endl;
 	}else{
-		for(int i = 0; i < log.size() - 1; i++){
+		for(unsigned int i = 0; i < log.size() - 1; i++){
 			cout<<"------------------------------------------------"<<endl;
 			cout<<"Cause of event : "<<log[i].note<<endl;
 			cout<<"Event from : "<<log[i].deviceid<<endl;
