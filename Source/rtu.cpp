@@ -1,31 +1,31 @@
 /*
-
 RTU program
-
 */
 #include "finalProject.h"
 
+//function definitions
 void* ADCthread(void*);
 void* DiginThread(void* ptr);
 void* NetworkSendThread(void* ptr);
 void* NetworkReceiveThread(void* prt);
-void ISR1();
+void ISR1(); //ISRn controls digital inputs
 void ISR2();
 void ISR3();
+struct logEntry gather_log(DigitalInput* digin1, DigitalInput* digin2, DigitalInput* digin3,
+      DigitalOutput* digout1, DigitalOutput* digout2, DigitalOutput* digout3, AnalogInput* analoginput);
+
+//class and variable definitions
 DigitalInput digin1(26);
 DigitalInput digin2(23);
 DigitalInput digin3(28);
 DigitalOutput digout1(9,1);
 DigitalOutput digout2(7,2);
 DigitalOutput digout3(21,3);
+AnalogInput analoginput;
 vector<struct logEntry> log;
 struct timeval zerotime;
-AnalogInput analoginput;
-
-SocketCommunication receiveSock(HSEND_RREC_PORT);
 int deviceid;
-struct logEntry gather_log(DigitalInput* digin1, DigitalInput* digin2, DigitalInput* digin3,
-      DigitalOutput* digout1, DigitalOutput* digout2, DigitalOutput* digout3, AnalogInput* analoginput);
+SocketCommunication receiveSock(HSEND_RREC_PORT);
 
 int main(int argc, char **argv) {
     if(argc != 2 || *argv[1] > '9' || *argv[1] < '0') { //check inputs and set device id
@@ -33,30 +33,17 @@ int main(int argc, char **argv) {
       exit(0);
     }
     deviceid = *argv[1] - '0'; //this is sneaky
-
-    receiveSock.receiveMessage(); //set the zero time
-    gettimeofday(&zerotime,NULL);
-  //instantiate all objects
+    receiveSock.receiveMessage(); //receive 1 dummy message to start up receive sockets
+    gettimeofday(&zerotime,NULL); //set zero time
     wiringPiSetup();
-  //  AnalogInput analoginput; //analog input
- //   DigitalInput digin1(26);
- //   DigitalInput digin2(23);
- //   DigitalInput digin3(28);
- //   DigitalOutput digout1(9);
-//   DigitalOutput digout2(7);
-//    DigitalOutput digout3(21);
-    pthread_t thread1,thread2,thread3,thread4,thread5,thread6; //create thread pointer
-	pthread_create(&thread1, NULL, ADCthread, (void*)&analoginput); //execute thread that will time ADCpthread_t thread1,thread2,thread3,thread4; //create thread pointer
-//	pthread_create(&thread2, NULL, DiginThread, (void*)&digin1); //execute thread that will time ADCpthread_t thread1,thread2,thread3,thread4; //create thread pointer
-//	pthread_create(&thread3, NULL, DiginThread, (void*)&digin2); //execute thread that will time ADCpthread_t thread1,thread2,thread3,thread4; //create thread pointer
-//	pthread_create(&thread4, NULL, DiginThread, (void*)&digin3); //execute thread that will time ADC
-    //make this a vector eventually
-	pthread_create(&thread6, NULL, NetworkReceiveThread, NULL);//also be listening for commands to control the digouts.
-    pthread_create(&thread5, NULL, NetworkSendThread, NULL); //create pthread that sends data every 1 second
-
     int dummy1 = wiringPiISR(26,INT_EDGE_BOTH,&ISR1); //initialize interrupts for the inputs
     int dummy2 = wiringPiISR(23,INT_EDGE_BOTH,&ISR2);
     int dummy3 = wiringPiISR(28,INT_EDGE_BOTH,&ISR3);
+    pthread_t thread1,thread5,thread6; //create thread pointers
+  	pthread_create(&thread1, NULL, ADCthread, (void*)&analoginput); //execute thread that will time ADC 
+  	pthread_create(&thread6, NULL, NetworkReceiveThread, NULL);//also be listening for commands to control the digouts.
+    pthread_create(&thread5, NULL, NetworkSendThread, NULL); //create pthread that sends message every 1 second
+
   while(1) {
     if(analoginput.getEvent()) {
       log.push_back(gather_log(&digin1,&digin2,&digin3,&digout1,&digout2,&digout3,&analoginput));
@@ -65,7 +52,7 @@ int main(int argc, char **argv) {
   }
 }
 
-void ISR1() {
+void ISR1() { //called when digital input 1 is interrupted
 	digin1.update();
 	log.push_back(gather_log(&digin1,&digin2,&digin3,&digout1,&digout2,&digout3,&analoginput));
 }
@@ -80,16 +67,15 @@ void ISR3() {
 	log.push_back(gather_log(&digin1,&digin2,&digin3,&digout1,&digout2,&digout3,&analoginput));
 }
 
-void* NetworkReceiveThread(void* prt) {
+void* NetworkReceiveThread(void* prt) { //receives commands for digital outputs
 	char networkbuffer[MSG_SIZE];
 	char* comparestring;
 	string buffer;
-		
 	while(1) {
 		strcpy(networkbuffer, receiveSock.receiveMessage());
 		cout << "Command received: " << networkbuffer << endl;
 		strncpy(comparestring,networkbuffer,3);
-		if(strcmp("led",comparestring) == 0) {
+		if(strcmp("led",comparestring) == 0) { //parse command and call corresponding member function
 			if(networkbuffer[4] == deviceid+'0') {
 				if(networkbuffer[9] == 'n') {
 					if(networkbuffer[6] == '1')
@@ -112,65 +98,42 @@ void* NetworkReceiveThread(void* prt) {
 	}
 }
 
-void* NetworkSendThread(void* ptr) {
-
-	  //timer and scheduling setup
-	  int timer_fd = timerfd_create(CLOCK_MONOTONIC, 0); //intialize realtime scheduling
+void* NetworkSendThread(void* ptr) { //sends the log every 1 second to the historian
+	  int timer_fd = timerfd_create(CLOCK_MONOTONIC, 0); //intialize timer
 		 if(timer_fd == -1) {
 				printf("Error creating timer");
 				exit(0);
 		 }
-		 struct itimerspec timerspec;
+		 struct itimerspec timerspec; //initialize timer at 1 hz
 		 timerspec.it_interval.tv_sec = 1;
-		 timerspec.it_interval.tv_nsec = 0; //1 hz
+		 timerspec.it_interval.tv_nsec = 0; 
 		 timerspec.it_value.tv_sec = 0;
 		 timerspec.it_value.tv_nsec = 1000000;
 		 if(timerfd_settime(timer_fd,0,&timerspec,NULL) == -1) {
 			 printf("Error starting timer");
 			 exit(0);
 		 }
-		 struct sched_param param;
+		 struct sched_param param; //set up real time scheduling
 		 param.sched_priority = 48;
 		 sched_setscheduler(0,SCHED_FIFO,&param);
 		 uint64_t num_periods = 0;
 
-		 SocketCommunication sendSock(RSEND_HREC_PORT);
+		 SocketCommunication sendSock(RSEND_HREC_PORT); //instantiate socket
+		 sendSock.sendMessage("#yolo"); //send a dummy initialization message
 
-		 sendSock.sendMessage("#yolo");
-
-	  while(1) {
-		while(read(timer_fd, &num_periods,sizeof(num_periods)) == -1); //wait for timer
-			if(num_periods >  1) {puts("MISSED WINDOW");exit(1);} //error check
-
-		      log.push_back(gather_log(&digin1,&digin2,&digin3,&digout1,&digout2,&digout3,&analoginput));
-		 //     cout << log[log.size()-1].note << endl;
-		      sendSock.sendMessage(log);
-		      log.erase(log.begin(),log.begin() + log.size());
-	  }
-
-	  //thread should never exit
-	  //pthread_exit((void*)retval);
+  	  while(1) {
+    		while(read(timer_fd, &num_periods,sizeof(num_periods)) == -1); //wait for timer
+    			if(num_periods >  1) {puts("MISSED WINDOW");exit(1);} //error check
+    		      log.push_back(gather_log(&digin1,&digin2,&digin3,&digout1,&digout2,&digout3,&analoginput)); //grab update every second
+    		      sendSock.sendMessage(log); //send the log
+    		      log.erase(log.begin(),log.begin() + log.size()); //erase log after sending
+    	  }
+  	  //thread should never exit
+  	  //pthread_exit((void*)retval);
 }
 
-void* DiginThread(void* ptr) {
-
-	 struct sched_param param;
-	 param.sched_priority = 49;
-	 sched_setscheduler(0,SCHED_FIFO,&param);
-
-	 DigitalInput *digin = (DigitalInput*)ptr;
-
-  while(1) {
-         digin->update(); //call update method
-  }
-
-  //thread should never exit
-  //pthread_exit((void*)retval);
-}
-
-void* ADCthread(void* ptr) {
-  //timer and scheduling setup
-  int timer_fd = timerfd_create(CLOCK_MONOTONIC, 0); //intialize realtime scheduling
+void* ADCthread(void* ptr) { //controls ADC
+  int timer_fd = timerfd_create(CLOCK_MONOTONIC, 0); //intialize timer for 1 khz
 	 if(timer_fd == -1) {
 		 	printf("Error creating timer");
 		 	exit(0);
@@ -184,32 +147,30 @@ void* ADCthread(void* ptr) {
 	 	 printf("Error starting timer");
 	 	 exit(0);
 	 }
-	 struct sched_param param;
+	 struct sched_param param; //schedule as real time task
 	 param.sched_priority = 48;
 	 sched_setscheduler(0,SCHED_FIFO,&param);
 	 uint64_t num_periods = 0;
 
-   AnalogInput *adc = (AnalogInput*)ptr;
+   AnalogInput *adc = (AnalogInput*)ptr; //grab adc pointer from argument
 
-  while(1) {
-    while(read(timer_fd, &num_periods,sizeof(num_periods)) == -1); //wait for timer
-		if(num_periods >  1) {puts("MISSED WINDOW");exit(1);} //error check
-         adc->update(); //call update method
-  }
-
-  //thread should never exit
-  //pthread_exit((void*)retval);
+    while(1) {
+      while(read(timer_fd, &num_periods,sizeof(num_periods)) == -1); //wait for timer
+  		if(num_periods >  1) {puts("MISSED WINDOW");exit(1);} //error check
+           adc->update(); //call update method
+    }
+    //thread should never exit
+    //pthread_exit((void*)retval);
 }
-//TODO: marshall can just copy that ADCthread and make the timer 1 second and have it call his networking send() function
 
-struct logEntry gather_log(DigitalInput* digin1, DigitalInput* digin2, DigitalInput* digin3,
+struct logEntry gather_log(DigitalInput* digin1, DigitalInput* digin2, DigitalInput* digin3, //gathers statuses,values,notes for the event and packs it into logentry
       DigitalOutput* digout1, DigitalOutput* digout2, DigitalOutput* digout3, AnalogInput* analoginput) { //this is a sad arguments list
   struct logEntry log;
-  struct timeval currentTime;
+  struct timeval currentTime; //get time stamp and subtract from zero time
   gettimeofday(&currentTime,NULL);
   timersub(&currentTime,&zerotime,&log.timestamp);
 
-  log.deviceid = deviceid;
+  log.deviceid = deviceid; //build everything needed for the logEntry
   log.digin1state = digin1->getValue();
   log.digin2state = digin2->getValue();
   log.digin3state = digin3->getValue();
@@ -219,7 +180,7 @@ struct logEntry gather_log(DigitalInput* digin1, DigitalInput* digin2, DigitalIn
   log.analoginstate = analoginput->getState();
   log.analogvalue = analoginput->getValue();
 
-  //check all the events
+  //check all the events and figure out which one actually triggered this, then reset it.
   if(digin1->getEvent()) {
     if(digin1->getValue())
       log.note = "Digital input 1 has gone high";
@@ -270,6 +231,5 @@ struct logEntry gather_log(DigitalInput* digin1, DigitalInput* digin2, DigitalIn
     analoginput->resetFlag();
   }
   else log.note = "No event has occured. This is just a 1 Hz update";
-
   return log;
 }

@@ -1,11 +1,10 @@
-
 /*
   Marshall Lindsay
   Max Houck
   ECE 4220 Final Project
 
 */
-#define RTU YES
+#define RTU YES //include this if you are compiling for the RTU. comment this out if you are compiling on a workstation for the historian
 #define HISTORIAN YES
 
 #ifndef FINALPROJECT_H
@@ -29,7 +28,7 @@
 #include <sstream>
 #include <semaphore.h>
 #include <thread>
-#ifdef RTU
+#ifdef RTU //workstations don't have these so compiler will fail. see note above.
 	#include <wiringPi.h>
 	#include <wiringPiSPI.h>
 #endif
@@ -37,22 +36,12 @@
 #include <sys/timerfd.h>
 #include <sys/time.h>
 #include <vector>
-#define CHAR_DEV "/dev/RTU" // "/dev/YourDevName"
 
-#define HSEND_RREC_PORT (2345)
-#define RSEND_HREC_PORT (2346)
+#define CHAR_DEV "/dev/RTU"
+
+#define HSEND_RREC_PORT (2345) //historian send _ rtu receive port
+#define RSEND_HREC_PORT (2346) //rtu send _ historian receive port
 #define MSG_SIZE (100)
-
-using namespace std;
-
-struct logEntry {
-  int analoginstate,digin1state,digin2state,digin3state,digout1state,digout2state,digout3state;
-  double analogvalue;
-  timeval timestamp;
-  int deviceid;
-  string note; //note what actually triggered the event
-};
-
 
 //definitions for ADC
 #define SPI_CHANNEL	      0	// 0 or 1
@@ -63,14 +52,23 @@ struct logEntry {
 #define ADC_UNDERLOAD 0.8 	//underload voltage
 #define ADC_POWERDOWN 25	//number of consecutive equal measurements pbefore power line is considered down
 #define ADC_TOLERANCE 0.1 //tolerance used for powerdown condition counting
-
-#define OK 1
+#define OK 1 //adc states
 #define OVERLOAD 2
 #define UNDERLOAD 3
 #define POWERDOWN 4
 #define ACK1 5
 #define ACK2 6
 #define ACK3 7
+
+using namespace std;
+
+struct logEntry {
+  int analoginstate,digin1state,digin2state,digin3state,digout1state,digout2state,digout3state;
+  double analogvalue;
+  timeval timestamp;
+  int deviceid;
+  string note; //note what actually triggered the event
+};
 
 #ifdef RTU
 class DigitalOutput{

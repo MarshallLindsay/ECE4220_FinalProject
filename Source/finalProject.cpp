@@ -16,7 +16,7 @@ SocketCommunication::SocketCommunication(){
 		exit(1);
 	}
 
-  //Set the port.. We could change to dymanic port
+  //Set the port.. We could change to dynamic port
   this->portno = 2345;
   //cout<<"hello"<<this->portno<<endl;
 
@@ -232,7 +232,7 @@ AnalogInput::AnalogInput() {
 }
 
 
-void AnalogInput::get_ADC() {
+void AnalogInput::get_ADC() { //basically the same as Luis' example function, except sets the value
   uint8_t spiData[3];
 	spiData[0] = 0b00000001; // Contains the Start Bit
 	spiData[1] = 0b10000000 | (ADC_CHANNEL << 4);	// Mode and Channel: M0XX0000
@@ -247,18 +247,18 @@ void AnalogInput::get_ADC() {
 
 	// spiData[1] and spiData[2] now have the result (2 bits and 8 bits, respectively)
 
-	this->value =  (3.3/1024)*((spiData[1] << 8) | spiData[2]);
+	this->value =  (3.3/1024)*((spiData[1] << 8) | spiData[2]); //assuming reference will always be a stable 3.3
 }
 
-void AnalogInput::test_ADC() {
+void AnalogInput::test_ADC() { //used for debugging only
   cout << "ADC value is " << this->value << "\n";
 }
 
-int AnalogInput::getState() {
+int AnalogInput::getState() { //returns state of adc - is it normal, or which error condition are we in?
   return this->state;
 }
 
-void AnalogInput::resetFlag() {
+void AnalogInput::resetFlag() { //resets the flag and changes state according to the state diagram shown in report
   this->eventFlag = false;
   if(this->state == OVERLOAD) {this->state = ACK1; this->count = 0;}
   if(this->state == UNDERLOAD){this->state = ACK2; }
@@ -276,13 +276,10 @@ double AnalogInput::getValue() {
 AnalogInput::~AnalogInput() {
 }
 
-void AnalogInput::update() {
+void AnalogInput::update() { //see state diagram for a better understanding of how this works
    get_ADC(); //actually get the value over spi
-   //cout<<this->state<<endl;
-  // cout<<this->value<<endl;
- //  cout<<this->count<<endl;
 
-   if(this->state == OK) {
+   if(this->state == OK) { //depending on state, check for events on ADC
 	  if(this->value <= (this->last + ADC_TOLERANCE) && this->value >= (this->last - ADC_TOLERANCE)) //power down status can happen even if overload is already set
 		this->count++;
 	  else {
@@ -331,58 +328,22 @@ void AnalogInput::update() {
 		   this->last = this->value;
 	   }
    }
-
-
-
-  /*  if(this->value == this->last) //power down status can happen even if overload is already set
-      this->count++;
-    if(this->value != this->last)
-      this->count = 0;
-
-    if(this->count > ADC_POWERDOWN && (this->state == UNDERLOAD || this->state == OK))
-      this->state = POWERDOWN;
-
-    if (this->state == OK) { //overload or underload states cannot occur when power is already down
-      if(this->value > ADC_OVERLOAD) //check the value and update status if necessary
-        this->state = OVERLOAD;
-      if(this->value < ADC_UNDERLOAD)
-        this->state = UNDERLOAD;
-    }
-    this->last = this->value;
-    if(this->state != OK) {
-    	if(this->state != ACK)
-    		this->eventFlag = true; */
-  //  }
-
-    //cout << this->value << endl; //for debugging
 }
 
 DigitalInput::DigitalInput(int pin) {
- //set pull up or pull down if necessary
- //set pin as input
 	this->pinNumber = pin;
 	this->eventFlag = false;
 	pinMode(pin,INPUT);
 	pullUpDnControl(pin, PUD_DOWN);
-	usleep(1000);
+	usleep(1000); //tried this to get this to work if the switch starts as a 1 but doesn't seem to do the trick
 	this->value = digitalRead(this->pinNumber);
 }
 
 void DigitalInput::update() {
-  //use wiringpi to check if value on pin is different than value in object
-//	cout<<"Point C: "<<this->getEvent()<<endl;
-//	cout<<"Point D: "<<this->eventFlag<<endl;
-	//if(this->pinNumber == 26)
-	//cout << "at start of update for pin previous value is " << this->value << " new value is " << digitalRead(this->pinNumber) << "event flag is " << this->eventFlag <<  " the value of comparison is " << (this->value != digitalRead(this->pinNumber)) <<endl;
-  if(this->value != digitalRead(this->pinNumber)) {
-	//  cout <<"setting event flag to true" <<endl;
-    this->eventFlag = true; //if theyre different set the event flag
-     //update the value anyways
+  if(this->value != digitalRead(this->pinNumber)) {   //use wiringpi to check if value on pin is different than value in object
+    this->eventFlag = true; //if theyre different set the event flag   
   }
- this->value = digitalRead(this->pinNumber);
- //if(this->pinNumber == 26)
-//  cout << "at end of update current value is " << digitalRead(this->pinNumber) << "and eventflag is " << this->eventFlag << endl;
-
+ this->value = digitalRead(this->pinNumber); //always update the value 
 }
 bool DigitalInput::getEvent() {
   return this->eventFlag;
@@ -390,9 +351,6 @@ bool DigitalInput::getEvent() {
 
 void DigitalInput::resetFlag() {
   this->eventFlag = false;
-//  cout << "resetting flag. flag is " << this->eventFlag << endl;
-//	cout<<"Point E: "<<this->getEvent()<<endl;
-//	cout<<"Point F: "<<this->eventFlag<<endl;
 }
 
 int DigitalInput::getValue() {
@@ -400,33 +358,26 @@ int DigitalInput::getValue() {
 }
 
 DigitalOutput::DigitalOutput(int pin,int outputNumber) {
-	this->outputNumber = outputNumber;
+	this->outputNumber = outputNumber; //output number is either 1, 2, or 3
 	this->eventFlag = false;
-  this->pinNumber = pin;
-//  pinMode(this->pinNumber,OUTPUT);
+  this->pinNumber = pin; //pin number is the wiring pi pin
   this->value = digitalRead(this->pinNumber);
-
-  // Open the Character Device for writing
-      if((cdev_id = open(CHAR_DEV, O_WRONLY)) == -1) {
-          printf("Cannot open device %s\n", CHAR_DEV);
-          exit(1);
-      }
-
-
+  if((cdev_id = open(CHAR_DEV, O_WRONLY)) == -1) {   // Open the Character Device for writing
+      printf("Cannot open device %s\n", CHAR_DEV);
+      exit(1);
+  }
 }
 
 void DigitalOutput::setValue(int value) {
-//  digitalWrite(this->pinNumber,value);
-  this->eventFlag = true;
-  char buffer[2];
+  this->eventFlag = true; //uses character device and kernel module to set the outputs
+  char buffer[2]; //parse message for char device and send it
   buffer[0] = this->outputNumber + '0';
   buffer[1] = value + '0';
   int dummy = write(cdev_id, buffer, sizeof(buffer));
-	if(dummy != sizeof(buffer)) {
+	if(dummy != sizeof(buffer)) { //error check
 	  printf("Write failed, leaving...\n");
 	  exit(0);
 	}
-
 }
 
 bool DigitalOutput::getEvent() {
