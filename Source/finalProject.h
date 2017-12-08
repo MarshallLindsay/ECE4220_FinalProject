@@ -1,10 +1,11 @@
+
 /*
   Marshall Lindsay
   Max Houck
   ECE 4220 Final Project
 
 */
-#define RTU YES
+//#define RTU YES
 #define HISTORIAN YES
 
 #ifndef FINALPROJECT_H
@@ -131,6 +132,7 @@ private:
   string localAddress;
 
   char broadcast[MSG_SIZE];
+  char recMessage[MSG_SIZE];
   struct logEntry receive;
 
   struct sockaddr_in serveraddress;

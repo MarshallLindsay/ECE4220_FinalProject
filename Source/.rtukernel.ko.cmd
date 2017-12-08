@@ -1,1 +1,0 @@
-cmd_/home/pi/final/Source/rtukernel.ko := ld -EL -r  -T ./scripts/module-common.lds --build-id  -o /home/pi/final/Source/rtukernel.ko /home/pi/final/Source/rtukernel.o /home/pi/final/Source/rtukernel.mod.o

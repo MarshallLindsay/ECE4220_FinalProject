@@ -20,6 +20,7 @@ void createLogEntry(char* message);
 
 char broadcast[MSG_SIZE];
 sem_t sendBroadcast_semaphore;
+pthread_mutex_t historyMutex;
 vector<struct logEntry> history;
 
 void* readMessages(void*);
@@ -157,8 +158,11 @@ void* sendMessages(void* ptr){
 	SocketCommunication sock(HSEND_RREC_PORT);
 	string message;
 	while(1){
+		cout<<"Wait for the semaphore"<<endl;
 		sem_wait(&sendBroadcast_semaphore);
+		cout<<"Copy the broadcast message to message"<<endl;
 		message = broadcast;
+		cout<<"Send the message"<<endl;
 		sock.sendMessage(message);
 	}
 }
@@ -177,7 +181,6 @@ void* readMessages(void* ptr){
 		//Filter messages
 		if(buffer[1] == ',' ){
 			//Create a log entry of the message
-			//cout<<"About to do the log thing : "<<buffer<<endl;
 			createLogEntry(buffer);
 		}else{
 			cout<<"Master message received"<<endl;
@@ -267,13 +270,16 @@ void createLogEntry(char* buffer){
 	//cout<<note<<endl;
 	entry.note = note;
 	message.erase(0, pos + delimiter.length());
-
+	pthread_mutex_lock(&historyMutex);
 	history.push_back(entry);
+	pthread_mutex_unlock(&historyMutex);
 
 }
 
 vector<struct logEntry> sortHistory(){
+	pthread_mutex_lock(&historyMutex);
 	vector<struct logEntry> sortedHistory = history;
+	pthread_mutex_unlock(&historyMutex);
 	struct logEntry temp;
 
 	int minLocation = 0;

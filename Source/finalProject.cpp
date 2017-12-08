@@ -216,13 +216,12 @@ int SocketCommunication::sendMessage(vector<struct logEntry> buffer){
 }
 
 char* SocketCommunication::receiveMessage(void){
-  char buffer[MSG_SIZE];
-  bzero(buffer, MSG_SIZE);
+  bzero(this->recMessage, MSG_SIZE);
   int n;
-  n = recvfrom(this->sockfd, buffer, MSG_SIZE, 0,(struct sockaddr*)&(this->fromaddress), &(this->fromlen));
-  return buffer;
+  n = recvfrom(this->sockfd, this->recMessage, MSG_SIZE, 0,(struct sockaddr*)&(this->fromaddress), &(this->fromlen));
+  return this->recMessage;
 }
-
+#ifdef RTU
 AnalogInput::AnalogInput() {
 	this->eventFlag = false;
   if(wiringPiSPISetup(SPI_CHANNEL, SPI_SPEED) < 0) {
@@ -231,6 +230,7 @@ AnalogInput::AnalogInput() {
   	}
    this->state = OK;
 }
+
 
 void AnalogInput::get_ADC() {
   uint8_t spiData[3];
@@ -440,3 +440,4 @@ void DigitalOutput::resetFlag() {
 int DigitalOutput::getValue() {
   return this->value;
 }
+#endif
