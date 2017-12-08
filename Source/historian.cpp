@@ -111,7 +111,8 @@ void printHistory(){
 	//Print the history
 	if(log.empty()){
 		cout<<"------------------------------------------------"<<endl;
-		cout<<"No events have been logged!"<<endl;			cout<<"------------------------------------------------"<<endl;
+		cout<<"No events have been logged!"<<endl;
+		cout<<"------------------------------------------------"<<endl;
 	}else{
 		for(unsigned int i = 0; i < log.size() - 1; i++){
 			cout<<"------------------------------------------------"<<endl;
