@@ -171,7 +171,7 @@ void createLogEntry(char* buffer){
 	stringstream(state) >> entry.digout3state;
 	message.erase(0, pos + delimiter.length());
 
-	size_type sz;
+	size_t sz;
 	pos = message.find(delimiter);
 	analogValueString = message.substr(0, pos);
 	stod(analogValueSting,&sz);
