@@ -125,7 +125,7 @@ int SocketCommunication::sendMessage(string buffer){
   this->serveraddress.sin_addr.s_addr = inet_addr("128.206.19.255");
   const char * message = buffer.c_str();
   int n;
-  cout<<message<<endl;
+  //cout<<message<<endl;
   n = sendto(this->sockfd, message, MSG_SIZE, 0, (struct sockaddr*)&(this->serveraddress), this->fromlen);
 
   if(n < 0){
