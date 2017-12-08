@@ -90,6 +90,15 @@ void startRTUS(){
 
 void sendCommand(){
 	//Broadcast the command
+	bzero(broadcast, MSG_SIZE);
+
+	string command;
+	getline(cin, command);
+
+	strcpy(broadcast, command);
+
+	sem_post(&sendBroadcast_semaphore);
+
 }
 
 void printHistory(){
