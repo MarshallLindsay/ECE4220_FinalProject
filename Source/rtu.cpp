@@ -88,7 +88,6 @@ void* NetworkReceiveThread(void* prt) {
 	while(1) {
 		strcpy(networkbuffer, receiveSock.receiveMessage());
 		strncpy(comparestring,networkbuffer,3);
-		cout<<comparestring<<endl;
 		if(strcmp("led",comparestring) == 0) {
 			if(networkbuffer[4] == deviceid+'0') {
 				if(networkbuffer[9] == 'n') {
@@ -245,7 +244,7 @@ struct logEntry gather_log(DigitalInput* digin1, DigitalInput* digin2, DigitalIn
     if(digout1->getValue())
       log.note = "Digital output 1 has gone high";
     else
-      log.note = "Digital output 1 has gone lotimestampw";
+      log.note = "Digital output 1 has gone low";
     digout1->resetFlag();
     }
   else if(digout2->getEvent()) {
