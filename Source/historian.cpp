@@ -94,6 +94,9 @@ void sendCommand(){
 
 void printHistory(){
 	//Print the history
+	for(int i = 0; i < history.size() - 1; i++){
+		cout<<history[i].deviceid<<endl;
+	}
 }
 
 void* sendMessages(void* ptr){
@@ -197,5 +200,7 @@ void createLogEntry(char* buffer){
 	note = message.substr(0, pos);
 	entry.note = note;
 	message.erase(0, pos + delimiter.length());
+
+	history.push_back(entry);
 
 }
