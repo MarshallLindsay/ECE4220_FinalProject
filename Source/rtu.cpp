@@ -7,7 +7,6 @@ RTU program
 
 void* ADCthread(void*);
 
-void gpio_tests();
 int deviceid;
 struct logEntry gather_log(DigitalInput* digin1, DigitalInput* digin2, DigitalInput* digin3,
       DigitalOutput* digout1, DigitalOutput* digout2, DigitalOutput* digout3, AnalogInput* analoginput);
@@ -37,34 +36,17 @@ int main(int argc, char **argv) {
       //also be listening for commands to control the digouts. call get_states() and make a log entry when you receive a command.
   while(1) {
   //  network.update();  //read network buffer for incoming commands
-	// cout<<digin1.getEvent()<<endl;
+
     digin1.update();
     digin2.update();
     digin3.update();
-/*    if(digin1.getEvent()) cout << "event on digin1" << endl;
-    if(digin2.getEvent()) cout << "event on digin2" << endl;
-    if(digin3.getEvent()) cout << "event on digin3" << endl;
-    if(digout1.getEvent()) cout << "event on digout1" << endl;
-    if(digout2.getEvent()) cout << "event on digout2" << endl;
-    if(digout3.getEvent()) cout << "event on digout3" << endl;
-    if(analoginput.getEvent()) cout << "event on analog" << endl;*/
-  //  cout << "state of analog is " << analoginput.getState() << endl;}
-  //  cout<<"Point A: " << digin1.getEvent()<<endl;
+
     if(digin1.getEvent() || digin2.getEvent() || digin3.getEvent() || analoginput.getEvent()) {
       log.push_back(gather_log(&digin1,&digin2,&digin3,&digout1,&digout2,&digout3,&analoginput));
- //     cout<<"Point G: " << digin1.getEvent()<<endl;
     	cout << log[log.size()-1].note << endl;
-    //	cout << "event detected" << endl;
   }
-  //  cout<<"Point B: " << digin1.getEvent()<<endl;
   }
 }
-
-void gpio_tests() {
-
-}
-
-
 
 void* ADCthread(void* ptr) {
   //timer and scheduling setup
