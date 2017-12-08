@@ -7,7 +7,18 @@ RTU program
 
 void* ADCthread(void*);
 void* DiginThread(void* ptr);
+void* NetworkSendThread(void* ptr);
+void* NetworkReceiveThread(void* prt);
+DigitalInput digin1(26);
+DigitalInput digin2(23);
+DigitalInput digin3(28);
+DigitalOutput digout1(9);
+DigitalOutput digout2(7);
+DigitalOutput digout3(21);
+vector<struct logEntry> log;
+AnalogInput analoginput; 
 
+SocketCommunication receiveSock(HSEND_RREC_PORT);
 int deviceid;
 struct logEntry gather_log(DigitalInput* digin1, DigitalInput* digin2, DigitalInput* digin3,
       DigitalOutput* digout1, DigitalOutput* digout2, DigitalOutput* digout3, AnalogInput* analoginput);
@@ -21,35 +32,96 @@ int main(int argc, char **argv) {
 
   //instantiate all objects
     wiringPiSetup();
-    AnalogInput analoginput; //analog input
-
-    DigitalInput digin1(26);
-    DigitalInput digin2(23);
-    DigitalInput digin3(28);
-    DigitalOutput digout1(9);
-    DigitalOutput digout2(7);
-    DigitalOutput digout3(21);
-    pthread_t thread1,thread2,thread3,thread4; //create thread pointer
+  //  AnalogInput analoginput; //analog input
+ //   DigitalInput digin1(26);
+ //   DigitalInput digin2(23);
+ //   DigitalInput digin3(28);
+ //   DigitalOutput digout1(9);
+//   DigitalOutput digout2(7);
+//    DigitalOutput digout3(21);
+    pthread_t thread1,thread2,thread3,thread4,thread5,thread6; //create thread pointer
 	pthread_create(&thread1, NULL, ADCthread, (void*)&analoginput); //execute thread that will time ADCpthread_t thread1,thread2,thread3,thread4; //create thread pointer
 //	pthread_create(&thread2, NULL, DiginThread, (void*)&digin1); //execute thread that will time ADCpthread_t thread1,thread2,thread3,thread4; //create thread pointer
 //	pthread_create(&thread3, NULL, DiginThread, (void*)&digin2); //execute thread that will time ADCpthread_t thread1,thread2,thread3,thread4; //create thread pointer
 //	pthread_create(&thread4, NULL, DiginThread, (void*)&digin3); //execute thread that will time ADC
-    vector<struct logEntry> log; //make this a vector eventually
+    //make this a vector eventually
+	pthread_create(&thread6, NULL, NetworkReceiveThread, NULL);
+    pthread_create(&thread5, NULL, NetworkSendThread, NULL);
 
-    //instantiate networking stuff
       //create pthread that sends data every 1 second
       //also be listening for commands to control the digouts. call get_states() and make a log entry when you receive a command.
   while(1) {
   //  network.update();  //read network buffer for incoming commands
-
     digin1.update();
     digin2.update();
     digin3.update();
     if(digin1.getEvent() || digin2.getEvent() || digin3.getEvent() || analoginput.getEvent()) {
       log.push_back(gather_log(&digin1,&digin2,&digin3,&digout1,&digout2,&digout3,&analoginput));
-    	cout << log[log.size()-1].note << endl;
+    //	cout << log[log.size()-1].note << endl;
     }
   }
+}
+
+void* NetworkReceiveThread(void* prt) {
+	char *networkbuffer;
+	char* comparestring;
+	string buffer;
+	
+	while(1) {
+		strcpy(networkbuffer, receiveSock.receiveMessage());
+		strncpy(comparestring,networkbuffer,3);
+		
+		if(strcmp("led",comparestring) == 0) {
+			if(buffer[4] == deviceid) {
+				if(buffer[9] == 'f') {
+					if(buffer[6] == '1');
+						
+					if(buffer[6] == '2');
+					if(buffer[6] == '3');
+				}
+			}
+		}
+	}
+}
+
+void* NetworkSendThread(void* ptr) {
+		
+	  //timer and scheduling setup
+	  int timer_fd = timerfd_create(CLOCK_MONOTONIC, 0); //intialize realtime scheduling
+		 if(timer_fd == -1) {
+				printf("Error creating timer");
+				exit(0);
+		 }
+		 struct itimerspec timerspec;
+		 timerspec.it_interval.tv_sec = 1;
+		 timerspec.it_interval.tv_nsec = 0; //1 hz
+		 timerspec.it_value.tv_sec = 0;
+		 timerspec.it_value.tv_nsec = 1000000;
+		 if(timerfd_settime(timer_fd,0,&timerspec,NULL) == -1) {
+			 printf("Error starting timer");
+			 exit(0);
+		 }
+		 struct sched_param param;
+		 param.sched_priority = 48;
+		 sched_setscheduler(0,SCHED_FIFO,&param);
+		 uint64_t num_periods = 0;
+	
+		 SocketCommunication sendSock(RSEND_HREC_PORT);
+	
+		 sendSock.sendMessage("#yolo");
+		 sendSock.sendMessage("#swag");
+	  while(1) {
+		while(read(timer_fd, &num_periods,sizeof(num_periods)) == -1); //wait for timer
+			if(num_periods >  1) {puts("MISSED WINDOW");exit(1);} //error check
+			
+		      log.push_back(gather_log(&digin1,&digin2,&digin3,&digout1,&digout2,&digout3,&analoginput));
+		 //     cout << log[log.size()-1].note << endl;
+		      sendSock.sendMessage(log);
+		      log.erase(log.begin(),log.begin() + log.size());
+	  }
+	
+	  //thread should never exit
+	  //pthread_exit((void*)retval);
 }
 
 void* DiginThread(void* ptr) {
@@ -78,7 +150,6 @@ void* ADCthread(void* ptr) {
 	 struct itimerspec timerspec;
 	 timerspec.it_interval.tv_sec = 0;
 	 timerspec.it_interval.tv_nsec = 1000000;
-	 timerspec.it_interval.tv_nsec = 10000000;
 	 timerspec.it_value.tv_sec = 0;
 	 timerspec.it_value.tv_nsec = 1000000;
 	 if(timerfd_settime(timer_fd,0,&timerspec,NULL) == -1) {

@@ -135,42 +135,44 @@ int SocketCommunication::sendMessage(string buffer){
   return(1);
 }
 
-int SocketCommunication::sendMessage(struct logEntry buffer){
-  this->serveraddress.sin_addr.s_addr = inet_addr("128.206.19.255");
-  int n;
-  string temp;
-  temp += to_string(buffer.analoginstate);
-  temp += ",";
-  temp += to_string(buffer.digin1state);
-  temp += ",";
-  temp += to_string(buffer.digin2state);
-  temp += ",";
-  temp += to_string(buffer.digin3state);
-  temp += ",";
-  temp += to_string(buffer.digout1state);
-  temp += ",";
-  temp += to_string(buffer.digout2state);
-  temp += ",";
-  temp += to_string(buffer.digout3state);
-  temp += ",";
-  temp += to_string(buffer.analogvalue);
-  temp += ",";
-  temp += to_string(buffer.timestamp.tv_sec);
-  temp += ",";
-  temp += to_string(buffer.timestamp.tv_usec);
-  temp += ",";
-  temp += to_string(buffer.deviceid);
-  temp += ",";
-  temp += buffer.note;
-
-  const char * message = temp.c_str();
-  cout<<message<<endl;
-  n = sendto(this->sockfd, message, MSG_SIZE, 0, (struct sockaddr*)&(this->serveraddress), this->fromlen);
-
-  if(n < 0){
-    cout<<"SEND FAILED"<<endl;
-    exit(1);
-  }
+int SocketCommunication::sendMessage(vector<struct logEntry> buffer){
+	for(int i = 0; i < buffer.size(); i++) {
+	  this->serveraddress.sin_addr.s_addr = inet_addr("128.206.19.255");
+	  int n;
+	  string temp;
+	  temp += to_string(buffer[i].analoginstate);
+	  temp += ",";
+	  temp += to_string(buffer[i].digin1state);
+	  temp += ",";
+	  temp += to_string(buffer[i].digin2state);
+	  temp += ",";
+	  temp += to_string(buffer[i].digin3state);
+	  temp += ",";
+	  temp += to_string(buffer[i].digout1state);
+	  temp += ",";
+	  temp += to_string(buffer[i].digout2state);
+	  temp += ",";
+	  temp += to_string(buffer[i].digout3state);
+	  temp += ",";
+	  temp += to_string(buffer[i].analogvalue);
+	  temp += ",";
+	  temp += to_string(buffer[i].timestamp.tv_sec);
+	  temp += ",";
+	  temp += to_string(buffer[i].timestamp.tv_usec);
+	  temp += ",";
+	  temp += to_string(buffer[i].deviceid);
+	  temp += ",";
+	  temp += buffer[i].note;
+	
+	  const char * message = temp.c_str();
+	  cout<<message<<endl;
+	  n = sendto(this->sockfd, message, MSG_SIZE, 0, (struct sockaddr*)&(this->serveraddress), this->fromlen);
+	
+	  if(n < 0){
+		cout<<"SEND FAILED"<<endl;
+		exit(1);
+	  }
+	}
   return(1);
 }
 
@@ -324,6 +326,7 @@ DigitalInput::DigitalInput(int pin) {
 	this->eventFlag = false;
 	pinMode(pin,INPUT);
 	pullUpDnControl(pin, PUD_DOWN);
+	usleep(1000);
 	this->value = digitalRead(this->pinNumber);
 }
 
