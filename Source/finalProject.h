@@ -123,7 +123,6 @@ private:
   string localAddress;
 
   char broadcast[MSG_SIZE];
-  static char receiveMessage[MSG_SIZE];
   struct logEntry receive;
 
   struct sockaddr_in serveraddress;
