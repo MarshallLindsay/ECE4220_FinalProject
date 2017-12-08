@@ -37,6 +37,8 @@
 #define HSEND_RREC_PORT (2345)
 #define RSEND_HREC_PORT (2346)
 
+using namespace std;
+
 struct logEntry {
   int analoginstate,digin1state,digin2state,digin3state,digout1state,digout2state,digout3state;
   double analogvalue;
