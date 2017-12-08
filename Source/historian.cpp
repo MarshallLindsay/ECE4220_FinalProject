@@ -270,5 +270,5 @@ vector<struct logEntry> sortHistory(){
 		}
 	}
 
-
+	return(sortedHistory);
 }
