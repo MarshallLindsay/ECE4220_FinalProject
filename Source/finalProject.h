@@ -42,7 +42,6 @@
 #define HSEND_RREC_PORT (2345)
 #define RSEND_HREC_PORT (2346)
 
-#define CHAR_DEV "/dev/MarshallMaxFinal"
 #define MSG_SIZE (50)
 
 using namespace std;
