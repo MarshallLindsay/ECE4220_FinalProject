@@ -174,6 +174,6 @@ void createLogEntry(char* buffer){
 	size_t sz;
 	pos = message.find(delimiter);
 	analogValueString = message.substr(0, pos);
-	stod(analogValueSting,&sz);
+	stod(analogValueString,&sz);
 
 }
