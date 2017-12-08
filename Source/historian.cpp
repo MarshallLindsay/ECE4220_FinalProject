@@ -15,6 +15,7 @@ void startRTUS();
 void sendCommand();
 void printHistory();
 void printSimpleHistory();
+void printSuperSimpleHistory();
 vector<struct logEntry> sortHistory();
 void createLogEntry(char* message);
 
@@ -53,8 +54,9 @@ void printWelcomeMessage(){
 	cout<<"1)Start the RTUs"<<endl;
 	cout<<"2)Send a command to the RTUs"<<endl;
 	cout<<"3)Print the event history since start"<<endl;
-	cout<<"4)Print simplified envent history"<<endl;
-	cout<<"5)Exit"<<endl;
+	cout<<"4)Print simplified event history"<<endl;
+	cout<<"5)Print super simplified envent history"<<endl;
+	cout<<"6)Exit"<<endl;
 }
 
 int handleUserInput(string input){
@@ -71,6 +73,9 @@ int handleUserInput(string input){
 		printSimpleHistory();
 		return(1);
 	}else if(input == "5"){
+		printSuperSimpleHistory();
+		return(1);
+	}else if(input == "6"){
 		exit(1);
 	}else{
 		cout<<"Invalid Input"<<endl;
@@ -151,6 +156,21 @@ void printSimpleHistory(){
 		}
 	}
 
+}
+
+
+void printSuperSimpleHistory(){
+	//sort the history
+	vector<struct logEntry> log;
+	log = sortHistory();
+	//Print the history
+	if(log.empty()){
+		cout<<"No events have been logged!"<<endl;
+	}else{
+		for(unsigned int i = 0; i < log.size() - 1; i++){
+			cout<<"Event from: "<<log[i].deviceid<<" at " <<log[i].timestamp.tv_sec<<"."<<log[i].timestamp.tv_usec<<" is "<<log[i].note<<endl;
+		}
+	}
 }
 
 void* sendMessages(void* ptr){

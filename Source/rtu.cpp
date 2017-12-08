@@ -84,9 +84,10 @@ void* NetworkReceiveThread(void* prt) {
 	char networkbuffer[MSG_SIZE];
 	char* comparestring;
 	string buffer;
-
+		
 	while(1) {
 		strcpy(networkbuffer, receiveSock.receiveMessage());
+		cout << "Command received: " << networkbuffer << endl;
 		strncpy(comparestring,networkbuffer,3);
 		if(strcmp("led",comparestring) == 0) {
 			if(networkbuffer[4] == deviceid+'0') {
