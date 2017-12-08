@@ -82,6 +82,8 @@ void startRTUS(){
 	gettimeofday(&systemStartTime, NULL);
 	//Post to the sendBroadcast_semaphore, indicating a message should be sent.
 	sem_post(&sendBroadcast_semaphore);
+	//Gotta do it twice cause.. maths
+	sem_post(&sendBroadcast_semaphore);
 
 }
 
@@ -96,6 +98,12 @@ void printHistory(){
 void* sendMessages(void* ptr){
 	//Initialize a socket on the send port
 	SocketCommunication sock(HSEND_RREC_PORT);
+	string message;
+	while(1){
+		sem_wait(&sendBroadcast_semaphore);
+		message = broadcast;
+		sock.sendMessage(message);
+	}
 }
 
 void* readMessages(void* ptr){
