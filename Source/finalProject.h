@@ -41,8 +41,7 @@
 
 #define HSEND_RREC_PORT (2345)
 #define RSEND_HREC_PORT (2346)
-
-#define MSG_SIZE (50)
+#define MSG_SIZE (100)
 
 using namespace std;
 
@@ -53,7 +52,7 @@ struct logEntry {
   int deviceid;
   string note; //note what actually triggered the event
 };
-#define MSG_SIZE (100)
+
 
 //definitions for ADC
 #define SPI_CHANNEL	      0	// 0 or 1
