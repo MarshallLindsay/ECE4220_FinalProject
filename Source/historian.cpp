@@ -7,47 +7,318 @@ historian program
 
 #include "finalProject.h"
 
-void* readMessages(void*);
 
+
+void printWelcomeMessage();
+int handleUserInput(string input);
+void startRTUS();
+void sendCommand();
+void printHistory();
+void printSimpleHistory();
+void printSuperSimpleHistory();
+vector<struct logEntry> sortHistory();
+void createLogEntry(char* message);
+
+char broadcast[MSG_SIZE];
+sem_t sendBroadcast_semaphore;
+pthread_mutex_t historyMutex;
+vector<struct logEntry> history;
+
+void* readMessages(void*);
+void* sendMessages(void*);
 
 int main(void){
+	string userInput;
+	int option;
+	pthread_t sender, reader;
+	//Initialize the sendBroadcast_semaphore
+	sem_init(&sendBroadcast_semaphore, 0, 0);
+	pthread_create(&sender, NULL, sendMessages, NULL);
+	pthread_create(&reader, NULL, readMessages, NULL);
+	while(1){
+		//print the welcome message
+		printWelcomeMessage();
+		//get user input
+		getline(cin,userInput);
+		//Handle user input
+		handleUserInput(userInput);
+	}
 
-	SocketCommunication sock;
-	pthread_t messageReader;
-	void** retVal;
-	pthread_create(&messageReader, NULL, readMessages, NULL);
-	char buffer[MSG_SIZE];
-	string message = "This is a message";
-	struct logEntry log;
-	gettimeofday(&log.timestamp,NULL);
-  log.deviceid = 15;
-  log.digin1state = 1;
-  log.digin2state = 0;
-  log.digin3state = 1;
-  log.digout1state = 0;
-  log.digout2state = 1;
-  log.digout3state = 1;
-  log.analoginstate = 1;
-  log.analogvalue = 1.21;
-	log.note = "This is a note";
 
-	cout<<log.deviceid<<endl;
-	sock.sendMessage(log);
-	sock.sendMessage(message);
-
-	pthread_join(messageReader, retVal);
 	return(1);
 }
 
-void* readMessages(void* ptr){
-	SocketCommunication sock;
+void printWelcomeMessage(){
+	cout<<"\nWelcome to the Historian Program!"<<endl;
+	cout<<"\nPlease select an option:"<<endl;
+	cout<<"1)Start the RTUs"<<endl;
+	cout<<"2)Send a command to the RTUs"<<endl;
+	cout<<"3)Print the event history since start"<<endl;
+	cout<<"4)Print simplified event history"<<endl;
+	cout<<"5)Print super simplified envent history"<<endl;
+	cout<<"6)Exit"<<endl;
+}
 
-	//Set thread to real time
-	struct sched_param param;
-	param.sched_priority = 51;
-	sched_setscheduler(0,SCHED_FIFO,&param);
+int handleUserInput(string input){
+	if(input == "1"){
+		startRTUS();
+		return(1);
+	}else if(input == "2"){
+		sendCommand();
+		return(1);
+	}else if(input == "3"){
+		printHistory();
+		return(1);
+	}else if(input == "4"){
+		printSimpleHistory();
+		return(1);
+	}else if(input == "5"){
+		printSuperSimpleHistory();
+		return(1);
+	}else if(input == "6"){
+		exit(1);
+	}else{
+		cout<<"Invalid Input"<<endl;
+		return(0);
+	}
+}
+
+void startRTUS(){
+	//Broadcast the start message
+	int n;
+	//Clear the broadcast buffer
+	bzero(broadcast, MSG_SIZE);
+	//Set the message
+	strcpy(broadcast, "#start");
+	//Post to the sendBroadcast_semaphore, indicating a message should be sent.
+	sem_post(&sendBroadcast_semaphore);
+	//Gotta do it twice cause.. maths
+	sem_post(&sendBroadcast_semaphore);
+
+}
+
+void sendCommand(){
+	//Broadcast the command
+	bzero(broadcast, MSG_SIZE);
+
+	string command;
+	getline(cin, command);
+
+	strcpy(broadcast, command.c_str());
+
+	sem_post(&sendBroadcast_semaphore);
+
+}
+
+void printHistory(){
+	//sort the history
+	vector<struct logEntry> log;
+	log = sortHistory();
+	//Print the history
+	if(log.empty()){
+		cout<<"------------------------------------------------"<<endl;
+		cout<<"No events have been logged!"<<endl;			cout<<"------------------------------------------------"<<endl;
+	}else{
+		for(unsigned int i = 0; i < log.size() - 1; i++){
+			cout<<"------------------------------------------------"<<endl;
+			cout<<"Cause of event : "<<log[i].note<<endl;
+			cout<<"Event from : "<<log[i].deviceid<<endl;
+			cout<<"Time of event from start: "<<log[i].timestamp.tv_sec<<"(S) "<<log[i].timestamp.tv_usec<<"(uS)"<<endl;
+			cout<<"Analog state: "<<log[i].analoginstate<<endl;
+			cout<<"Analog value: "<<log[i].analogvalue<<endl;
+			cout<<"Digital Input 1 State: "<<log[i].digin1state<<endl;
+			cout<<"Digital Input 2 State: "<<log[i].digin2state<<endl;
+			cout<<"Digital Input 3 State: "<<log[i].digin3state<<endl;
+			cout<<"Digital Output 1 State: "<<log[i].digout1state<<endl;
+			cout<<"Digital Output 2 State: "<<log[i].digout2state<<endl;
+			cout<<"Digital Output 3 State: "<<log[i].digout3state<<endl;
+			cout<<"------------------------------------------------"<<endl;
+		}
+	}
+}
+
+void printSimpleHistory(){
+	//sort the history
+	vector<struct logEntry> log;
+	log = sortHistory();
+	//Print the history
+	if(log.empty()){
+		cout<<"------------------------------------------------"<<endl;
+		cout<<"No events have been logged!"<<endl;
+		cout<<"------------------------------------------------"<<endl;
+	}else{
+		for(unsigned int i = 0; i < log.size() - 1; i++){
+			cout<<"------------------------------------------------"<<endl;
+			cout<<"Cause of event : "<<log[i].note<<endl;
+			cout<<"Event from : "<<log[i].deviceid<<endl;
+			cout<<"Time of event from start: "<<log[i].timestamp.tv_sec<<"(S) "<<log[i].timestamp.tv_usec<<"(uS)"<<endl;
+			cout<<"------------------------------------------------"<<endl;
+		}
+	}
+
+}
+
+
+void printSuperSimpleHistory(){
+	//sort the history
+	vector<struct logEntry> log;
+	log = sortHistory();
+	//Print the history
+	if(log.empty()){
+		cout<<"No events have been logged!"<<endl;
+	}else{
+		for(unsigned int i = 0; i < log.size() - 1; i++){
+			cout<<"Event from: "<<log[i].deviceid<<" at " <<log[i].timestamp.tv_sec<<"."<<log[i].timestamp.tv_usec<<" is "<<log[i].note<<endl;
+		}
+	}
+}
+
+void* sendMessages(void* ptr){
+	//Initialize a socket on the send port
+	SocketCommunication sock(HSEND_RREC_PORT);
+	string message;
+	while(1){
+		cout<<"Wait for the semaphore"<<endl;
+		sem_wait(&sendBroadcast_semaphore);
+		cout<<"Copy the broadcast message to message"<<endl;
+		message = broadcast;
+		cout<<"Send the message"<<endl;
+		sock.sendMessage(message);
+	}
+}
+
+void* readMessages(void* ptr){
+	//Initialize a socket on the read port
+	SocketCommunication sock(RSEND_HREC_PORT);
+	//Variable to hold the message recieved
+	char buffer[MSG_SIZE] = "Initialize";
+	//Clear the buffer variable
 
 	while(1){
-		sock.receiveMessage();
+		//Get a message and copy to buffer
+		bzero(buffer, MSG_SIZE);
+		strcpy(buffer, sock.receiveMessage());
+		//Filter messages
+		if(buffer[1] == ',' ){
+			//Create a log entry of the message
+			createLogEntry(buffer);
+		}else{
+			cout<<"Master message received"<<endl;
+		}
 	}
+}
+
+void createLogEntry(char* buffer){
+	//Take the message in buffer, create a log, push to the log vector
+	struct logEntry entry;
+	string message = buffer;
+	string delimiter = ",";
+
+	string state;
+	string analogValueString;
+	double analogValue;
+	string timeSecString;
+	string timeMicroSecString;
+	string deviceNumberString;
+	int deviceNumber;
+	string note;
+	size_t pos = 0;
+
+	pos = message.find(delimiter);
+	state = message.substr(0, pos);
+	//cout<<state<<endl;
+	stringstream(state) >> entry.analoginstate;
+	message.erase(0, pos + delimiter.length());
+	pos = message.find(delimiter);
+	state = message.substr(0, pos);
+	//cout<<state<<endl;
+	stringstream(state) >> entry.digin1state;
+	message.erase(0, pos + delimiter.length());
+	pos = message.find(delimiter);
+	state = message.substr(0, pos);
+	//cout<<state<<endl;
+	stringstream(state) >> entry.digin2state;
+	message.erase(0, pos + delimiter.length());
+	pos = message.find(delimiter);
+	state = message.substr(0, pos);
+	//cout<<state<<endl;
+	stringstream(state) >> entry.digin3state;
+	message.erase(0, pos + delimiter.length());
+	pos = message.find(delimiter);
+	state = message.substr(0, pos);
+	//cout<<state<<endl;
+	stringstream(state) >> entry.digout1state;
+	message.erase(0, pos + delimiter.length());
+	pos = message.find(delimiter);
+	state = message.substr(0, pos);
+	//cout<<state<<endl;
+	stringstream(state) >> entry.digout2state;
+	message.erase(0, pos + delimiter.length());
+	pos = message.find(delimiter);
+	state = message.substr(0, pos);
+	//cout<<state<<endl;
+	stringstream(state) >> entry.digout3state;
+	message.erase(0, pos + delimiter.length());
+
+	size_t sz;
+	pos = message.find(delimiter);
+	analogValueString = message.substr(0, pos);
+	//cout<<analogValueString<<endl;
+	entry.analogvalue = stod(analogValueString,&sz);
+	message.erase(0, pos+ delimiter.length());
+
+	pos = message.find(delimiter);
+	timeSecString = message.substr(0, pos);
+	//cout<<timeSecString<<endl;
+	entry.timestamp.tv_sec = stod(timeSecString, &sz);
+	message.erase(0, pos + delimiter.length());
+
+	pos = message.find(delimiter);
+	timeMicroSecString = message.substr(0, pos);
+	//cout<<timeMicroSecString<<endl;
+	entry.timestamp.tv_usec = stod(timeMicroSecString, &sz);
+	message.erase(0, pos + delimiter.length());
+
+	pos = message.find(delimiter);
+	deviceNumberString = message.substr(0, pos);
+	//cout<<deviceNumberString<<endl;
+	stringstream(deviceNumberString) >> entry.deviceid;
+	message.erase(0, pos + delimiter.length());
+
+	pos = message.find(delimiter);
+	note = message.substr(0, pos);
+	//cout<<note<<endl;
+	entry.note = note;
+	message.erase(0, pos + delimiter.length());
+	pthread_mutex_lock(&historyMutex);
+	history.push_back(entry);
+	pthread_mutex_unlock(&historyMutex);
+
+}
+
+vector<struct logEntry> sortHistory(){
+	pthread_mutex_lock(&historyMutex);
+	vector<struct logEntry> sortedHistory = history;
+	pthread_mutex_unlock(&historyMutex);
+	struct logEntry temp;
+
+	int minLocation = 0;
+	for(unsigned int j = 0; j < sortedHistory.size()-1; j++){
+		minLocation = j;
+		for(unsigned int i = j; i < sortedHistory.size()-1-j; i++){
+
+			if(sortedHistory[i].timestamp.tv_sec < sortedHistory[minLocation].timestamp.tv_sec){
+				minLocation = i;
+			}else if(sortedHistory[i].timestamp.tv_sec == sortedHistory[minLocation].timestamp.tv_sec){
+				if(sortedHistory[i].timestamp.tv_usec < sortedHistory[minLocation].timestamp.tv_usec){
+					minLocation = i;
+				}
+			}
+		}
+		temp = sortedHistory[j];
+		sortedHistory[j] = sortedHistory[minLocation];
+		sortedHistory[minLocation] = temp;
+	}
+
+	return(sortedHistory);
 }

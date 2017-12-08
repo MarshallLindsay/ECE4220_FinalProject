@@ -55,14 +55,63 @@ SocketCommunication::SocketCommunication(){
   strncpy(ifr.ifr_name, "wlan0", sizeof(ifr.ifr_name));
   if(ioctl(this->sockfd, SIOCGIFADDR, &ifr) >= 0){
     this->localAddress = inet_ntoa(((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr);
-    cout<<"\nMy IP addr is: "<<this->localAddress<<endl;
+    //cout<<"\nMy IP addr is: "<<this->localAddress<<endl;
   }
 
-  //Set the fromaddress struct as the same as the server.
-  this->fromaddress = this->serveraddress;
-  //Set the address to the broadcast address for the lab
-  this->fromaddress.sin_addr.s_addr = inet_addr("128.206.19.255");
-  //Set the size for the fromlen
+  this->fromlen = sizeof(struct sockaddr_in);
+
+}
+
+SocketCommunication::SocketCommunication(int port){
+  //Create a socket, connectionless
+  this->sockfd= socket(AF_INET, SOCK_DGRAM, 0);
+	if(this->sockfd < 0){
+		cout<<"\nSocket creation failed"<<endl;
+		exit(1);
+	}
+
+  //Set the port.. We could change to dymanic port
+  this->portno = port;
+  //cout<<"hello"<<this->portno<<endl;
+
+  //Set the boolval.. Just gotta do it
+  this->boolval = 1;
+
+  //Clear all of the server data
+  this->length = sizeof(struct sockaddr_in);
+  bzero((char*)&(this->serveraddress), sizeof(this->serveraddress));
+
+  //Set the address family as IPv4
+  this->serveraddress.sin_family = AF_INET;
+
+  //Set the address to INADDR_ANY
+  this->serveraddress.sin_addr.s_addr = INADDR_ANY;
+
+  //Set the port number
+  this->serveraddress.sin_port = htons(this->portno);
+
+  //Bind the socket
+  if(bind(this->sockfd, (struct sockaddr *)&(this->serveraddress), sizeof(this->serveraddress)) < 0){
+		cout<<"\nFailed to bind the socket!"<<endl;
+		exit(1);
+	}
+
+  //Set the option for broadcasting
+  if (setsockopt(this->sockfd, SOL_SOCKET, SO_BROADCAST, &(this->boolval), sizeof(this->boolval)) < 0)
+	{
+		cout<<"\nError setting socket options"<<endl;
+		exit(1);
+	}
+  //Get the ip of the system
+  //Pulled from stackoverflow. Modified slightly for my uses
+	//https://stackoverflow.com/questions/579783/how-to-detect-ip-address-change-programmatically-in-linux
+  struct ifreq ifr;
+  strncpy(ifr.ifr_name, "wlan0", sizeof(ifr.ifr_name));
+  if(ioctl(this->sockfd, SIOCGIFADDR, &ifr) >= 0){
+    this->localAddress = inet_ntoa(((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr);
+    //cout<<"\nMy IP addr is: "<<this->localAddress<<endl;
+  }
+
   this->fromlen = sizeof(struct sockaddr_in);
 
 }
@@ -73,11 +122,11 @@ SocketCommunication::~SocketCommunication(){
 }
 
 int SocketCommunication::sendMessage(string buffer){
-  this->fromaddress.sin_addr.s_addr = inet_addr("128.206.19.255");
+  this->serveraddress.sin_addr.s_addr = inet_addr("128.206.19.255");
   const char * message = buffer.c_str();
   int n;
-  cout<<message<<endl;
-  n = sendto(this->sockfd, message, MSG_SIZE, 0, (struct sockaddr*)&(this->fromaddress), this->fromlen);
+  //cout<<message<<endl;
+  n = sendto(this->sockfd, message, MSG_SIZE, 0, (struct sockaddr*)&(this->serveraddress), this->fromlen);
 
   if(n < 0){
     cout<<"SEND FAILED"<<endl;
@@ -87,7 +136,7 @@ int SocketCommunication::sendMessage(string buffer){
 }
 
 int SocketCommunication::sendMessage(struct logEntry buffer){
-  this->fromaddress.sin_addr.s_addr = inet_addr("128.206.19.255");
+  this->serveraddress.sin_addr.s_addr = inet_addr("128.206.19.255");
   int n;
   string temp;
   temp += to_string(buffer.analoginstate);
@@ -115,27 +164,64 @@ int SocketCommunication::sendMessage(struct logEntry buffer){
   temp += buffer.note;
 
   const char * message = temp.c_str();
-  cout<<message<<endl;
-  n = sendto(this->sockfd, message, MSG_SIZE, 0, (struct sockaddr*)&(this->fromaddress), this->fromlen);
+ //cout<<message<<endl;
+  n = sendto(this->sockfd, message, MSG_SIZE, 0, (struct sockaddr*)&(this->serveraddress), this->fromlen);
 
   if(n < 0){
     cout<<"SEND FAILED"<<endl;
     exit(1);
   }
+}
+
+int SocketCommunication::sendMessage(vector<struct logEntry> buffer){
+	for(int i = 0; i < buffer.size(); i++) {
+	  this->serveraddress.sin_addr.s_addr = inet_addr("128.206.19.255");
+	  int n;
+	  string temp;
+	  temp += to_string(buffer[i].analoginstate);
+	  temp += ",";
+	  temp += to_string(buffer[i].digin1state);
+	  temp += ",";
+	  temp += to_string(buffer[i].digin2state);
+	  temp += ",";
+	  temp += to_string(buffer[i].digin3state);
+	  temp += ",";
+	  temp += to_string(buffer[i].digout1state);
+	  temp += ",";
+	  temp += to_string(buffer[i].digout2state);
+	  temp += ",";
+	  temp += to_string(buffer[i].digout3state);
+	  temp += ",";
+	  temp += to_string(buffer[i].analogvalue);
+	  temp += ",";
+	  temp += to_string(buffer[i].timestamp.tv_sec);
+	  temp += ",";
+	  temp += to_string(buffer[i].timestamp.tv_usec);
+	  temp += ",";
+	  temp += to_string(buffer[i].deviceid);
+	  temp += ",";
+	  temp += buffer[i].note;
+
+	  const char * message = temp.c_str();
+	  cout<<message<<endl;
+	  n = sendto(this->sockfd, message, MSG_SIZE, 0, (struct sockaddr*)&(this->serveraddress), this->fromlen);
+
+	  if(n < 0){
+		cout<<"SEND FAILED"<<endl;
+		exit(1);
+	  }
+	}
+
   return(1);
 }
 
 char* SocketCommunication::receiveMessage(void){
-  char buffer[MSG_SIZE];
-  bzero(&(this->receive), MSG_SIZE);
+  bzero(this->recMessage, MSG_SIZE);
   int n;
-  n = recvfrom(this->sockfd, buffer, MSG_SIZE, 0,(struct sockaddr*)&(this->fromaddress), &(this->fromlen));
-
-  cout<<buffer<<endl;
-  return 0;
-
+  n = recvfrom(this->sockfd, this->recMessage, MSG_SIZE, 0,(struct sockaddr*)&(this->fromaddress), &(this->fromlen));
+  return this->recMessage;
 }
-
+#ifdef RTU
 AnalogInput::AnalogInput() {
 	this->eventFlag = false;
   if(wiringPiSPISetup(SPI_CHANNEL, SPI_SPEED) < 0) {
@@ -144,6 +230,7 @@ AnalogInput::AnalogInput() {
   	}
    this->state = OK;
 }
+
 
 void AnalogInput::get_ADC() {
   uint8_t spiData[3];
@@ -173,7 +260,9 @@ int AnalogInput::getState() {
 
 void AnalogInput::resetFlag() {
   this->eventFlag = false;
-  this->state = OK;
+  if(this->state == OVERLOAD) {this->state = ACK1; this->count = 0;}
+  if(this->state == UNDERLOAD){this->state = ACK2; }
+  if(this->state == POWERDOWN)this->state = ACK3;
 }
 
 bool AnalogInput::getEvent() {
@@ -189,12 +278,68 @@ AnalogInput::~AnalogInput() {
 
 void AnalogInput::update() {
    get_ADC(); //actually get the value over spi
+   //cout<<this->state<<endl;
+  // cout<<this->value<<endl;
+ //  cout<<this->count<<endl;
 
-    if(this->value == this->last) //power down status can happen even if overload is already set
+   if(this->state == OK) {
+	  if(this->value <= (this->last + ADC_TOLERANCE) && this->value >= (this->last - ADC_TOLERANCE)) //power down status can happen even if overload is already set
+		this->count++;
+	  else {
+		this->count = 0;
+		this->last = this->value;
+	  }
+	  if(this->value > ADC_OVERLOAD) { //check the value and update status if necessary
+		this->state = OVERLOAD;
+		this->eventFlag = true;
+	  }
+	  if(this->value < ADC_UNDERLOAD) {
+		this->state = UNDERLOAD;
+		this->eventFlag = true;
+	  }
+	  if(this->count > ADC_POWERDOWN) {
+		this->state = POWERDOWN;
+		this->eventFlag = true;
+	  }
+   }
+
+   if(this->state == ACK1) {
+	   if(this->value < ADC_OVERLOAD)
+		   state = OK;
+   	   }
+
+   if(this->state == ACK2) {
+	   if(this->value <= (this->last + ADC_TOLERANCE) && this->value >= (this->last - ADC_TOLERANCE)) //power down status can happen even if overload is already set
+	  		this->count++;
+	   else {
+		   this->count = 0;
+		   this->last = this->value;
+	   }
+	   if(this->value > ADC_UNDERLOAD) {
+		   	this->state = OK;
+	   }
+	   if(this->count > ADC_POWERDOWN) {
+			this->state = POWERDOWN;
+			this->eventFlag = true;
+	   }
+   }
+
+   if(this->state == ACK3) {
+	   if(this->value >= (this->last + ADC_TOLERANCE) || this->value <= (this->last - ADC_TOLERANCE)) {
+		   this->state = OK;
+		   this->count = 0;
+		   this->last = this->value;
+	   }
+   }
+
+
+
+  /*  if(this->value == this->last) //power down status can happen even if overload is already set
       this->count++;
     if(this->value != this->last)
       this->count = 0;
-    if(this->count > ADC_POWERDOWN)
+
+    if(this->count > ADC_POWERDOWN && (this->state == UNDERLOAD || this->state == OK))
       this->state = POWERDOWN;
 
     if (this->state == OK) { //overload or underload states cannot occur when power is already down
@@ -205,8 +350,9 @@ void AnalogInput::update() {
     }
     this->last = this->value;
     if(this->state != OK) {
-    	this->eventFlag = true;
-    }
+    	if(this->state != ACK)
+    		this->eventFlag = true; */
+  //  }
 
     //cout << this->value << endl; //for debugging
 }
@@ -218,21 +364,24 @@ DigitalInput::DigitalInput(int pin) {
 	this->eventFlag = false;
 	pinMode(pin,INPUT);
 	pullUpDnControl(pin, PUD_DOWN);
+	usleep(1000);
 	this->value = digitalRead(this->pinNumber);
 }
 
 void DigitalInput::update() {
   //use wiringpi to check if value on pin is different than value in object
-	if(this->pinNumber == 26)
-	cout << "at start of update for pin previous value is " << this->value << " new value is " << digitalRead(this->pinNumber) << "event flag is " << this->eventFlag <<  " the value of comparison is " << (this->value != digitalRead(this->pinNumber)) <<endl;
+//	cout<<"Point C: "<<this->getEvent()<<endl;
+//	cout<<"Point D: "<<this->eventFlag<<endl;
+	//if(this->pinNumber == 26)
+	//cout << "at start of update for pin previous value is " << this->value << " new value is " << digitalRead(this->pinNumber) << "event flag is " << this->eventFlag <<  " the value of comparison is " << (this->value != digitalRead(this->pinNumber)) <<endl;
   if(this->value != digitalRead(this->pinNumber)) {
-	  cout <<"setting event flag to true" <<endl;
+	//  cout <<"setting event flag to true" <<endl;
     this->eventFlag = true; //if theyre different set the event flag
      //update the value anyways
   }
  this->value = digitalRead(this->pinNumber);
- if(this->pinNumber == 26)
-  cout << "at end of update current value is " << digitalRead(this->pinNumber) << "and eventflag is " << this->eventFlag << endl;
+ //if(this->pinNumber == 26)
+//  cout << "at end of update current value is " << digitalRead(this->pinNumber) << "and eventflag is " << this->eventFlag << endl;
 
 }
 bool DigitalInput::getEvent() {
@@ -241,23 +390,43 @@ bool DigitalInput::getEvent() {
 
 void DigitalInput::resetFlag() {
   this->eventFlag = false;
-  cout << "resetting flag. flag is " << this->eventFlag << endl;
+//  cout << "resetting flag. flag is " << this->eventFlag << endl;
+//	cout<<"Point E: "<<this->getEvent()<<endl;
+//	cout<<"Point F: "<<this->eventFlag<<endl;
 }
 
 int DigitalInput::getValue() {
   return this->value;
 }
 
-DigitalOutput::DigitalOutput(int pin) {
+DigitalOutput::DigitalOutput(int pin,int outputNumber) {
+	this->outputNumber = outputNumber;
 	this->eventFlag = false;
   this->pinNumber = pin;
   pinMode(this->pinNumber,OUTPUT);
   this->value = digitalRead(this->pinNumber);
+
+  // Open the Character Device for writing
+      if((cdev_id = open(CHAR_DEV, O_WRONLY)) == -1) {
+          printf("Cannot open device %s\n", CHAR_DEV);
+          exit(1);
+      }
+
+
 }
 
 void DigitalOutput::setValue(int value) {
   digitalWrite(this->pinNumber,value);
   this->eventFlag = true;
+  char buffer[2];
+  buffer[0] = this->outputNumber;
+  buffer[1] = value;
+  int dummy = write(cdev_id, buffer, sizeof(buffer));
+	if(dummy != sizeof(buffer)) {
+	  printf("Write failed, leaving...\n");
+	  exit(0);
+	}
+
 }
 
 bool DigitalOutput::getEvent() {
@@ -271,3 +440,4 @@ void DigitalOutput::resetFlag() {
 int DigitalOutput::getValue() {
   return this->value;
 }
+#endif

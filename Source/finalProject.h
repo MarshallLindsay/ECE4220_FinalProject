@@ -1,9 +1,13 @@
+
 /*
   Marshall Lindsay
   Max Houck
   ECE 4220 Final Project
 
 */
+//#define RTU YES
+#define HISTORIAN YES
+
 #ifndef FINALPROJECT_H
 #define FINALPROJECT_H
 
@@ -25,38 +29,61 @@
 #include <sstream>
 #include <semaphore.h>
 #include <thread>
-#include <wiringPi.h>
-#include <wiringPiSPI.h>
+#ifdef RTU
+	#include <wiringPi.h>
+	#include <wiringPiSPI.h>
+#endif
 #include <pthread.h>
 #include <sys/timerfd.h>
 #include <sys/time.h>
 #include <vector>
+#define CHAR_DEV "/dev/RTU" // "/dev/YourDevName"
+
+#define HSEND_RREC_PORT (2345)
+#define RSEND_HREC_PORT (2346)
 
 #define CHAR_DEV "/dev/MarshallMaxFinal"
 #define MSG_SIZE (50)
+
+using namespace std;
+
+struct logEntry {
+  int analoginstate,digin1state,digin2state,digin3state,digout1state,digout2state,digout3state;
+  double analogvalue;
+  timeval timestamp;
+  int deviceid;
+  string note; //note what actually triggered the event
+};
+#define MSG_SIZE (100)
 
 //definitions for ADC
 #define SPI_CHANNEL	      0	// 0 or 1
 #define SPI_SPEED 	2000000	// Max speed is 3.6 MHz when VDD = 5 V
 #define ADC_CHANNEL       1	// Between 1 and 3
 #define ADC_REF 3.3 		//reference voltage for ADC
-#define ADC_OVERLOAD 2.1 	//overload voltage
-#define ADC_UNDERLOAD 0.9 	//underload voltage
-#define ADC_POWERDOWN 10	//number of consecutive equal measurements pbefore power line is considered down
+#define ADC_OVERLOAD 2.2 	//overload voltage
+#define ADC_UNDERLOAD 0.8 	//underload voltage
+#define ADC_POWERDOWN 25	//number of consecutive equal measurements pbefore power line is considered down
+#define ADC_TOLERANCE 0.1 //tolerance used for powerdown condition counting
 
 #define OK 1
-#define OVERLOAD -1
-#define UNDERLOAD -2
-#define POWERDOWN -3
-using namespace std;
+#define OVERLOAD 2
+#define UNDERLOAD 3
+#define POWERDOWN 4
+#define ACK1 5
+#define ACK2 6
+#define ACK3 7
 
+#ifdef RTU
 class DigitalOutput{
 private:
+	int outputNumber;
+	int cdev_id;
   int pinNumber;  //What is the pin number?
   int value;     //What is the state of the input...has an event occurred?
   bool eventFlag;
 public:
-  DigitalOutput(int);         //Initialize the input hardware parameters
+  DigitalOutput(int,int);         //Initialize the input hardware parameters
   void setValue(int);    //Set the state if an event happened, or clear if the event is over.
   int getValue(void);
   void resetFlag();
@@ -95,6 +122,7 @@ public:
   void resetFlag();
   bool getEvent();
 };
+#endif
 
 class SocketCommunication{
 private:
@@ -105,14 +133,17 @@ private:
   int length;
   string localAddress;
   char broadcast[MSG_SIZE];
-  char receive[MSG_SIZE];
+  char recMessage[MSG_SIZE];
+  struct logEntry receive;
   struct sockaddr_in serveraddress;
   struct sockaddr_in fromaddress;
   struct hostent *server;
 public:
   SocketCommunication();
+  SocketCommunication(int port);
   ~SocketCommunication();
   int sendMessage(struct logEntry buffer);
+  int sendMessage(vector<struct logEntry> buffer);
   int sendMessage(string buffer);
   char* receiveMessage(void);
 };
