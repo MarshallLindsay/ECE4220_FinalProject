@@ -137,7 +137,7 @@ void createLogEntry(char* buffer){
 	string analogValueString;
 	double analogValue;
 	string timeSecString;
-	string timeMircoSecString;
+	string timeMicroSecString;
 	string deviceNumberString;
 	int deviceNumber;
 	string note;
