@@ -136,9 +136,10 @@ void createLogEntry(char* buffer){
 	string state;
 	string analogValueString;
 	double analogValue;
-	string timeSec;
-	string timeMircoSec;
-	string deviceNumber;
+	string timeSecString;
+	string timeMircoSecString;
+	string deviceNumberString;
+	int deviceNumber;
 	string note;
 	size_t pos = 0;
 
@@ -174,6 +175,27 @@ void createLogEntry(char* buffer){
 	size_t sz;
 	pos = message.find(delimiter);
 	analogValueString = message.substr(0, pos);
-	stod(analogValueString,&sz);
+	entry.analogvalue = stod(analogValueString,&sz);
+	message.erase(0, pos+ delimiter.length());
+
+	pos = message.find(delimiter);
+	timeSecString = message.substr(0, pos);
+	entry.timestamp.tv_sec = stod(timeSecString, &sz);
+	message.erase(0, pos + delimiter.length());
+
+	pos = message.find(delimiter);
+	timeMicroSecString = message.substr(0, pos);
+	entry.timestamp.tv_usec = stod(timeSecString, &sz);
+	message.erase(0, pos + delimiter.length());
+
+	pos = message.find(delimiter);
+	deviceNumberString = message.substr(0, pos);
+	stringstream(deviceNumberString) >> entry.deviceid;
+	message.erase(0, pos + delimiter.length());
+
+	pos = message.find(delimiter);
+	note = message.substr(0, pos);
+	entry.note = note;
+	message.erase(0, pos + delimiter.length());
 
 }
