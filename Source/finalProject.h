@@ -5,7 +5,7 @@
   ECE 4220 Final Project
 
 */
-//#define RTU YES
+#define RTU YES
 #define HISTORIAN YES
 
 #ifndef FINALPROJECT_H
@@ -162,11 +162,4 @@ public:
   char* readFromDevice(void); //Char pointer return?
 };
 
-struct logEntry {
-  int analoginstate,digin1state,digin2state,digin3state,digout1state,digout2state,digout3state;
-  double analogvalue;
-  timeval timestamp;
-  int deviceid; 
-  string note; //note what actually triggered the event
-};
 #endif
