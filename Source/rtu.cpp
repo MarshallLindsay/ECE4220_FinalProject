@@ -15,13 +15,14 @@ struct logEntry gather_log(DigitalInput* digin1, DigitalInput* digin2, DigitalIn
       DigitalOutput* digout1, DigitalOutput* digout2, DigitalOutput* digout3, AnalogInput* analoginput);
 
 //class and variable definitions
-DigitalInput digin1(26);
-DigitalInput digin2(23);
-DigitalInput digin3(28);
+DigitalInput digin1(DIGIN1PIN);
+DigitalInput digin2(DIGIN2PIN);
+DigitalInput digin3(DIGIN3PIN);
 DigitalOutput digout1(9,1);
 DigitalOutput digout2(7,2);
 DigitalOutput digout3(21,3);
 AnalogInput analoginput;
+_7seg seven;
 vector<struct logEntry> log;
 struct timeval zerotime;
 int deviceid;
@@ -36,19 +37,20 @@ int main(int argc, char **argv) {
     receiveSock.receiveMessage(); //receive 1 dummy message to start up receive sockets
     gettimeofday(&zerotime,NULL); //set zero time
     wiringPiSetup();
-    int dummy1 = wiringPiISR(26,INT_EDGE_BOTH,&ISR1); //initialize interrupts for the inputs
-    int dummy2 = wiringPiISR(23,INT_EDGE_BOTH,&ISR2);
-    int dummy3 = wiringPiISR(28,INT_EDGE_BOTH,&ISR3);
+    int dummy1 = wiringPiISR(DIGIN1PIN,INT_EDGE_BOTH,&ISR1); //initialize interrupts for the inputs
+    int dummy2 = wiringPiISR(DIGIN2PIN,INT_EDGE_BOTH,&ISR2);
+    int dummy3 = wiringPiISR(DIGIN3PIN,INT_EDGE_BOTH,&ISR3);
     pthread_t thread1,thread5,thread6; //create thread pointers
   	pthread_create(&thread1, NULL, ADCthread, (void*)&analoginput); //execute thread that will time ADC 
   	pthread_create(&thread6, NULL, NetworkReceiveThread, NULL);//also be listening for commands to control the digouts.
     pthread_create(&thread5, NULL, NetworkSendThread, NULL); //create pthread that sends message every 1 second
-
+    seven.init();
+    seven.setValue(7);
+    
   while(1) {
-    if(analoginput.getEvent()) {
-      log.push_back(gather_log(&digin1,&digin2,&digin3,&digout1,&digout2,&digout3,&analoginput));
-    //	cout << log[log.size()-1].note << endl;
-    }
+	if(analoginput.getEvent()) {
+	  log.push_back(gather_log(&digin1,&digin2,&digin3,&digout1,&digout2,&digout3,&analoginput));
+	}
   }
 }
 
@@ -187,6 +189,7 @@ struct logEntry gather_log(DigitalInput* digin1, DigitalInput* digin2, DigitalIn
     else
       log.note = "Digital input 1 has gone low";
     digin1->resetFlag();
+    seven.setValue(1);
     }
   else if(digin2->getEvent()) {
     if(digin2->getValue())
@@ -194,6 +197,7 @@ struct logEntry gather_log(DigitalInput* digin1, DigitalInput* digin2, DigitalIn
     else
       log.note = "Digital input 2 has gone low";
     digin2->resetFlag();
+    seven.setValue(2);
     }
   else if(digin3->getEvent()) {
     if(digin3->getValue())
@@ -201,6 +205,7 @@ struct logEntry gather_log(DigitalInput* digin1, DigitalInput* digin2, DigitalIn
     else
       log.note = "Digital input 3 has gone low";
     digin3->resetFlag();
+    seven.setValue(3);
     }
   else if(digout1->getEvent()) {
     if(digout1->getValue())
@@ -208,6 +213,7 @@ struct logEntry gather_log(DigitalInput* digin1, DigitalInput* digin2, DigitalIn
     else
       log.note = "Digital output 1 has gone low";
     digout1->resetFlag();
+    seven.setValue(4);
     }
   else if(digout2->getEvent()) {
     if(digout2->getValue())
@@ -215,6 +221,7 @@ struct logEntry gather_log(DigitalInput* digin1, DigitalInput* digin2, DigitalIn
     else
       log.note = "Digital output 2 has gone low";
     digout2->resetFlag();
+    seven.setValue(5);
     }
   else if(digout3->getEvent()) {
     if(digout3->getValue())
@@ -222,6 +229,7 @@ struct logEntry gather_log(DigitalInput* digin1, DigitalInput* digin2, DigitalIn
     else
       log.note = "Digital output 3 has gone low";
     digout3->resetFlag();
+    seven.setValue(6);
     }
   else if(analoginput->getEvent()) {
     int state = analoginput->getState();
@@ -229,6 +237,7 @@ struct logEntry gather_log(DigitalInput* digin1, DigitalInput* digin2, DigitalIn
     if(state == UNDERLOAD) log.note = "Analog input has detected a line underload";
     if(state == POWERDOWN) log.note = "Analog input has detected loss of power";
     analoginput->resetFlag();
+    seven.setValue(7);
   }
   else log.note = "No event has occured. This is just a 1 Hz update";
   return log;

@@ -10,6 +10,8 @@
 #ifndef FINALPROJECT_H
 #define FINALPROJECT_H
 
+using namespace std;
+
 #include <iostream>
 #include <fcntl.h>
 #include <stdio.h>
@@ -28,7 +30,7 @@
 #include <sstream>
 #include <semaphore.h>
 #include <thread>
-#ifdef RTU //workstations don't have these so compiler will fail. see note above.
+#ifdef RTU //workstations don't have these so compiler wilvim l fail. see note above.
 	#include <wiringPi.h>
 	#include <wiringPiSPI.h>
 #endif
@@ -60,7 +62,15 @@
 #define ACK2 6
 #define ACK3 7
 
-using namespace std;
+//wiringPi pins
+#define DIGIN1PIN 26
+#define DIGIN2PIN 23
+#define DIGIN3PIN 28
+#define SEVENENABLE 29
+#define SEVENA 5
+#define SEVENB 6
+#define SEVENC 25
+#define SEVEND 2
 
 struct logEntry {
   int analoginstate,digin1state,digin2state,digin3state,digout1state,digout2state,digout3state;
@@ -117,6 +127,16 @@ public:
   void update();
   void resetFlag();
   bool getEvent();
+};
+
+class _7seg{
+	private:
+	public:
+		_7seg();
+		~_7seg();
+		void init();
+		void setValue(int);
+	
 };
 #endif
 

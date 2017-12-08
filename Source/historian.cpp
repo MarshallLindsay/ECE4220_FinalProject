@@ -4,10 +4,7 @@ historian program
 
 */
 
-
 #include "finalProject.h"
-
-
 
 void printWelcomeMessage();
 int handleUserInput(string input);

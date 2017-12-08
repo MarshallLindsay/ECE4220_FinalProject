@@ -224,7 +224,7 @@ char* SocketCommunication::receiveMessage(void){
 #ifdef RTU
 AnalogInput::AnalogInput() {
 	this->eventFlag = false;
-  if(wiringPiSPISetup(SPI_CHANNEL, SPI_SPEED) < 0) {
+    if(wiringPiSPISetup(SPI_CHANNEL, SPI_SPEED) < 0) {
   		printf("wiringPiSPISetup failed\n");
   		exit(0);
   	}
@@ -390,5 +390,76 @@ void DigitalOutput::resetFlag() {
 
 int DigitalOutput::getValue() {
   return this->value;
+}
+
+_7seg::_7seg() {
+}
+
+_7seg::~_7seg() {
+	
+}
+
+void _7seg::init() {
+	pinMode(SEVENENABLE,OUTPUT);
+	pinMode(SEVENA,OUTPUT);
+	pinMode(SEVENB,OUTPUT);
+	pinMode(SEVENC,OUTPUT);
+	pinMode(SEVEND,OUTPUT);
+	digitalWrite(SEVENENABLE,1);
+	this->setValue(0);
+	
+}
+void _7seg::setValue(int num) {
+	switch(num) {
+	case 0:
+		digitalWrite(SEVENA,0);
+		digitalWrite(SEVENB,0);
+		digitalWrite(SEVENC,0);
+		digitalWrite(SEVEND,0);
+		break;
+	case 1:
+		digitalWrite(SEVENA,1);
+		digitalWrite(SEVENB,0);
+		digitalWrite(SEVENC,0);
+		digitalWrite(SEVEND,0);
+		break;
+	case 2:
+		digitalWrite(SEVENA,0);
+		digitalWrite(SEVENB,1);
+		digitalWrite(SEVENC,0);
+		digitalWrite(SEVEND,0);
+		break;
+	case 3:
+		digitalWrite(SEVENA,1);
+		digitalWrite(SEVENB,1);
+		digitalWrite(SEVENC,0);
+		digitalWrite(SEVEND,0);
+		break;
+	case 4:
+		digitalWrite(SEVENA,0);
+		digitalWrite(SEVENB,0);
+		digitalWrite(SEVENC,1);
+		digitalWrite(SEVEND,0);
+		break;
+	case 5:
+		digitalWrite(SEVENA,1);
+		digitalWrite(SEVENB,0);
+		digitalWrite(SEVENC,1);
+		digitalWrite(SEVEND,0);
+		break;
+	case 6:
+		digitalWrite(SEVENA,0);
+		digitalWrite(SEVENB,1);
+		digitalWrite(SEVENC,1);
+		digitalWrite(SEVEND,0);
+		break;
+	case 7:
+		digitalWrite(SEVENA,1);
+		digitalWrite(SEVENB,1);
+		digitalWrite(SEVENC,1);
+		digitalWrite(SEVEND,0);
+		break;
+	default: break;
+	}
 }
 #endif
