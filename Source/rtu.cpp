@@ -16,6 +16,7 @@ DigitalOutput digout1(9);
 DigitalOutput digout2(7);
 DigitalOutput digout3(21);
 vector<struct logEntry> log;
+struct timeval zerotime;
 AnalogInput analoginput; 
 
 SocketCommunication receiveSock(HSEND_RREC_PORT);
@@ -29,7 +30,9 @@ int main(int argc, char **argv) {
       exit(0);
     }
     deviceid = *argv[1] - '0'; //this is sneaky
-
+    
+    receiveSock.receiveMessage(); //set the zero time    
+    gettimeofday(&zerotime,NULL);
   //instantiate all objects
     wiringPiSetup();
   //  AnalogInput analoginput; //analog input
@@ -45,11 +48,10 @@ int main(int argc, char **argv) {
 //	pthread_create(&thread3, NULL, DiginThread, (void*)&digin2); //execute thread that will time ADCpthread_t thread1,thread2,thread3,thread4; //create thread pointer
 //	pthread_create(&thread4, NULL, DiginThread, (void*)&digin3); //execute thread that will time ADC
     //make this a vector eventually
-	pthread_create(&thread6, NULL, NetworkReceiveThread, NULL);
-    pthread_create(&thread5, NULL, NetworkSendThread, NULL);
-
-      //create pthread that sends data every 1 second
-      //also be listening for commands to control the digouts. call get_states() and make a log entry when you receive a command.
+	pthread_create(&thread6, NULL, NetworkReceiveThread, NULL);//also be listening for commands to control the digouts.
+    pthread_create(&thread5, NULL, NetworkSendThread, NULL); //create pthread that sends data every 1 second
+    
+    
   while(1) {
   //  network.update();  //read network buffer for incoming commands
     digin1.update();
@@ -63,21 +65,34 @@ int main(int argc, char **argv) {
 }
 
 void* NetworkReceiveThread(void* prt) {
-	char *networkbuffer;
+	char networkbuffer[MSG_SIZE];
 	char* comparestring;
 	string buffer;
 	
 	while(1) {
 		strcpy(networkbuffer, receiveSock.receiveMessage());
 		strncpy(comparestring,networkbuffer,3);
-		
+		cout<<comparestring<<endl;
 		if(strcmp("led",comparestring) == 0) {
-			if(buffer[4] == deviceid) {
-				if(buffer[9] == 'f') {
-					if(buffer[6] == '1');
-						
-					if(buffer[6] == '2');
-					if(buffer[6] == '3');
+			cout<<"mark A" << endl;
+			if(networkbuffer[4] == deviceid+'0') {
+				cout<<"mark C" << endl;
+				if(networkbuffer[9] == 'n') {
+					cout<<"mark B" << endl;
+					if(networkbuffer[6] == '1')
+						digout1.setValue(1);
+					if(networkbuffer[6] == '2')
+						digout2.setValue(1);
+					if(networkbuffer[6] == '3')
+						digout3.setValue(1);
+				}
+				if(networkbuffer[9] == 'f') {
+					if(networkbuffer[6] == '1')
+						digout1.setValue(0);
+					if(networkbuffer[6] == '2')
+						digout2.setValue(0);
+					if(networkbuffer[6] == '3')
+						digout3.setValue(0);
 				}
 			}
 		}
@@ -109,7 +124,7 @@ void* NetworkSendThread(void* ptr) {
 		 SocketCommunication sendSock(RSEND_HREC_PORT);
 	
 		 sendSock.sendMessage("#yolo");
-		 sendSock.sendMessage("#swag");
+		 
 	  while(1) {
 		while(read(timer_fd, &num_periods,sizeof(num_periods)) == -1); //wait for timer
 			if(num_periods >  1) {puts("MISSED WINDOW");exit(1);} //error check
@@ -177,7 +192,10 @@ void* ADCthread(void* ptr) {
 struct logEntry gather_log(DigitalInput* digin1, DigitalInput* digin2, DigitalInput* digin3,
       DigitalOutput* digout1, DigitalOutput* digout2, DigitalOutput* digout3, AnalogInput* analoginput) { //this is a sad arguments list
   struct logEntry log;
-  gettimeofday(&log.timestamp,NULL);
+  struct timeval currentTime;
+  gettimeofday(&currentTime,NULL);
+  timersub(&currentTime,&zerotime,&log.timestamp);
+  
   log.deviceid = deviceid;
   log.digin1state = digin1->getValue();
   log.digin2state = digin2->getValue();
@@ -214,7 +232,7 @@ struct logEntry gather_log(DigitalInput* digin1, DigitalInput* digin2, DigitalIn
     if(digout1->getValue())
       log.note = "Digital output 1 has gone high";
     else
-      log.note = "Digital output 1 has gone low";
+      log.note = "Digital output 1 has gone lotimestampw";
     digout1->resetFlag();
     }
   else if(digout2->getEvent()) {
