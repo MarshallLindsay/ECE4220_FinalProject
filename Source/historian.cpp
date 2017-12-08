@@ -95,7 +95,7 @@ void sendCommand(){
 	string command;
 	getline(cin, command);
 
-	strcpy(broadcast, command);
+	broadcast = command;
 
 	sem_post(&sendBroadcast_semaphore);
 
