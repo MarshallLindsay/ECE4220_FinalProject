@@ -67,159 +67,17 @@
 #include <linux/init.h>
 #include <linux/types.h>
  
-#define MSG_SIZE 40
+#define MSG_SIZE 100
 #define CDEV_NAME "RTU"    // "YourDevName"
  
 MODULE_LICENSE("GPL");
   
 static int major; 
 static char msg[MSG_SIZE];
-static struct task_struct *kthread1;
 int mydev_id;
-//u_int32_t *gpeds;
-u_int32_t *gpset;
-u_int32_t *gpclr;
-//char note;
-//int delay;
- /*
-static irqreturn_t button_isr(int irq, void *dev_id) {
-  //disable interrupt handlng
-    disable_irq_nosync(79);
-  //do stuff
-      //read event detect status
-     printk("button press detected");
-     if(*gpeds == (1 << 16)) 
-          note = 'C';     
-      if(*gpeds == (1 << 17)) 
-          note = 'G';     
-      if(*gpeds == (1 << 18)) 
-          note = 'D';     
-      if(*gpeds == (1 << 19)) 
-          note = 'A';     
-      if(*gpeds == (1 << 20)) 
-          note = 'E';     
-     switch(note) {
-     case 'C':
-       delay = 400;
-       break;
-     case 'G':
-          delay = 450;
-         break;
-     case 'D':
-          delay = 300;
-       break;
-     case 'A':
-            delay = 568;
-       break;
-     case 'E':
-            delay = 379;
-            break;
-    case 'x':
-            delay = 0;
-       break;
-       }
-   
-  //clear interrupt
-      *gpeds = ~0; //set everything to 1 to clear register
-   
-  //re-enable interrupt handling
-  printk("Interrupt handled\n");    
-    enable_irq(79);     // re-enable interrupt
-     
-  
-  
-    return IRQ_HANDLED;
-} */
- /*
-int kthread_fn(void *ptr)
- 
-{
-     
- 
-    unsigned long j0, j1;
- 
-    int count = 0;
- 
- 
- 
-    printk("In kthread1\n");
- 
-    j0 = jiffies;       // number of clock ticks since system started;
- 
-                        // current "time" in jiffies
- 
-    j1 = j0 + 10*HZ;    // HZ is the number of ticks per second, that is
- 
-                        // 1 HZ is 1 second in jiffies
- 
-     
- 
-    while(time_before(jiffies, j1)) // true when current "time" is less than j1
- 
-        schedule();     // voluntarily tell the scheduler that it can schedule
- 
-                        // some other process
- 
-     
- 
-    printk("Before loop\n");
- 
-     
- 
-    // The kthread does not need to run forever. It can execute something
- 
-    // and then leave.
- 
-    while(1)
- 
-    {
- 
-         *gpset |= (1 << 6); //set pin 0 high
-            usleep_range(delay,delay);  // good for > 10 ms
-       *gpclr |= (1<<6); //clear pin 0
-        usleep_range(delay,delay);  // good for > 10 ms
-     
- 
-        //msleep_interruptible(1000); // good for > 10 ms
- 
-        //udelay(unsigned long usecs);  // good for a few us (micro s)
- 
-        //usleep_range(unsigned long min, unsigned long max); // good for 10us - 20 ms
- 
-         
- 
-         
- 
-        // In an infinite loop, you should check if the kthread_stop
- 
-        // function has been called (e.g. in clean up module). If so,
- 
-        // the kthread should exit. If this is not done, the thread
- 
-        // will persist even after removing the module.
- 
-        if(kthread_should_stop()) {
-  //    iounmap(gpset);
- //     iounmap(gpclr);
-            do_exit(0);
- 
-        }
- 
-                 
- 
-        // comment out if your loop is going "fast". You don't want to
- 
-        // printk too often. Sporadically or every second or so, it's okay.
- 
-//      printk("Count: %d\n", ++count);
- 
-    }
- 
-     
- 
-    return 0;
- 
-} */
+int *gpset;
+int *gpclr;
+
  
  
 // Function called when the user space program reads the character device.
@@ -260,32 +118,30 @@ static ssize_t device_write(struct file *filp, const char __user *buff, size_t l
         msg[len-1] = '\0';  // will ignore the last character received.
     else
         msg[len] = '\0';
-     
     // You may want to remove the following printk in your final version.
     printk("Message from user space: %s\n", msg);
      
     switch(msg[0]) {
-		case 1:
-			if(msg[1] == 1)
-				*gpset |= (1 << 2);
-			if(msg[1] == 0)
-				*gpclr |= (1 << 2);
+		case '1':
+			if(msg[1] == '1')
+				*gpset = (1 << 2);
+			if(msg[1] == '0')
+				*gpclr = (1 << 2);
 			break;
-		case 2:
-			if(msg[1] == 1)
-				*gpset |= (1 << 3);
-			if(msg[1] == 0)
-				*gpclr |= (1 << 3);
+		case '2':
+			if(msg[1] == '1')
+				*gpset = (1 << 3);
+			if(msg[1] == '0')
+				*gpclr = (1 << 3);
 			break;
-		case 3:
-			if(msg[1] == 1)
-				*gpset |= (1 << 4);
-			if(msg[1] == 0)
-				*gpclr |= (1 << 4);
+		case '3':
+			if(msg[1] == '1')
+				*gpset = (1 << 4);
+			if(msg[1] == '0')
+				*gpclr = (1 << 4);
 			break;
 		default: break;
 	}
-    
     return len;     // the number of bytes that were written to the Character Device.
 }
  
@@ -298,7 +154,7 @@ static struct file_operations fops = {
  
 int cdev_module_init(void)
 {
-    // register the Characted Device and obtain the major (assigned by the system)
+    // register the Character Device and obtain the major (assigned by the system)
     major = register_chrdev(0, CDEV_NAME, &fops);
     if (major < 0) {
             printk("Registering the character device failed with %d\n", major);
@@ -307,71 +163,19 @@ int cdev_module_init(void)
     printk("Lab6_cdev_kmod example, assigned major: %d\n", major);
     printk("Create Char Device (node) with: sudo mknod /dev/%s c %d 0\n", CDEV_NAME, major);
      
- //     delay = 1911;
-  //      char kthread_name[11]="my_kthread"; // try running  ps -ef | grep my_kthread
  
-                                            // when the thread is active.
- 
-  //      printk("In init module\n");
- 
- //       printk("break 1");
-      //gpio setup
-      //will use gpio26 (pin 19)
-      //make sure you change the gpfsel register if a different pin is used
-        // set up speaker gpio
-         u_int32_t *gpfsel = ioremap(0x3F200000,32); //gpfsel0
+         int *gpfsel = ioremap(0x3F200000,32); //gpfsel0
       
               *gpfsel |= (001 << (2*3)); //function select 001 is output for LEDS
               *gpfsel |= (001 << (3*3)); 
               *gpfsel |= (001 << (4*3)); 
-    //      printk("%d\r\n",gpfsel);
-       //   gpfsel += 0x4 / 4; //gpfsel1
-    //          printk("%d\r\n",gpfsel);
-    //        *gpfsel = 0; //buttons are all 000 inputs
-    //        gpfsel += 0x4 / 4; //gpfsel2
-   //         *gpfsel = 0;
-  //          gpfsel -= 0x8 / 4;
-            //iounmap(gpfsel);
- /*        u_int32_t *gppud = gpfsel+0x94 / 4;//ioremap(0x3F200094,32);
-           *gppud = 01;   //gppud to 01 for pull down control
-         u_int32_t *gppudclk = gpfsel+0x98 / 4;//ioremap(0x3F200098,32); //gppudclk0
-           udelay(100); // //wait 150 cycles. msleep is good for > 10 ms
-           *gppudclk |= ((1<<16) | (1<<17) | (1<<18) | (1<<19) | (1<<20));
-            udelay(100);    // //wait 150 cycles. msleep is good for > 10 ms
-            *gppud = 0; //clear gppud
-            *gppudclk = 0; //clear gppudclk
-        //        iounmap(gppud);
-        //   iounmap(gppudclk);
-            uint32_t *gpfen = gpfsel+0x58 / 4;
-            *gpfen |= ((1<<16) | (1<<17) | (1<<18) | (1<<19) | (1<<20));
-           printk("break 2");
-         gpeds = gpfsel+0x40 / 4;//ioremap(0x3F200040,32); //gpeds0 */
+
+            iounmap(gpfsel);
+
  
-          gpset = gpfsel+0x1C / 4;//ioremap(0x3F20001C,32); //gpset0
-         gpclr = gpfsel+0x28 / 4;//ioremap(0x3F200028,32); //gpclr0     
-          
-          /*
-         int dummy = 0;
-             dummy = request_irq(79, button_isr, IRQF_SHARED, "Button_handler", &mydev_id);
-                //clear interrupt
-             //enable interrupt handling
-             enable_irq(79);
- 
-        kthread1 = kthread_create(kthread_fn, NULL, kthread_name);*/
- 
+          gpset = ioremap(0x3F20001C,32); //gpset0
+          gpclr = ioremap(0x3F200028,32); //gpclr0 
          
- /*
-        if((kthread1))  // true if kthread creation is successful
- 
-        {
- 
-            printk("Inside if\n");
- 
-            // kthread is dormant after creation. Needs to be woken up
- 
-            wake_up_process(kthread1);
- 
-        }*/
  
     return 0;
 }
@@ -380,18 +184,10 @@ void cdev_module_exit(void)
 {
     // Once unregistered, the Character Device won't be able to be accessed,
     // even if the file /dev/YourDevName still exists. Give that a try...
-    unregister_chrdev(major, CDEV_NAME);
-    printk("Char Device /dev/%s unregistered.\n", CDEV_NAME);
-     
- //   int ret;
- 
-        // the following doesn't actually stop the thread, but signals that
- 
-        // the thread should stop itself (with do_exit above).
- 
-        // kthread should not be called if the thread has already stopped.
-  //  free_irq(79, &mydev_id);
- //       ret = kthread_stop(kthread1);
+ //   unregister_chrdev(major, CDEV_NAME);
+ //   printk("Char Device /dev/%s unregistered.\n", CDEV_NAME);
+     iounmap(gpset);
+     iounmap(gpclr);
  
 }  
  

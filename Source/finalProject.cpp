@@ -403,7 +403,7 @@ DigitalOutput::DigitalOutput(int pin,int outputNumber) {
 	this->outputNumber = outputNumber;
 	this->eventFlag = false;
   this->pinNumber = pin;
-  pinMode(this->pinNumber,OUTPUT);
+//  pinMode(this->pinNumber,OUTPUT);
   this->value = digitalRead(this->pinNumber);
 
   // Open the Character Device for writing
@@ -416,11 +416,11 @@ DigitalOutput::DigitalOutput(int pin,int outputNumber) {
 }
 
 void DigitalOutput::setValue(int value) {
-  digitalWrite(this->pinNumber,value);
+//  digitalWrite(this->pinNumber,value);
   this->eventFlag = true;
   char buffer[2];
-  buffer[0] = this->outputNumber;
-  buffer[1] = value;
+  buffer[0] = this->outputNumber + '0';
+  buffer[1] = value + '0';
   int dummy = write(cdev_id, buffer, sizeof(buffer));
 	if(dummy != sizeof(buffer)) {
 	  printf("Write failed, leaving...\n");
