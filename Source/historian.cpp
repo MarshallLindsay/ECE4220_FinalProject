@@ -14,10 +14,10 @@ int handleUserInput(string input);
 void startRTUS();
 void sendCommand();
 void printHistory();
+void sortHistory();
 void createLogEntry(char* message);
 
 char broadcast[MSG_SIZE];
-timeval systemStartTime;
 sem_t sendBroadcast_semaphore;
 vector<struct logEntry> history;
 
@@ -79,8 +79,6 @@ void startRTUS(){
 	bzero(broadcast, MSG_SIZE);
 	//Set the message
 	strcpy(broadcast, "#start");
-	//Get a start time
-	gettimeofday(&systemStartTime, NULL);
 	//Post to the sendBroadcast_semaphore, indicating a message should be sent.
 	sem_post(&sendBroadcast_semaphore);
 	//Gotta do it twice cause.. maths
@@ -102,23 +100,27 @@ void sendCommand(){
 }
 
 void printHistory(){
+	//sort the history
+	vector<struct logEntry> log;
+	log = sortHistory();
 	//Print the history
-	if(history.empty()){
-		cout<<"No event have been logged!"<<endl;
+	if(log.empty()){
+		cout<<"------------------------------------------------"<<endl;
+		cout<<"No events have been logged!"<<endl;			cout<<"------------------------------------------------"<<endl;
 	}else{
-		for(int i = 0; i < history.size() - 1; i++){
+		for(int i = 0; i < log.size() - 1; i++){
 			cout<<"------------------------------------------------"<<endl;
-			cout<<"Cause of event : "<<history[i].note<<endl;
-			cout<<"Event from : "<<history[i].deviceid<<endl;
-			cout<<"Time of event from start: "<<history[i].timestamp.tv_sec<<"(S) "<<history[i].timestamp.tv_usec<<"(uS)"<<endl;
-			cout<<"Analog state: "<<history[i].analoginstate;
-			cout<<"Analog value: "<<history[i].analogvalue;
-			cout<<"Digital Input 1 State: "<<history[i].digin1state<<endl;
-			cout<<"Digital Input 2 State: "<<history[i].digin2state<<endl;
-			cout<<"Digital Input 3 State: "<<history[i].digin3state<<endl;
-			cout<<"Digital Output 1 State: "<<history[i].digout1state<<endl;
-			cout<<"Digital Output 2 State: "<<history[i].digout2state<<endl;
-			cout<<"Digital Output 3 State: "<<history[i].digout3state<<endl;
+			cout<<"Cause of event : "<<log[i].note<<endl;
+			cout<<"Event from : "<<log[i].deviceid<<endl;
+			cout<<"Time of event from start: "<<log[i].timestamp.tv_sec<<"(S) "<<log[i].timestamp.tv_usec<<"(uS)"<<endl;
+			cout<<"Analog state: "<<log[i].analoginstate;
+			cout<<"Analog value: "<<log[i].analogvalue;
+			cout<<"Digital Input 1 State: "<<log[i].digin1state<<endl;
+			cout<<"Digital Input 2 State: "<<log[i].digin2state<<endl;
+			cout<<"Digital Input 3 State: "<<log[i].digin3state<<endl;
+			cout<<"Digital Output 1 State: "<<log[i].digout1state<<endl;
+			cout<<"Digital Output 2 State: "<<log[i].digout2state<<endl;
+			cout<<"Digital Output 3 State: "<<log[i].digout3state<<endl;
 			cout<<"------------------------------------------------"<<endl;
 		}
 	}
@@ -219,13 +221,13 @@ void createLogEntry(char* buffer){
 	pos = message.find(delimiter);
 	timeSecString = message.substr(0, pos);
 	//cout<<timeSecString<<endl;
-	entry.timestamp.tv_sec = stod(timeSecString, &sz) + systemStartTime.tv_sec;
+	entry.timestamp.tv_sec = stod(timeSecString, &sz);
 	message.erase(0, pos + delimiter.length());
 
 	pos = message.find(delimiter);
 	timeMicroSecString = message.substr(0, pos);
 	//cout<<timeMicroSecString<<endl;
-	entry.timestamp.tv_usec = stod(timeSecString, &sz) + systemStartTime.tv_usec;
+	entry.timestamp.tv_usec = stod(timeSecString, &sz);
 	message.erase(0, pos + delimiter.length());
 
 	pos = message.find(delimiter);
@@ -241,5 +243,32 @@ void createLogEntry(char* buffer){
 	message.erase(0, pos + delimiter.length());
 
 	history.push_back(entry);
+
+}
+
+vector<struct logEntry> sortHistory(){
+	vector<struct logEntry> sortedHistory = history;
+	struct logEntry temp;
+
+	int minLocation = 0;
+	for(int j = 0; j < sortedHistory.size()-1; j++){
+		minLocation = j;
+		for(int i = j; i < sortedHistory.size()-1-j; i++){
+
+			if(sortedHistory[i].timestamp.tv_sec < sortedHistory[minLocation].timestamp.tv_sec){
+				minLocation = i;
+			}else if(sortedHistory[i].timestamp.tv_sec == sortedHistory[minLocation].timestamp.tv_sec){
+				if(sortedHistory[i].timestamp.tv_usec < sortedHistory[minLocation].timestamp.tv_usec){
+					minLocation = i;
+				}
+			}
+
+			temp = sortedHistory[j];
+			sortedHistory[j] = sortedHistory[i];
+			sortedHistory[i] = temp;
+
+		}
+	}
+
 
 }
