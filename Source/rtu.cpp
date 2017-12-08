@@ -58,6 +58,7 @@ void* ADCthread(void* ptr) {
 	 struct itimerspec timerspec;
 	 timerspec.it_interval.tv_sec = 0;
 	 timerspec.it_interval.tv_nsec = 1000000;
+	 timerspec.it_interval.tv_nsec = 10000000;
 	 timerspec.it_value.tv_sec = 0;
 	 timerspec.it_value.tv_nsec = 1000000;
 	 if(timerfd_settime(timer_fd,0,&timerspec,NULL) == -1) {
@@ -74,7 +75,7 @@ void* ADCthread(void* ptr) {
   while(1) {
     while(read(timer_fd, &num_periods,sizeof(num_periods)) == -1); //wait for timer
 		if(num_periods >  1) {puts("MISSED WINDOW");exit(1);} //error check
-    adc->update(); //call update method
+         adc->update(); //call update method
   }
 
   //thread should never exit
