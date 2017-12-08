@@ -14,6 +14,7 @@ int handleUserInput(string input);
 void startRTUS();
 void sendCommand();
 void printHistory();
+void printSimpleHistory();
 vector<struct logEntry> sortHistory();
 void createLogEntry(char* message);
 
@@ -51,7 +52,8 @@ void printWelcomeMessage(){
 	cout<<"1)Start the RTUs"<<endl;
 	cout<<"2)Send a command to the RTUs"<<endl;
 	cout<<"3)Print the event history since start"<<endl;
-	cout<<"4)Exit"<<endl;
+	cout<<"4)Print simplified envent history"<<endl;
+	cout<<"5)Exit"<<endl;
 }
 
 int handleUserInput(string input){
@@ -65,6 +67,9 @@ int handleUserInput(string input){
 		printHistory();
 		return(1);
 	}else if(input == "4"){
+		printSimpleHistory();
+		return(1);
+	}else if(input == "5"){
 		exit(1);
 	}else{
 		cout<<"Invalid Input"<<endl;
@@ -113,8 +118,8 @@ void printHistory(){
 			cout<<"Cause of event : "<<log[i].note<<endl;
 			cout<<"Event from : "<<log[i].deviceid<<endl;
 			cout<<"Time of event from start: "<<log[i].timestamp.tv_sec<<"(S) "<<log[i].timestamp.tv_usec<<"(uS)"<<endl;
-			cout<<"Analog state: "<<log[i].analoginstate;
-			cout<<"Analog value: "<<log[i].analogvalue;
+			cout<<"Analog state: "<<log[i].analoginstate<<endl;
+			cout<<"Analog value: "<<log[i].analogvalue<<endl;
 			cout<<"Digital Input 1 State: "<<log[i].digin1state<<endl;
 			cout<<"Digital Input 2 State: "<<log[i].digin2state<<endl;
 			cout<<"Digital Input 3 State: "<<log[i].digin3state<<endl;
@@ -124,6 +129,27 @@ void printHistory(){
 			cout<<"------------------------------------------------"<<endl;
 		}
 	}
+}
+
+void printSimpleHistory(){
+	//sort the history
+	vector<struct logEntry> log;
+	log = sortHistory();
+	//Print the history
+	if(log.empty()){
+		cout<<"------------------------------------------------"<<endl;
+		cout<<"No events have been logged!"<<endl;
+		cout<<"------------------------------------------------"<<endl;
+	}else{
+		for(unsigned int i = 0; i < log.size() - 1; i++){
+			cout<<"------------------------------------------------"<<endl;
+			cout<<"Cause of event : "<<log[i].note<<endl;
+			cout<<"Event from : "<<log[i].deviceid<<endl;
+			cout<<"Time of event from start: "<<log[i].timestamp.tv_sec<<"(S) "<<log[i].timestamp.tv_usec<<"(uS)"<<endl;
+			cout<<"------------------------------------------------"<<endl;
+		}
+	}
+
 }
 
 void* sendMessages(void* ptr){
@@ -227,7 +253,7 @@ void createLogEntry(char* buffer){
 	pos = message.find(delimiter);
 	timeMicroSecString = message.substr(0, pos);
 	//cout<<timeMicroSecString<<endl;
-	entry.timestamp.tv_usec = stod(timeSecString, &sz);
+	entry.timestamp.tv_usec = stod(timeMicroSecString, &sz);
 	message.erase(0, pos + delimiter.length());
 
 	pos = message.find(delimiter);
