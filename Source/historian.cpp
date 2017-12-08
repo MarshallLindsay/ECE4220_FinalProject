@@ -148,56 +148,68 @@ void createLogEntry(char* buffer){
 
 	pos = message.find(delimiter);
 	state = message.substr(0, pos);
+	cout<<state<<endl;
 	stringstream(state) >> entry.analoginstate;
 	message.erase(0, pos + delimiter.length());
 	pos = message.find(delimiter);
 	state = message.substr(0, pos);
+	cout<<state<<endl;
 	stringstream(state) >> entry.digin1state;
 	message.erase(0, pos + delimiter.length());
 	pos = message.find(delimiter);
 	state = message.substr(0, pos);
+	cout<<state<<endl;
 	stringstream(state) >> entry.digin2state;
 	message.erase(0, pos + delimiter.length());
 	pos = message.find(delimiter);
 	state = message.substr(0, pos);
+	cout<<state<<endl;
 	stringstream(state) >> entry.digin3state;
 	message.erase(0, pos + delimiter.length());
 	pos = message.find(delimiter);
 	state = message.substr(0, pos);
+	cout<<state<<endl;
 	stringstream(state) >> entry.digout1state;
 	message.erase(0, pos + delimiter.length());
 	pos = message.find(delimiter);
 	state = message.substr(0, pos);
+	cout<<state<<endl;
 	stringstream(state) >> entry.digout2state;
 	message.erase(0, pos + delimiter.length());
 	pos = message.find(delimiter);
 	state = message.substr(0, pos);
+	cout<<state<<endl;
 	stringstream(state) >> entry.digout3state;
 	message.erase(0, pos + delimiter.length());
 
 	size_t sz;
 	pos = message.find(delimiter);
 	analogValueString = message.substr(0, pos);
+	cout<<analogValueString<<endl;
 	entry.analogvalue = stod(analogValueString,&sz);
 	message.erase(0, pos+ delimiter.length());
 
 	pos = message.find(delimiter);
 	timeSecString = message.substr(0, pos);
+	cout<<timeSecString<<endl;
 	entry.timestamp.tv_sec = stod(timeSecString, &sz);
 	message.erase(0, pos + delimiter.length());
 
 	pos = message.find(delimiter);
 	timeMicroSecString = message.substr(0, pos);
+	cout<<timeMicroSecString<<endl;
 	entry.timestamp.tv_usec = stod(timeSecString, &sz);
 	message.erase(0, pos + delimiter.length());
 
 	pos = message.find(delimiter);
 	deviceNumberString = message.substr(0, pos);
+	cout<<deviceNumberString<<endl;
 	stringstream(deviceNumberString) >> entry.deviceid;
 	message.erase(0, pos + delimiter.length());
 
 	pos = message.find(delimiter);
 	note = message.substr(0, pos);
+	cout<<note<<endl;
 	entry.note = note;
 	message.erase(0, pos + delimiter.length());
 
