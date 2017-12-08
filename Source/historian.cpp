@@ -122,7 +122,7 @@ void* readMessages(void* ptr){
 		bzero(buffer, MSG_SIZE);
 		strcpy(buffer, sock.receiveMessage());
 		//Filter messages
-		if(buffer[1] != ',' ){
+		if(buffer[1] == ',' ){
 			//Create a log entry of the message
 			cout<<"About to do the log thing : "<<buffer<<endl;
 			createLogEntry(buffer);
