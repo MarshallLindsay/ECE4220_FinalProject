@@ -19,6 +19,7 @@ void createLogEntry(char* message);
 char broadcast[MSG_SIZE];
 timeval systemStartTime;
 sem_t sendBroadcast_semaphore;
+vector<struct logEntry> history;
 
 void* readMessages(void*);
 void* sendMessages(void*);
@@ -128,5 +129,9 @@ void* readMessages(void* ptr){
 
 void createLogEntry(char* buffer){
 	//Take the message in buffer, create a log, push to the log vector
-	cout<<buffer<<endl;
+	struct logEntry entry;
+	string message = buffer;
+	string delimiter = ",";
+
+
 }
