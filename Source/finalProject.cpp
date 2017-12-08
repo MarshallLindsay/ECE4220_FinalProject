@@ -171,7 +171,9 @@ int AnalogInput::getState() {
 
 void AnalogInput::resetFlag() {
   this->eventFlag = false;
-  this->state = OK;
+  if(this->state == OVERLOAD) {this->state = ACK1; this->count = 0;}
+  if(this->state == UNDERLOAD){this->state = ACK2; }
+  if(this->state == POWERDOWN)this->state = ACK3;
 }
 
 bool AnalogInput::getEvent() {
@@ -187,13 +189,69 @@ AnalogInput::~AnalogInput() {
 
 void AnalogInput::update() {
    get_ADC(); //actually get the value over spi
-
-    if(this->value == this->last) //power down status can happen even if overload is already set
+   //cout<<this->state<<endl;
+  // cout<<this->value<<endl;
+ //  cout<<this->count<<endl;
+   
+   if(this->state == OK) {
+	  if(this->value <= (this->last + ADC_TOLERANCE) && this->value >= (this->last - ADC_TOLERANCE)) //power down status can happen even if overload is already set
+		this->count++;
+	  else {
+		this->count = 0;
+		this->last = this->value;
+	  }
+	  if(this->value > ADC_OVERLOAD) { //check the value and update status if necessary
+		this->state = OVERLOAD;
+		this->eventFlag = true;
+	  }
+	  if(this->value < ADC_UNDERLOAD) {
+		this->state = UNDERLOAD;
+		this->eventFlag = true;
+	  }
+	  if(this->count > ADC_POWERDOWN) {
+		this->state = POWERDOWN;
+		this->eventFlag = true;
+	  }
+   }
+   
+   if(this->state == ACK1) {
+	   if(this->value < ADC_OVERLOAD)
+		   state = OK;
+   	   }
+   
+   if(this->state == ACK2) {
+	   if(this->value <= (this->last + ADC_TOLERANCE) && this->value >= (this->last - ADC_TOLERANCE)) //power down status can happen even if overload is already set
+	  		this->count++;
+	   else {
+		   this->count = 0;
+		   this->last = this->value;
+	   }
+	   if(this->value > ADC_UNDERLOAD) {
+		   	this->state = OK;
+	   }
+	   if(this->count > ADC_POWERDOWN) {
+			this->state = POWERDOWN;
+			this->eventFlag = true;
+	   }
+   }
+   
+   if(this->state == ACK3) {
+	   if(this->value >= (this->last + ADC_TOLERANCE) || this->value <= (this->last - ADC_TOLERANCE)) {
+		   this->state = OK;
+		   this->count = 0;
+		   this->last = this->value;
+	   }
+   }
+   	   
+   
+   
+  /*  if(this->value == this->last) //power down status can happen even if overload is already set
       this->count++;
     if(this->value != this->last)
       this->count = 0;
-    if(this->count > ADC_POWERDOWN)
-    a  this->state = POWERDOWN;
+    
+    if(this->count > ADC_POWERDOWN && (this->state == UNDERLOAD || this->state == OK))
+      this->state = POWERDOWN;
 
     if (this->state == OK) { //overload or underload states cannot occur when power is already down
       if(this->value > ADC_OVERLOAD) //check the value and update status if necessary
@@ -203,8 +261,9 @@ void AnalogInput::update() {
     }
     this->last = this->value;
     if(this->state != OK) {
-    	this->eventFlag = true;
-    }
+    	if(this->state != ACK)
+    		this->eventFlag = true; */
+  //  }
 
     //cout << this->value << endl; //for debugging
 }

@@ -51,14 +51,18 @@ struct logEntry {
 #define SPI_SPEED 	2000000	// Max speed is 3.6 MHz when VDD = 5 V
 #define ADC_CHANNEL       2	// Between 1 and 3
 #define ADC_REF 3.3 		//reference voltage for ADC
-#define ADC_OVERLOAD 2.1 	//overload voltage
-#define ADC_UNDERLOAD 0.9 	//underload voltage
-#define ADC_POWERDOWN 10	//number of consecutive equal measurements pbefore power line is considered down
+#define ADC_OVERLOAD 2.2 	//overload voltage
+#define ADC_UNDERLOAD 0.8 	//underload voltage
+#define ADC_POWERDOWN 25	//number of consecutive equal measurements pbefore power line is considered down
+#define ADC_TOLERANCE 0.1 //tolerance used for powerdown condition counting
 
 #define OK 1
 #define OVERLOAD -1
 #define UNDERLOAD -2
 #define POWERDOWN -3
+#define ACK1 -4
+#define ACK2 -5
+#define ACK3 -6
 
 
 class DigitalOutput{

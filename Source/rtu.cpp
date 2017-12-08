@@ -13,11 +13,11 @@ struct logEntry gather_log(DigitalInput* digin1, DigitalInput* digin2, DigitalIn
       DigitalOutput* digout1, DigitalOutput* digout2, DigitalOutput* digout3, AnalogInput* analoginput);
 
 int main(int argc, char **argv) {
-    if(argc != 2) { //check inputs and set device id
-      cout << "Usage: rtu <deviceid>\r\n";
+    if(argc != 2 || *argv[1] > '9' || *argv[1] < '0') { //check inputs and set device id
+      cout << "Usage: rtu <deviceid>\r\nDevice ID must be 1 digit";
       exit(0);
     }
-    deviceid = (int) argv[1];
+    deviceid = *argv[1] - '0'; //this is sneaky
 
   //instantiate all objects
     wiringPiSetup();
