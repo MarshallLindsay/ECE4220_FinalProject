@@ -122,7 +122,7 @@ SocketCommunication::~SocketCommunication(){
 }
 
 int SocketCommunication::sendMessage(string buffer){
-  this->fromaddress.sin_addr.s_addr = inet_addr("128.206.19.255");
+  this->serveraddress.sin_addr.s_addr = inet_addr("128.206.19.255");
   const char * message = buffer.c_str();
   int n;
   cout<<message<<endl;
@@ -136,7 +136,7 @@ int SocketCommunication::sendMessage(string buffer){
 }
 
 int SocketCommunication::sendMessage(struct logEntry buffer){
-  this->fromaddress.sin_addr.s_addr = inet_addr("128.206.19.255");
+  this->serveraddress.sin_addr.s_addr = inet_addr("128.206.19.255");
   int n;
   string temp;
   temp += to_string(buffer.analoginstate);
@@ -165,7 +165,7 @@ int SocketCommunication::sendMessage(struct logEntry buffer){
 
   const char * message = temp.c_str();
   cout<<message<<endl;
-  n = sendto(this->sockfd, message, MSG_SIZE, 0, (struct sockaddr*)&(this->fromaddress), this->fromlen);
+  n = sendto(this->sockfd, message, MSG_SIZE, 0, (struct sockaddr*)&(this->serveraddress), this->fromlen);
 
   if(n < 0){
     cout<<"SEND FAILED"<<endl;
