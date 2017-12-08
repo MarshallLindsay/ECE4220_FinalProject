@@ -94,20 +94,24 @@ void sendCommand(){
 
 void printHistory(){
 	//Print the history
-	for(int i = 0; i < history.size() - 1; i++){
-		cout<<"------------------------------------------------"<<endl;
-		cout<<"Cause of event : "<<history[i].note<<endl;
-		cout<<"Event from : "<<history[i].deviceid<<endl;
-		cout<<"Time of event from start: "<<history[i].timestamp.tv_sec<<"(S) "<<history[i].timestamp.tv_usec<<"(uS)"<<endl;
-		cout<<"Analog state: "<<history[i].analoginstate;
-		cout<<"Analog value: "<<history[i].analogvalue;
-		cout<<"Digital Input 1 State: "<<history[i].digin1state<<endl;
-		cout<<"Digital Input 2 State: "<<history[i].digin2state<<endl;
-		cout<<"Digital Input 3 State: "<<history[i].digin3state<<endl;
-		cout<<"Digital Output 1 State: "<<history[i].digout1state<<endl;
-		cout<<"Digital Output 2 State: "<<history[i].digout2state<<endl;
-		cout<<"Digital Output 3 State: "<<history[i].digout3state<<endl;
-		cout<<"------------------------------------------------"<<endl;
+	if(history.empty()){
+		cout<<"No event have been logged!"<<endl;
+	}else{
+		for(int i = 0; i < history.size() - 1; i++){
+			cout<<"------------------------------------------------"<<endl;
+			cout<<"Cause of event : "<<history[i].note<<endl;
+			cout<<"Event from : "<<history[i].deviceid<<endl;
+			cout<<"Time of event from start: "<<history[i].timestamp.tv_sec<<"(S) "<<history[i].timestamp.tv_usec<<"(uS)"<<endl;
+			cout<<"Analog state: "<<history[i].analoginstate;
+			cout<<"Analog value: "<<history[i].analogvalue;
+			cout<<"Digital Input 1 State: "<<history[i].digin1state<<endl;
+			cout<<"Digital Input 2 State: "<<history[i].digin2state<<endl;
+			cout<<"Digital Input 3 State: "<<history[i].digin3state<<endl;
+			cout<<"Digital Output 1 State: "<<history[i].digout1state<<endl;
+			cout<<"Digital Output 2 State: "<<history[i].digout2state<<endl;
+			cout<<"Digital Output 3 State: "<<history[i].digout3state<<endl;
+			cout<<"------------------------------------------------"<<endl;
+		}
 	}
 }
 
