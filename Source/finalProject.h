@@ -36,8 +36,8 @@
 #include <sys/timerfd.h>
 #include <sys/time.h>
 #include <vector>
+#define CHAR_DEV "/dev/RTU" // "/dev/YourDevName"
 
-#define CHAR_DEV "/dev/MarshallMaxFinal"
 #define HSEND_RREC_PORT (2345)
 #define RSEND_HREC_PORT (2346)
 
@@ -74,11 +74,13 @@ struct logEntry {
 
 class DigitalOutput{
 private:
+	int outputNumber;
+	int cdev_id;
   int pinNumber;  //What is the pin number?
   int value;     //What is the state of the input...has an event occurred?
   bool eventFlag;
 public:
-  DigitalOutput(int);         //Initialize the input hardware parameters
+  DigitalOutput(int,int);         //Initialize the input hardware parameters
   void setValue(int);    //Set the state if an event happened, or clear if the event is over.
   int getValue(void);
   void resetFlag();

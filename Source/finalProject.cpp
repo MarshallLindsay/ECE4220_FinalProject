@@ -361,16 +361,34 @@ int DigitalInput::getValue() {
   return this->value;
 }
 
-DigitalOutput::DigitalOutput(int pin) {
+DigitalOutput::DigitalOutput(int pin,int outputNumber) {
+	this->outputNumber = outputNumber;
 	this->eventFlag = false;
   this->pinNumber = pin;
   pinMode(this->pinNumber,OUTPUT);
   this->value = digitalRead(this->pinNumber);
+  
+  // Open the Character Device for writing
+      if((cdev_id = open(CHAR_DEV, O_WRONLY)) == -1) {
+          printf("Cannot open device %s\n", CHAR_DEV);
+          exit(1);
+      }
+  
+  
 }
 
 void DigitalOutput::setValue(int value) {
   digitalWrite(this->pinNumber,value);
   this->eventFlag = true;
+  char buffer[2];
+  buffer[0] = this->outputNumber;
+  buffer[1] = value;
+  int dummy = write(cdev_id, buffer, sizeof(buffer));
+	if(dummy != sizeof(buffer)) {
+	  printf("Write failed, leaving...\n");
+	  exit(0);
+	}
+  
 }
 
 bool DigitalOutput::getEvent() {
