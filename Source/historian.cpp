@@ -124,7 +124,7 @@ void* readMessages(void* ptr){
 		//Filter messages
 		if(buffer[1] == ',' ){
 			//Create a log entry of the message
-			cout<<"About to do the log thing : "<<buffer<<endl;
+			//cout<<"About to do the log thing : "<<buffer<<endl;
 			createLogEntry(buffer);
 		}else{
 			cout<<"Master message received"<<endl;

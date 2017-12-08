@@ -164,7 +164,7 @@ int SocketCommunication::sendMessage(struct logEntry buffer){
   temp += buffer.note;
 
   const char * message = temp.c_str();
-  cout<<message<<endl;
+ //cout<<message<<endl;
   n = sendto(this->sockfd, message, MSG_SIZE, 0, (struct sockaddr*)&(this->serveraddress), this->fromlen);
 
   if(n < 0){
