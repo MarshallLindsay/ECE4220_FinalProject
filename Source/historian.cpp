@@ -95,7 +95,7 @@ void sendCommand(){
 void printHistory(){
 	//Print the history
 	for(int i = 0; i < history.size() - 1; i++){
-		cout<<history[i].deviceid<<endl;
+		cout<<history[i].note<<endl;
 	}
 }
 
