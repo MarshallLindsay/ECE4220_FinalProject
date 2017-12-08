@@ -1,2 +1,2 @@
-/home/pi/final/Source/rtukernel.ko
-/home/pi/final/Source/rtukernel.o
+/home/pi/workspace/finalProject/Source/rtukernel.ko
+/home/pi/workspace/finalProject/Source/rtukernel.o
