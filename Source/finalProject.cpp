@@ -175,10 +175,10 @@ int SocketCommunication::sendMessage(struct logEntry buffer){
 }
 
 char* SocketCommunication::receiveMessage(void){
-  bzero((this->receiveMessage), MSG_SIZE);
+  bzero(buffer, MSG_SIZE);
   int n;
-  n = recvfrom(this->sockfd, this->receiveMessage, MSG_SIZE, 0,(struct sockaddr*)&(this->fromaddress), &(this->fromlen));
-  return (this->receiveMessage);
+  n = recvfrom(this->sockfd, buffer, MSG_SIZE, 0,(struct sockaddr*)&(this->fromaddress), &(this->fromlen));
+  return buffer;
 }
 
 AnalogInput::AnalogInput() {
