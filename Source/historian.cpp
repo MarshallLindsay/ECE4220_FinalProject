@@ -288,12 +288,10 @@ vector<struct logEntry> sortHistory(){
 					minLocation = i;
 				}
 			}
-
-			temp = sortedHistory[j];
-			sortedHistory[j] = sortedHistory[i];
-			sortedHistory[i] = temp;
-
 		}
+		temp = sortedHistory[j];
+		sortedHistory[j] = sortedHistory[i];
+		sortedHistory[i] = temp;
 	}
 
 	return(sortedHistory);
