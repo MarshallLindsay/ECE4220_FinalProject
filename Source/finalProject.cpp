@@ -220,7 +220,9 @@ int AnalogInput::getState() {
 
 void AnalogInput::resetFlag() {
   this->eventFlag = false;
-  this->state = OK;
+  if(this->state == OVERLOAD) {this->state = ACK1; this->count = 0;}
+  if(this->state == UNDERLOAD){this->state = ACK2; }
+  if(this->state == POWERDOWN)this->state = ACK3;
 }
 
 bool AnalogInput::getEvent() {
@@ -236,12 +238,68 @@ AnalogInput::~AnalogInput() {
 
 void AnalogInput::update() {
    get_ADC(); //actually get the value over spi
+   //cout<<this->state<<endl;
+  // cout<<this->value<<endl;
+ //  cout<<this->count<<endl;
 
-    if(this->value == this->last) //power down status can happen even if overload is already set
+   if(this->state == OK) {
+	  if(this->value <= (this->last + ADC_TOLERANCE) && this->value >= (this->last - ADC_TOLERANCE)) //power down status can happen even if overload is already set
+		this->count++;
+	  else {
+		this->count = 0;
+		this->last = this->value;
+	  }
+	  if(this->value > ADC_OVERLOAD) { //check the value and update status if necessary
+		this->state = OVERLOAD;
+		this->eventFlag = true;
+	  }
+	  if(this->value < ADC_UNDERLOAD) {
+		this->state = UNDERLOAD;
+		this->eventFlag = true;
+	  }
+	  if(this->count > ADC_POWERDOWN) {
+		this->state = POWERDOWN;
+		this->eventFlag = true;
+	  }
+   }
+
+   if(this->state == ACK1) {
+	   if(this->value < ADC_OVERLOAD)
+		   state = OK;
+   	   }
+
+   if(this->state == ACK2) {
+	   if(this->value <= (this->last + ADC_TOLERANCE) && this->value >= (this->last - ADC_TOLERANCE)) //power down status can happen even if overload is already set
+	  		this->count++;
+	   else {
+		   this->count = 0;
+		   this->last = this->value;
+	   }
+	   if(this->value > ADC_UNDERLOAD) {
+		   	this->state = OK;
+	   }
+	   if(this->count > ADC_POWERDOWN) {
+			this->state = POWERDOWN;
+			this->eventFlag = true;
+	   }
+   }
+
+   if(this->state == ACK3) {
+	   if(this->value >= (this->last + ADC_TOLERANCE) || this->value <= (this->last - ADC_TOLERANCE)) {
+		   this->state = OK;
+		   this->count = 0;
+		   this->last = this->value;
+	   }
+   }
+
+
+
+  /*  if(this->value == this->last) //power down status can happen even if overload is already set
       this->count++;
     if(this->value != this->last)
       this->count = 0;
-    if(this->count > ADC_POWERDOWN)
+
+    if(this->count > ADC_POWERDOWN && (this->state == UNDERLOAD || this->state == OK))
       this->state = POWERDOWN;
 
     if (this->state == OK) { //overload or underload states cannot occur when power is already down
@@ -252,8 +310,9 @@ void AnalogInput::update() {
     }
     this->last = this->value;
     if(this->state != OK) {
-    	this->eventFlag = true;
-    }
+    	if(this->state != ACK)
+    		this->eventFlag = true; */
+  //  }
 
     //cout << this->value << endl; //for debugging
 }
@@ -270,16 +329,18 @@ DigitalInput::DigitalInput(int pin) {
 
 void DigitalInput::update() {
   //use wiringpi to check if value on pin is different than value in object
-	if(this->pinNumber == 26)
-	cout << "at start of update for pin previous value is " << this->value << " new value is " << digitalRead(this->pinNumber) << "event flag is " << this->eventFlag <<  " the value of comparison is " << (this->value != digitalRead(this->pinNumber)) <<endl;
+//	cout<<"Point C: "<<this->getEvent()<<endl;
+//	cout<<"Point D: "<<this->eventFlag<<endl;
+	//if(this->pinNumber == 26)
+	//cout << "at start of update for pin previous value is " << this->value << " new value is " << digitalRead(this->pinNumber) << "event flag is " << this->eventFlag <<  " the value of comparison is " << (this->value != digitalRead(this->pinNumber)) <<endl;
   if(this->value != digitalRead(this->pinNumber)) {
-	  cout <<"setting event flag to true" <<endl;
+	//  cout <<"setting event flag to true" <<endl;
     this->eventFlag = true; //if theyre different set the event flag
      //update the value anyways
   }
  this->value = digitalRead(this->pinNumber);
- if(this->pinNumber == 26)
-  cout << "at end of update current value is " << digitalRead(this->pinNumber) << "and eventflag is " << this->eventFlag << endl;
+ //if(this->pinNumber == 26)
+//  cout << "at end of update current value is " << digitalRead(this->pinNumber) << "and eventflag is " << this->eventFlag << endl;
 
 }
 bool DigitalInput::getEvent() {
@@ -288,7 +349,9 @@ bool DigitalInput::getEvent() {
 
 void DigitalInput::resetFlag() {
   this->eventFlag = false;
-  cout << "resetting flag. flag is " << this->eventFlag << endl;
+//  cout << "resetting flag. flag is " << this->eventFlag << endl;
+//	cout<<"Point E: "<<this->getEvent()<<endl;
+//	cout<<"Point F: "<<this->eventFlag<<endl;
 }
 
 int DigitalInput::getValue() {
