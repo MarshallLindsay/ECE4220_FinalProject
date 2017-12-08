@@ -64,14 +64,14 @@ struct logEntry {
 #define ADC_TOLERANCE 0.1 //tolerance used for powerdown condition counting
 
 #define OK 1
-#define OVERLOAD -1
-#define UNDERLOAD -2
-#define POWERDOWN -3
-#define ACK1 -4
-#define ACK2 -5
-#define ACK3 -6
+#define OVERLOAD 2
+#define UNDERLOAD 3
+#define POWERDOWN 4
+#define ACK1 5
+#define ACK2 6
+#define ACK3 7
 
-
+#ifdef RTU
 class DigitalOutput{
 private:
 	int outputNumber;
@@ -119,6 +119,7 @@ public:
   void resetFlag();
   bool getEvent();
 };
+#endif
 
 class SocketCommunication{
 private:

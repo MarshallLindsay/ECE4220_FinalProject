@@ -9,6 +9,9 @@ void* ADCthread(void*);
 void* DiginThread(void* ptr);
 void* NetworkSendThread(void* ptr);
 void* NetworkReceiveThread(void* prt);
+void ISR1();
+void ISR2();
+void ISR3();
 DigitalInput digin1(26);
 DigitalInput digin2(23);
 DigitalInput digin3(28);
@@ -51,17 +54,30 @@ int main(int argc, char **argv) {
 	pthread_create(&thread6, NULL, NetworkReceiveThread, NULL);//also be listening for commands to control the digouts.
     pthread_create(&thread5, NULL, NetworkSendThread, NULL); //create pthread that sends data every 1 second
     
-    
+    int dummy1 = wiringPiISR(26,INT_EDGE_BOTH,&ISR1); //initialize interrupts for the inputs
+    int dummy2 = wiringPiISR(23,INT_EDGE_BOTH,&ISR2);
+    int dummy3 = wiringPiISR(28,INT_EDGE_BOTH,&ISR3);
   while(1) {
-  //  network.update();  //read network buffer for incoming commands
-    digin1.update();
-    digin2.update();
-    digin3.update();
-    if(digin1.getEvent() || digin2.getEvent() || digin3.getEvent() || analoginput.getEvent()) {
+    if(analoginput.getEvent()) {
       log.push_back(gather_log(&digin1,&digin2,&digin3,&digout1,&digout2,&digout3,&analoginput));
     //	cout << log[log.size()-1].note << endl;
     }
   }
+}
+
+void ISR1() {
+	digin1.update();
+	log.push_back(gather_log(&digin1,&digin2,&digin3,&digout1,&digout2,&digout3,&analoginput));
+}
+
+void ISR2() {
+	digin2.update();
+	log.push_back(gather_log(&digin1,&digin2,&digin3,&digout1,&digout2,&digout3,&analoginput));
+}
+
+void ISR3() {
+	digin3.update();
+	log.push_back(gather_log(&digin1,&digin2,&digin3,&digout1,&digout2,&digout3,&analoginput));
 }
 
 void* NetworkReceiveThread(void* prt) {
@@ -74,11 +90,8 @@ void* NetworkReceiveThread(void* prt) {
 		strncpy(comparestring,networkbuffer,3);
 		cout<<comparestring<<endl;
 		if(strcmp("led",comparestring) == 0) {
-			cout<<"mark A" << endl;
 			if(networkbuffer[4] == deviceid+'0') {
-				cout<<"mark C" << endl;
 				if(networkbuffer[9] == 'n') {
-					cout<<"mark B" << endl;
 					if(networkbuffer[6] == '1')
 						digout1.setValue(1);
 					if(networkbuffer[6] == '2')
