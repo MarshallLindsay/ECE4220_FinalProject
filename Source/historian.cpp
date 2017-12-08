@@ -116,9 +116,10 @@ void* readMessages(void* ptr){
 	//Variable to hold the message recieved
 	char buffer[MSG_SIZE] = "Initialize";
 	//Clear the buffer variable
-	bzero(buffer, MSG_SIZE);
+
 	while(1){
 		//Get a message and copy to buffer
+		bzero(buffer, MSG_SIZE);
 		strcpy(buffer, sock.receiveMessage());
 		//Filter messages
 		if(buffer[0] != '#'){
