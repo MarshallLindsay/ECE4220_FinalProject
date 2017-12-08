@@ -171,6 +171,47 @@ int SocketCommunication::sendMessage(struct logEntry buffer){
     cout<<"SEND FAILED"<<endl;
     exit(1);
   }
+}
+
+int SocketCommunication::sendMessage(vector<struct logEntry> buffer){
+	for(int i = 0; i < buffer.size(); i++) {
+	  this->serveraddress.sin_addr.s_addr = inet_addr("128.206.19.255");
+	  int n;
+	  string temp;
+	  temp += to_string(buffer[i].analoginstate);
+	  temp += ",";
+	  temp += to_string(buffer[i].digin1state);
+	  temp += ",";
+	  temp += to_string(buffer[i].digin2state);
+	  temp += ",";
+	  temp += to_string(buffer[i].digin3state);
+	  temp += ",";
+	  temp += to_string(buffer[i].digout1state);
+	  temp += ",";
+	  temp += to_string(buffer[i].digout2state);
+	  temp += ",";
+	  temp += to_string(buffer[i].digout3state);
+	  temp += ",";
+	  temp += to_string(buffer[i].analogvalue);
+	  temp += ",";
+	  temp += to_string(buffer[i].timestamp.tv_sec);
+	  temp += ",";
+	  temp += to_string(buffer[i].timestamp.tv_usec);
+	  temp += ",";
+	  temp += to_string(buffer[i].deviceid);
+	  temp += ",";
+	  temp += buffer[i].note;
+
+	  const char * message = temp.c_str();
+	  cout<<message<<endl;
+	  n = sendto(this->sockfd, message, MSG_SIZE, 0, (struct sockaddr*)&(this->serveraddress), this->fromlen);
+
+	  if(n < 0){
+		cout<<"SEND FAILED"<<endl;
+		exit(1);
+	  }
+	}
+
   return(1);
 }
 
@@ -323,6 +364,7 @@ DigitalInput::DigitalInput(int pin) {
 	this->eventFlag = false;
 	pinMode(pin,INPUT);
 	pullUpDnControl(pin, PUD_DOWN);
+	usleep(1000);
 	this->value = digitalRead(this->pinNumber);
 }
 
@@ -357,16 +399,34 @@ int DigitalInput::getValue() {
   return this->value;
 }
 
-DigitalOutput::DigitalOutput(int pin) {
+DigitalOutput::DigitalOutput(int pin,int outputNumber) {
+	this->outputNumber = outputNumber;
 	this->eventFlag = false;
   this->pinNumber = pin;
   pinMode(this->pinNumber,OUTPUT);
   this->value = digitalRead(this->pinNumber);
+
+  // Open the Character Device for writing
+      if((cdev_id = open(CHAR_DEV, O_WRONLY)) == -1) {
+          printf("Cannot open device %s\n", CHAR_DEV);
+          exit(1);
+      }
+
+
 }
 
 void DigitalOutput::setValue(int value) {
   digitalWrite(this->pinNumber,value);
   this->eventFlag = true;
+  char buffer[2];
+  buffer[0] = this->outputNumber;
+  buffer[1] = value;
+  int dummy = write(cdev_id, buffer, sizeof(buffer));
+	if(dummy != sizeof(buffer)) {
+	  printf("Write failed, leaving...\n");
+	  exit(0);
+	}
+
 }
 
 bool DigitalOutput::getEvent() {

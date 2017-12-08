@@ -4,6 +4,9 @@
   ECE 4220 Final Project
 
 */
+#define RTU YES
+#define HISTORIAN YES
+
 #ifndef FINALPROJECT_H
 #define FINALPROJECT_H
 
@@ -25,17 +28,19 @@
 #include <sstream>
 #include <semaphore.h>
 #include <thread>
-#include <wiringPi.h>
-#include <wiringPiSPI.h>
+#ifdef RTU
+	#include <wiringPi.h>
+	#include <wiringPiSPI.h>
+#endif
 #include <pthread.h>
 #include <sys/timerfd.h>
 #include <sys/time.h>
 #include <vector>
+#define CHAR_DEV "/dev/RTU" // "/dev/YourDevName"
 
-
-#define CHAR_DEV "/dev/MarshallMaxFinal"
 #define HSEND_RREC_PORT (2345)
 #define RSEND_HREC_PORT (2346)
+
 
 using namespace std;
 
@@ -59,21 +64,23 @@ struct logEntry {
 #define ADC_TOLERANCE 0.1 //tolerance used for powerdown condition counting
 
 #define OK 1
-#define OVERLOAD -1
-#define UNDERLOAD -2
-#define POWERDOWN -3
-#define ACK1 -4
-#define ACK2 -5
-#define ACK3 -6
+#define OVERLOAD 2
+#define UNDERLOAD 3
+#define POWERDOWN 4
+#define ACK1 5
+#define ACK2 6
+#define ACK3 7
 
-
+#ifdef RTU
 class DigitalOutput{
 private:
+	int outputNumber;
+	int cdev_id;
   int pinNumber;  //What is the pin number?
   int value;     //What is the state of the input...has an event occurred?
   bool eventFlag;
 public:
-  DigitalOutput(int);         //Initialize the input hardware parameters
+  DigitalOutput(int,int);         //Initialize the input hardware parameters
   void setValue(int);    //Set the state if an event happened, or clear if the event is over.
   int getValue(void);
   void resetFlag();
@@ -112,6 +119,7 @@ public:
   void resetFlag();
   bool getEvent();
 };
+#endif
 
 class SocketCommunication{
 private:
@@ -132,7 +140,7 @@ public:
   SocketCommunication();
   SocketCommunication(int port);
   ~SocketCommunication();
-  int sendMessage(logEntry buffer);
+  int sendMessage(vector<struct logEntry> buffer);
   int sendMessage(string buffer);
   char* receiveMessage(void);
 };
