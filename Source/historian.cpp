@@ -99,7 +99,7 @@ void printHistory(){
 		cout<<"Cause of event : "<<history[i].note<<endl;
 		cout<<"Event from : "<<history[i].deviceid<<endl;
 		cout<<"Time of event from start: "<<history[i].timestamp.tv_sec<<"(S) "<<history[i].timestamp.tv_usec<<"(uS)"<<endl;
-		cout<<"Analog state: "<<history[i].analogstate;
+		cout<<"Analog state: "<<history[i].analoginstate;
 		cout<<"Analog value: "<<history[i].analogvalue;
 		cout<<"Digital Input 1 State: "<<history[i].digin1state<<endl;
 		cout<<"Digital Input 2 State: "<<history[i].digin2state<<endl;
