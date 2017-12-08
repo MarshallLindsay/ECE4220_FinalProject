@@ -14,7 +14,7 @@ int handleUserInput(string input);
 void startRTUS();
 void sendCommand();
 void printHistory();
-void sortHistory();
+vector<struct logEntry> sortHistory();
 void createLogEntry(char* message);
 
 char broadcast[MSG_SIZE];
