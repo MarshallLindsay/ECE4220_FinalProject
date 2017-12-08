@@ -6,6 +6,7 @@ RTU program
 #include "finalProject.h"
 
 void* ADCthread(void*);
+void* DiginThread(void* ptr);
 
 int deviceid;
 struct logEntry gather_log(DigitalInput* digin1, DigitalInput* digin2, DigitalInput* digin3,
@@ -21,14 +22,18 @@ int main(int argc, char **argv) {
   //instantiate all objects
     wiringPiSetup();
     AnalogInput analoginput; //analog input
-    pthread_t thread1; //create thread pointer
-    pthread_create(&thread1, NULL, ADCthread, (void*)&analoginput); //execute thread that will time ADC
+      
     DigitalInput digin1(26);
     DigitalInput digin2(23);
     DigitalInput digin3(28);
     DigitalOutput digout1(9);
     DigitalOutput digout2(7);
     DigitalOutput digout3(21);
+    pthread_t thread1,thread2,thread3,thread4; //create thread pointer
+	pthread_create(&thread1, NULL, ADCthread, (void*)&analoginput); //execute thread that will time ADCpthread_t thread1,thread2,thread3,thread4; //create thread pointer
+//	pthread_create(&thread2, NULL, DiginThread, (void*)&digin1); //execute thread that will time ADCpthread_t thread1,thread2,thread3,thread4; //create thread pointer
+//	pthread_create(&thread3, NULL, DiginThread, (void*)&digin2); //execute thread that will time ADCpthread_t thread1,thread2,thread3,thread4; //create thread pointer
+//	pthread_create(&thread4, NULL, DiginThread, (void*)&digin3); //execute thread that will time ADC
     vector<struct logEntry> log; //make this a vector eventually
 
     //instantiate networking stuff
@@ -40,12 +45,27 @@ int main(int argc, char **argv) {
     digin1.update();
     digin2.update();
     digin3.update();
-
     if(digin1.getEvent() || digin2.getEvent() || digin3.getEvent() || analoginput.getEvent()) {
       log.push_back(gather_log(&digin1,&digin2,&digin3,&digout1,&digout2,&digout3,&analoginput));
     	cout << log[log.size()-1].note << endl;
+    }
   }
+}
+
+void* DiginThread(void* ptr) {
+
+	 struct sched_param param;
+	 param.sched_priority = 49;
+	 sched_setscheduler(0,SCHED_FIFO,&param);
+	 
+	 DigitalInput *digin = (DigitalInput*)ptr;
+
+  while(1) {
+         digin->update(); //call update method
   }
+
+  //thread should never exit
+  //pthread_exit((void*)retval);
 }
 
 void* ADCthread(void* ptr) {
@@ -66,7 +86,7 @@ void* ADCthread(void* ptr) {
 	 	 exit(0);
 	 }
 	 struct sched_param param;
-	 param.sched_priority = 49;
+	 param.sched_priority = 48;
 	 sched_setscheduler(0,SCHED_FIFO,&param);
 	 uint64_t num_periods = 0;
 
