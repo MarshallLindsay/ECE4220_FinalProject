@@ -95,7 +95,19 @@ void sendCommand(){
 void printHistory(){
 	//Print the history
 	for(int i = 0; i < history.size() - 1; i++){
-		cout<<history[i].note<<endl;
+		cout<<"------------------------------------------------"<<endl;
+		cout<<"Cause of event : "<<history[i].note<<endl;
+		cout<<"Event from : "<<history[i].deviceid<<endl;
+		cout<<"Time of event from start: "<<history[i].timestamp.tv_sec<<"(S) "<<history[i].timestamp.tv_usec<<"(uS)"<<endl;
+		cout<<"Analog state: "<<history[i].analogstate;
+		cout<<"Analog value: "<<history[i].analogvalue;
+		cout<<"Digital Input 1 State: "<<history[i].digin1state<<endl;
+		cout<<"Digital Input 2 State: "<<history[i].digin2state<<endl;
+		cout<<"Digital Input 3 State: "<<history[i].digin3state<<endl;
+		cout<<"Digital Output 1 State: "<<history[i].digout1state<<endl;
+		cout<<"Digital Output 2 State: "<<history[i].digout2state<<endl;
+		cout<<"Digital Output 3 State: "<<history[i].digout3state<<endl;
+		cout<<"------------------------------------------------"<<endl;
 	}
 }
 
@@ -194,13 +206,13 @@ void createLogEntry(char* buffer){
 	pos = message.find(delimiter);
 	timeSecString = message.substr(0, pos);
 	//cout<<timeSecString<<endl;
-	entry.timestamp.tv_sec = stod(timeSecString, &sz);
+	entry.timestamp.tv_sec = stod(timeSecString, &sz) + systemStartTime.tv_sec;
 	message.erase(0, pos + delimiter.length());
 
 	pos = message.find(delimiter);
 	timeMicroSecString = message.substr(0, pos);
 	//cout<<timeMicroSecString<<endl;
-	entry.timestamp.tv_usec = stod(timeSecString, &sz);
+	entry.timestamp.tv_usec = stod(timeSecString, &sz) + systemStartTime.tv_usec;
 	message.erase(0, pos + delimiter.length());
 
 	pos = message.find(delimiter);
