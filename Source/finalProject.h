@@ -4,7 +4,7 @@
   ECE 4220 Final Project
 
 */
-#define RTU YES //include this if you are compiling for the RTU. comment this out if you are compiling on a workstation for the historian
+//#define RTU YES //include this if you are compiling for the RTU. comment this out if you are compiling on a workstation for the historian
 #define HISTORIAN YES
 
 #ifndef FINALPROJECT_H
