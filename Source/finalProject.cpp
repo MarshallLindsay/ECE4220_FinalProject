@@ -62,6 +62,7 @@ SocketCommunication::SocketCommunication(){
 
 }
 
+//Overloaded constructor to allow for dynamic port declaration
 SocketCommunication::SocketCommunication(int port){
   //Create a socket, connectionless
   this->sockfd= socket(AF_INET, SOCK_DGRAM, 0);
@@ -122,12 +123,14 @@ SocketCommunication::~SocketCommunication(){
 }
 
 int SocketCommunication::sendMessage(string buffer){
+  //Set the broadcast IP
   this->serveraddress.sin_addr.s_addr = inet_addr("128.206.19.255");
+  //Convert the string to a char*
   const char * message = buffer.c_str();
   int n;
-  //cout<<message<<endl;
+  //Send the message
   n = sendto(this->sockfd, message, MSG_SIZE, 0, (struct sockaddr*)&(this->serveraddress), this->fromlen);
-
+  //Error check
   if(n < 0){
     cout<<"SEND FAILED"<<endl;
     exit(1);
@@ -135,9 +138,12 @@ int SocketCommunication::sendMessage(string buffer){
   return(1);
 }
 
+//Overload of send message to send a log.
 int SocketCommunication::sendMessage(struct logEntry buffer){
+  //Set the broadcast IP
   this->serveraddress.sin_addr.s_addr = inet_addr("128.206.19.255");
   int n;
+  //Convert the different members of the struct to CSV string
   string temp;
   temp += to_string(buffer.analoginstate);
   temp += ",";
@@ -163,16 +169,20 @@ int SocketCommunication::sendMessage(struct logEntry buffer){
   temp += ",";
   temp += buffer.note;
 
+  //Convert the string to a char*
   const char * message = temp.c_str();
- //cout<<message<<endl;
+  //Send the message
   n = sendto(this->sockfd, message, MSG_SIZE, 0, (struct sockaddr*)&(this->serveraddress), this->fromlen);
-
+  //Error check
   if(n < 0){
     cout<<"SEND FAILED"<<endl;
     exit(1);
   }
 }
 
+//Overload of sendMessage to send a vector of logs.
+//Does what sendMessage(struct logEvent) with the addition of a for loop to
+//go through the whole vector.
 int SocketCommunication::sendMessage(vector<struct logEntry> buffer){
 	for(int i = 0; i < buffer.size(); i++) {
 	  this->serveraddress.sin_addr.s_addr = inet_addr("128.206.19.255");
@@ -216,11 +226,17 @@ int SocketCommunication::sendMessage(vector<struct logEntry> buffer){
 }
 
 char* SocketCommunication::receiveMessage(void){
+  //Clear the recMessage field
   bzero(this->recMessage, MSG_SIZE);
   int n;
+  //Get the message and copy to this->recMessage
   n = recvfrom(this->sockfd, this->recMessage, MSG_SIZE, 0,(struct sockaddr*)&(this->fromaddress), &(this->fromlen));
+  //Return the message
   return this->recMessage;
 }
+
+//The following methods are only used in the RTU and wont be compiled on
+//the workstation.
 #ifdef RTU
 AnalogInput::AnalogInput() {
 	this->eventFlag = false;
@@ -341,9 +357,9 @@ DigitalInput::DigitalInput(int pin) {
 
 void DigitalInput::update() {
   if(this->value != digitalRead(this->pinNumber)) {   //use wiringpi to check if value on pin is different than value in object
-    this->eventFlag = true; //if theyre different set the event flag   
+    this->eventFlag = true; //if theyre different set the event flag
   }
- this->value = digitalRead(this->pinNumber); //always update the value 
+ this->value = digitalRead(this->pinNumber); //always update the value
 }
 bool DigitalInput::getEvent() {
   return this->eventFlag;
@@ -396,7 +412,7 @@ _7seg::_7seg() {
 }
 
 _7seg::~_7seg() {
-	
+
 }
 
 void _7seg::init() {
@@ -407,7 +423,7 @@ void _7seg::init() {
 	pinMode(SEVEND,OUTPUT);
 	digitalWrite(SEVENENABLE,1);
 	this->setValue(0);
-	
+
 }
 void _7seg::setValue(int num) {
 	switch(num) {

@@ -16,20 +16,27 @@ void printSuperSimpleHistory();
 vector<struct logEntry> sortHistory();
 void createLogEntry(char* message);
 
+//Global variable to hold a message to be broadcast
 char broadcast[MSG_SIZE];
+//Semaphore to indicate a message should be broadcasted
 sem_t sendBroadcast_semaphore;
+//Mutex to protect the history vector
 pthread_mutex_t historyMutex;
+//History vector. Contains all of the logs since starting
 vector<struct logEntry> history;
 
+//Pthread functions
 void* readMessages(void*);
 void* sendMessages(void*);
 
 int main(void){
+	//String to hold the user input
 	string userInput;
 	int option;
 	pthread_t sender, reader;
 	//Initialize the sendBroadcast_semaphore
 	sem_init(&sendBroadcast_semaphore, 0, 0);
+	//Start the pthreads
 	pthread_create(&sender, NULL, sendMessages, NULL);
 	pthread_create(&reader, NULL, readMessages, NULL);
 	while(1){
@@ -89,20 +96,21 @@ void startRTUS(){
 	strcpy(broadcast, "#start");
 	//Post to the sendBroadcast_semaphore, indicating a message should be sent.
 	sem_post(&sendBroadcast_semaphore);
-	//Gotta do it twice cause.. maths
+	//Gotta do it twice cause.. Weird things
 	sem_post(&sendBroadcast_semaphore);
 
 }
 
 void sendCommand(){
 	//Broadcast the command
+	//Clear the broadcast buffer
 	bzero(broadcast, MSG_SIZE);
-
+	//Get the command from the user
 	string command;
 	getline(cin, command);
-
+	//Copy the command from the user to the broadcast buffer
 	strcpy(broadcast, command.c_str());
-
+	//Post to the broadcast semaphore
 	sem_post(&sendBroadcast_semaphore);
 
 }
@@ -136,7 +144,7 @@ void printHistory(){
 }
 
 void printSimpleHistory(){
-	//sort the history
+	//Sort the history
 	vector<struct logEntry> log;
 	log = sortHistory();
 	//Print the history
@@ -176,11 +184,11 @@ void* sendMessages(void* ptr){
 	SocketCommunication sock(HSEND_RREC_PORT);
 	string message;
 	while(1){
-		cout<<"Wait for the semaphore"<<endl;
+		//Wait for the broadcast semaphore
 		sem_wait(&sendBroadcast_semaphore);
-		cout<<"Copy the broadcast message to message"<<endl;
+		//Copy the message
 		message = broadcast;
-		cout<<"Send the message"<<endl;
+		//Send the message
 		sock.sendMessage(message);
 	}
 }
@@ -189,12 +197,14 @@ void* readMessages(void* ptr){
 	//Initialize a socket on the read port
 	SocketCommunication sock(RSEND_HREC_PORT);
 	//Variable to hold the message recieved
-	char buffer[MSG_SIZE] = "Initialize";
+	char buffer[MSG_SIZE];
 	//Clear the buffer variable
 
 	while(1){
 		//Get a message and copy to buffer
+		//Clear the local buffer
 		bzero(buffer, MSG_SIZE);
+		//Receive a message and copy to the local buffer
 		strcpy(buffer, sock.receiveMessage());
 		//Filter messages
 		if(buffer[1] == ',' ){
@@ -222,88 +232,96 @@ void createLogEntry(char* buffer){
 	string note;
 	size_t pos = 0;
 
+	//Parse the message and put contents into appropriate variables
 	pos = message.find(delimiter);
 	state = message.substr(0, pos);
-	//cout<<state<<endl;
 	stringstream(state) >> entry.analoginstate;
 	message.erase(0, pos + delimiter.length());
+
 	pos = message.find(delimiter);
 	state = message.substr(0, pos);
-	//cout<<state<<endl;
 	stringstream(state) >> entry.digin1state;
 	message.erase(0, pos + delimiter.length());
+
 	pos = message.find(delimiter);
 	state = message.substr(0, pos);
-	//cout<<state<<endl;
 	stringstream(state) >> entry.digin2state;
 	message.erase(0, pos + delimiter.length());
+
 	pos = message.find(delimiter);
 	state = message.substr(0, pos);
-	//cout<<state<<endl;
 	stringstream(state) >> entry.digin3state;
 	message.erase(0, pos + delimiter.length());
+
 	pos = message.find(delimiter);
 	state = message.substr(0, pos);
-	//cout<<state<<endl;
 	stringstream(state) >> entry.digout1state;
 	message.erase(0, pos + delimiter.length());
+
 	pos = message.find(delimiter);
 	state = message.substr(0, pos);
-	//cout<<state<<endl;
 	stringstream(state) >> entry.digout2state;
 	message.erase(0, pos + delimiter.length());
+
 	pos = message.find(delimiter);
 	state = message.substr(0, pos);
-	//cout<<state<<endl;
 	stringstream(state) >> entry.digout3state;
 	message.erase(0, pos + delimiter.length());
 
 	size_t sz;
 	pos = message.find(delimiter);
 	analogValueString = message.substr(0, pos);
-	//cout<<analogValueString<<endl;
 	entry.analogvalue = stod(analogValueString,&sz);
 	message.erase(0, pos+ delimiter.length());
 
 	pos = message.find(delimiter);
 	timeSecString = message.substr(0, pos);
-	//cout<<timeSecString<<endl;
 	entry.timestamp.tv_sec = stod(timeSecString, &sz);
 	message.erase(0, pos + delimiter.length());
 
 	pos = message.find(delimiter);
 	timeMicroSecString = message.substr(0, pos);
-	//cout<<timeMicroSecString<<endl;
 	entry.timestamp.tv_usec = stod(timeMicroSecString, &sz);
 	message.erase(0, pos + delimiter.length());
 
 	pos = message.find(delimiter);
 	deviceNumberString = message.substr(0, pos);
-	//cout<<deviceNumberString<<endl;
 	stringstream(deviceNumberString) >> entry.deviceid;
 	message.erase(0, pos + delimiter.length());
 
 	pos = message.find(delimiter);
 	note = message.substr(0, pos);
-	//cout<<note<<endl;
 	entry.note = note;
 	message.erase(0, pos + delimiter.length());
+
+	//Add the log to the history buffer
+	//Lock the history mutex
 	pthread_mutex_lock(&historyMutex);
+	//Add the log to the global history
 	history.push_back(entry);
+	//Unlock the history mutex
 	pthread_mutex_unlock(&historyMutex);
 
 }
 
 vector<struct logEntry> sortHistory(){
+	//Create a local copy of the global history,
+	//sort it, and then return the sorted version.
+
+	//Lock the history mutex.
 	pthread_mutex_lock(&historyMutex);
+	//Make a local copy of the global history
 	vector<struct logEntry> sortedHistory = history;
+	//Unlock the histor mutex
 	pthread_mutex_unlock(&historyMutex);
+
 	struct logEntry temp;
 
+	//Selection sort based off the times
 	int minLocation = 0;
 	for(int j = 0; j < sortedHistory.size()-1; j++){
 		minLocation = j;
-		for(int i = j; i < sortedHistory.size()-(1); i++){
+	for(int i = j; i < sortedHistory.size()-1; i++){
 
 			if(sortedHistory[i].timestamp.tv_sec < sortedHistory[minLocation].timestamp.tv_sec){
 				minLocation = i;
